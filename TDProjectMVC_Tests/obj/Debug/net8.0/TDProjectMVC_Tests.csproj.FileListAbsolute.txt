@@ -1,0 +1,9 @@
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\bin\Debug\net8.0\.msCoverageSourceRootsMapping_TDProjectMVC_Tests
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\bin\Debug\net8.0\CoverletSourceRootsMapping_TDProjectMVC_Tests
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\TDProjectMVC_Tests.csproj.AssemblyReference.cache
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\MvcTestingAppManifest.json
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\TDProjectMVC_Tests.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\TDProjectMVC_Tests.AssemblyInfoInputs.cache
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\TDProjectMVC_Tests.AssemblyInfo.cs
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\TDProjectMVC_Tests.csproj.CoreCompileInputs.cache
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC_Tests\obj\Debug\net8.0\TDProjectMVC_Tests.sourcelink.json
