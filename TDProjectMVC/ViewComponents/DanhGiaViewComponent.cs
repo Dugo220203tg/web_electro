@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TDProjectMVC.Data;
 using TDProjectMVC.ViewModels;
 
@@ -11,8 +12,14 @@ namespace TDProjectMVC.ViewComponents
         {
             this.db = db;
         }
+        public int GetReviewCountAsync(int maHH)
+        {
+            return  db.DanhGiaSps.Count(d => d.MaHh == maHH);
+        }
         public IViewComponentResult Invoke(int maHH)
         {
+            var reviewCount = GetReviewCountAsync(maHH);
+
             var data = db.DanhGiaSps
                 .Where(dg => dg.MaHh == maHH)
                 .Select(lo => new DanhGiaVM
@@ -24,6 +31,11 @@ namespace TDProjectMVC.ViewComponents
                     Sao = (int)lo.Sao,
                 })
                 .ToList();
+            var model = new DanhGiaListViewModel
+            {
+                ReviewCount = reviewCount,
+                DanhGias = data
+            };
             return View("Index", data);
         }
     }

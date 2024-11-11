@@ -105,16 +105,16 @@ document.addEventListener('DOMContentLoaded', function () {
 //---------------------------------------------Your Cart-----------------------------------------------
 // Tìm kiếm
 $(document).ready(function () {
-  $("#searchButton").click(function () {
-    let searchText = $("#searchText").val().trim(); // Trim to remove leading/trailing spaces
-    if (searchText !== "") {
-      // Check if search text is not empty
-      let url = `/Product/Search?query=` + encodeURIComponent(searchText); // Encode search text
-      window.location.href = url;
-    } else {
-      window.location.href = "/Product"; // Redirect to /Product if searchText is empty
-    }
-  });
+    $("#searchButton").click(function () {
+        let searchText = $("#searchText").val().trim(); // Trim to remove leading/trailing spaces
+        if (searchText !== "") {
+            // Check if search text is not empty
+            let url = `/Product/Search?query=` + encodeURIComponent(searchText); // Encode search text
+            window.location.href = url;
+        } else {
+            window.location.href = "/Product"; // Redirect to /Product if searchText is empty
+        }
+    });
 });
 
 
@@ -122,26 +122,26 @@ $(document).ready(function () {
 // Thêm sự kiện click cho các thẻ li
 var liElements = document.querySelectorAll(".section-tab-nav li");
 liElements.forEach(function (li) {
-  li.addEventListener("click", function () {
-    // Xóa lớp "active" từ tất cả các thẻ li
-    liElements.forEach(function (el) {
-      el.classList.remove("active");
+    li.addEventListener("click", function () {
+        // Xóa lớp "active" từ tất cả các thẻ li
+        liElements.forEach(function (el) {
+            el.classList.remove("active");
+        });
+        // Thêm lớp "active" cho thẻ li được nhấp vào
+        this.classList.add("active");
     });
-    // Thêm lớp "active" cho thẻ li được nhấp vào
-    this.classList.add("active");
-  });
 });
 
 // Kiểm tra nếu có tham số loại trong URL, thêm lớp "active" cho thẻ li tương ứng
 var queryParams = new URLSearchParams(window.location.search);
 var loaiParam = queryParams.get("loai");
 if (loaiParam) {
-  var activeLi = document.querySelector(
-    '.section-tab-nav li a[asp-route-loai="' + loaiParam + '"]'
-  ).parentNode;
-  if (activeLi) {
-    activeLi.classList.add("active");
-  }
+    var activeLi = document.querySelector(
+        '.section-tab-nav li a[asp-route-loai="' + loaiParam + '"]'
+    ).parentNode;
+    if (activeLi) {
+        activeLi.classList.add("active");
+    }
 }
 
 //-----WISH-LIST-----
@@ -180,14 +180,14 @@ function addToWishlist(id) {
 
 // Function to remove an item from the wishlist
 function RemoveWishList(id, element) {
-   // console.log(`Removing item with ID: ${id}`); // Debugging line
+    // console.log(`Removing item with ID: ${id}`); // Debugging line
 
     $.ajax({
         url: "/WishList/RemoveWishList",
         type: "POST",
         data: { id: id },
         success: function (result) {
-           // console.log(result); // Debugging line to check response
+            // console.log(result); // Debugging line to check response
             if (result.success) {
                 Swal.fire({
                     icon: "success",
@@ -281,9 +281,9 @@ $(document).ready(function () {
 
 // Pagination link click handler
 $(".page-link").click(function (e) {
-  e.preventDefault();
-  var page = $(this).text();
- // console.log("Chuyển đến trang: " + page);
+    e.preventDefault();
+    var page = $(this).text();
+    // console.log("Chuyển đến trang: " + page);
 });
 
 // Hiển thị danh mục sản phẩm trên breadcrumb
@@ -293,27 +293,15 @@ document.addEventListener("DOMContentLoaded", function () {
     //console.log("urlPath:", urlPath);
     // Lặp qua tất cả các phần tử có class "danhmuc"
     document.querySelectorAll(".danhmuc").forEach((link) => {
-        // Lấy href của mỗi thẻ chứa class danhmuc
-        var href = link.getAttribute("href");
-
-        // In giá trị của biến href vào console
-        //console.log("Href:", href);
-
-        if (href && href.includes(urlPath)) {
-            // Lấy phần tử label trong phạm vi của thẻ <a>
-            var label = link.querySelector("label");
-
-            // In giá trị của biến label vào console
-           // console.log("Label:", label);
-
-            // Kiểm tra xem label có tồn tại không trước khi lấy dữ liệu từ nó
-            if (label) {
-                // Lấy nội dung của label
-                var labelContent = label.textContent.trim();
-                // Cập nhật nội dung của phần tử <li> có class 'active' trong breadcrumb
-                document.querySelector("#breadcrumb-tree li.active").textContent =
-                    labelContent;
-            }
+        // Lấy phần tử label trong phạm vi của thẻ <a>
+        var label = link.querySelector("label");
+        // Kiểm tra xem label có tồn tại không trước khi lấy dữ liệu từ nó
+        if (label) {
+            // Lấy nội dung của label
+            var labelContent = label.textContent.trim();
+            // Cập nhật nội dung của phần tử <li> có class 'active' trong breadcrumb
+            document.querySelector("#breadcrumb-tree li.active").textContent =
+                labelContent;
         }
     });
 });

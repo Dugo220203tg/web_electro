@@ -16,7 +16,7 @@
             <div class="col-md-12">
                 <ul class="breadcrumb-tree">
                     <li><a href="/Product">Store</a></li>
-                    <li><a href="/Product/@Model.ML">@Model.TenLoai</a></li>
+                    <li><a href="/Product/@Model.ML">@Model.</a></li>
                     <li><a href="/Product/@Model.NCC">@Model.MaNCC</a></li>
                     <li class="active">@Model.TenHH</li>
                 </ul>
@@ -62,13 +62,20 @@
                     <h2 class="product-name">@Model.TenHH</h2>
                     <div>
                         <div class="product-rating">
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star"></i>
-                            <i class="fa fa-star-o"></i>
+                            @for (int i = 0; i < 5; i++)
+                            {
+                                if (i < @Model.DiemDanhGia)
+                                {
+                                    <i class="fa fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-star-o"></i>
+                                }
+                            }
                         </div>
-                        <a class="review-link" href="#">10 Review(s) | Add your review</a>
+
+                        <a class="review-link" href="#">@Model.CountDg Review(s) | Add your review</a>
                     </div>
                     <div>
                         <h4 class="product-price">
@@ -147,34 +154,15 @@
                 <div id="product-tab">
                     <!-- product tab nav -->
                     <ul class="tab-nav">
-                        <li class="active"><a data-toggle="tab" href="#tab1">Thông Tin</a></li>
+                        <li class="active"><a data-toggle="tab" href="#tab1">Reviews (@Model.CountDg)</a></li>
                         <li><a data-toggle="tab" href="#tab2">Chi Tiết</a></li>
-                        <li><a data-toggle="tab" href="#tab3">Reviews (3)</a></li>
+                        <li ><a data-toggle="tab" href="#tab3">Thông Tin</a></li>
                     </ul>
                     <!-- /product tab nav -->
                     <!-- product tab content -->
                     <div class="tab-content">
-                        <!-- tab1  -->
-                        <div id="tab1" class="tab-pane fade in active">
-                            <div class="col-md-12">
-                                @* <p class="group-title">Thông số sản phẩm</p> *@
-                                <div id="js-pd-summary">
-                                    @Html.Raw(finalMoTaHtml)
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /tab1  -->
-                        <!-- tab2  -->
-                        <div id="tab2" class="tab-pane fade in">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    @* <p>@Model.MoTa</p> *@
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /tab2  -->
                         <!-- tab3  -->
-                        <div id="tab3" class="tab-pane fade in">
+                        <div id="tab1" class="tab-pane fade in active">
                             <div class="row">
                                 <!-- Rating -->
                                 <div class="col-md-3">
@@ -230,6 +218,25 @@
                             </div>
                         </div>
                         <!-- /tab3  -->
+                        <!-- tab1  -->
+                        <div id="tab3" class="tab-pane fade in ">
+                            <div class="col-md-12">
+                                @* <p class="group-title">Thông số sản phẩm</p> *@
+                                <div id="js-pd-summary">
+                                    @Html.Raw(finalMoTaHtml)
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /tab1  -->
+                        <!-- tab2  -->
+                        <div id="tab2" class="tab-pane fade in">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @* <p>@Model.MoTa</p> *@
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /tab2  -->
                     </div>
                     <!-- /product tab content  -->
                 </div>

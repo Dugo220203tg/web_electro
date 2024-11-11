@@ -17,7 +17,8 @@
         public int SoLuong { get; set; }
         public int DiemDanhGia { get; set; }
         public List<string> ImageUrls { get; set; }
-
+        public int CountDg { get; set; }
+        public string TenDanhMuc {  get; set; }
     }
     public class ChiTietHangHoaVM
     {

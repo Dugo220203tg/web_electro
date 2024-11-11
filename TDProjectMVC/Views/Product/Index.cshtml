@@ -1,43 +1,80 @@
 ﻿@* @model IEnumerable<TDProjectMVC.ViewModels.HangHoaVM> *@
-@using PagedList.Mvc;
-@using PagedList;
-@model IPagedList<TDProjectMVC.ViewModels.HangHoaVM>
+@model PaginatedList<HangHoaVM>
+@using TDProjectMVC.ViewModels
+@using TDProjectMVC.Helpers;
 @{
     ViewData["Title"] = "Index";
     Layout = "_DanhSachHangHoa";
 }
- <!-- #region Danh Sach San Pham -->
-    <div class="row">
-        @section BreadCum {
-            <div id="breadcrumb" class="section">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <ul id="breadcrumb-tree" class="breadcrumb-tree">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Store</a></li>
-                                <li class="active"></li>
-                            </ul>
-                        </div>
+<!-- #region Danh Sach San Pham -->
+<div class="row">
+    @section BreadCum {
+        <div id="breadcrumb" class="section">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul id="breadcrumb-tree" class="breadcrumb-tree">
+                            <li><a href="/">Home</a></li>
+                            <li><a href="/">Store</a></li>
+                            <li class="active"></li>
+                        </ul>
                     </div>
                 </div>
             </div>
-        }
-        @if(Model != null && Model.Any()){
-                @await Html.PartialAsync("productItem", Model)    
-        }
-        <div class="store-filter clearfix">
-            <span class="store-qty">Showing 20-100 products</span>
-            <ul class="store-pagination">
-                @if (ViewBag.TotalPages != null && ViewBag.TotalPages > 0)
-                {
-                    for (int i = 1; i <= ViewBag.TotalPages; i++)
-                    {
-                        <li class="@(ViewBag.Page == i ? "active" : "")">
-                            <a href="@Url.Action("Index", "Product", new { page = i, pagesize = ViewBag.PageSize, loai = ViewBag.Loai, hang = ViewBag.hang })">@i</a>
-                        </li>
-                    }
-                }
-            </ul>
         </div>
-     </div>
+    }
+    @if (Model != null && Model.Any())
+    {
+        @await Html.PartialAsync("productItem", Model)
+    }
+    <div class="store-filter clearfix">
+        <span class="store-qty">Showing 20-100 products</span>
+        <ul class="store-pagination">
+            @{
+                int pageIndex = Model.PageIndex;
+                int totalPages = Model.TotalPages;
+                int pageSizeValue = ViewBag.PageSize;
+                int startPage = ((pageIndex - 1) / 5) * 5 + 1;
+                int endPage = Math.Min(startPage + 4, totalPages);
+            }
+
+            <ul class="store-pagination">
+                @if (startPage > 1)
+                {
+                    <li class="page_item">
+                        <a href="@Url.Action("Index", "Product", new { page = startPage - 5, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">&lt;&lt;</a>
+                    </li>
+                }
+                @if (pageIndex > 1)
+                {
+                    <li class="page_item">
+                        <a href="@Url.Action("Index", "Product", new { page = pageIndex - 1, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">&lt;</a>
+                    </li>
+                }
+
+
+                @for (var i = startPage; i <= endPage; i++)
+                {
+                    <li class="@(pageIndex == i ? "active" : "")">
+                        <a href="@Url.Action("Index", "Product", new { page = i, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">@i</a>
+                    </li>
+                }
+
+                @if (pageIndex < totalPages)
+                {
+                    <li class="page_item">
+                        <a href="@Url.Action("Index", "Product", new { page = pageIndex + 1, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">></a>
+                    </li>
+                }
+                @if (endPage < totalPages)
+                {
+                    <li class="page_item">
+                        <a href="@Url.Action("Index", "Product", new { page = endPage + 1, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">>></a>
+                    </li>
+                }
+
+            </ul>
+
+        </ul>
+    </div>
+</div>

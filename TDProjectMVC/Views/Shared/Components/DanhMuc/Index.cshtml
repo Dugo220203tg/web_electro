@@ -5,7 +5,7 @@
     <div class="checkbox-filter">
         @foreach (var item in Model)
         {
-            <div class="input-checkbox">
+            <div class="input-checkbox danhmuc-cb">
                 <input type="checkbox" id="@item.ID" class="danhmuc-checkbox" data-url="@Url.Action("Index", "Product", new { danhmuc = item.ID })" />
                 <label for="@item.ID">
                     <span></span>@item.TenDanhMuc

@@ -16,7 +16,7 @@ namespace TDProjectMVC.ViewComponents
         {
             var data = db.DanhGiaSps
                 .Where(dg => dg.MaHh == maHH)
-                .ToList(); // Chuyển dữ liệu thành List để tránh thực hiện truy vấn đa lần
+                .ToList();
 
             var tongSao = data.Sum(dg => dg.Sao);
             var trungBinhSao = data.Count > 0 ? (double)tongSao / data.Count : 0;

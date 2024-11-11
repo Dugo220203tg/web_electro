@@ -1,8 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PagedList;
+using System;
+using System.Diagnostics.Metrics;
+using System.Drawing.Printing;
 using TDProjectMVC.Data;
 using TDProjectMVC.ViewModels;
+using TDProjectMVC.Helpers;
 
 namespace TDProjectMVC.Controllers
 {
@@ -15,17 +19,11 @@ namespace TDProjectMVC.Controllers
             db = context;
         }
 
-        public IActionResult Index(int? danhmuc, string? hang, int? loai, decimal? minPrice, decimal? maxPrice, int? page, int? pagesize)
+        public IActionResult Index(int? danhmuc, string? hang, int? loai, decimal? minPrice, decimal? maxPrice, int? page, int? pageSize)
         {
-            if (page == null)
-            {
-                page = 1;
-            }
-            if (pagesize == null)
-            {
-                pagesize = 9;
-            }
-            ViewBag.PageSize = pagesize;
+            int pageIndex = page ?? 1;
+            int pageSizeValue = pageSize ?? 9;
+            ViewBag.PageSize = pageSizeValue;
 
             var hangHoas = db.HangHoas.AsQueryable();
 
@@ -51,7 +49,6 @@ namespace TDProjectMVC.Controllers
             {
                 hangHoas = hangHoas.Where(p => (decimal?)p.DonGia <= maxPrice.Value);
             }
-
             var result = hangHoas.Select(p => new HangHoaVM
             {
                 MaHH = p.MaHh,
@@ -65,16 +62,16 @@ namespace TDProjectMVC.Controllers
                 ML = p.MaLoai,
                 NCC = p.MaNcc,
                 DiemDanhGia = p.DanhGiaSps.Any() ? (int)Math.Round(p.DanhGiaSps.Average(dg => dg.Sao ?? 0)) : 0
-            });
+            }).ToList(); // Thực hiện ToList() tại đây
 
             int totalItems = result.Count();
-            decimal totalPages = Math.Ceiling((decimal)((decimal)totalItems / pagesize ?? 1));
-            ViewBag.TotalPages = totalPages;
-            ViewBag.Page = page;
+            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(result, pageIndex, pageSizeValue);
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.Page = pageIndex;
             ViewBag.Loai = loai;
             ViewBag.hang = hang;
 
-            return View(result.ToPagedList((int)page, (int)pagesize));
+            return View(paginatedList);
         }
 
 
@@ -145,7 +142,7 @@ namespace TDProjectMVC.Controllers
 
             // Calculate average rating
             double diemDanhGia = data.DanhGiaSps.Any() ? data.DanhGiaSps.Average(dg => dg.Sao ?? 0) : 0;
-
+            int countdg = db.DanhGiaSps.Count(d => d.MaHh == id);
             var result = new HangHoaVM
             {
                 MaHH = data.MaHh,
@@ -160,7 +157,8 @@ namespace TDProjectMVC.Controllers
                 NCC = data.MaNcc,
                 SoLuong = 10,
                 DiemDanhGia = (int)diemDanhGia,  // Assign calculated rating
-                ImageUrls = imageUrls
+                ImageUrls = imageUrls,
+                CountDg = countdg
             };
 
             return View(result);

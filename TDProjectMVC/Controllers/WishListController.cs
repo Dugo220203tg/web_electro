@@ -49,7 +49,7 @@ namespace TDProjectMVC.Controllers
 
             if (existingItem != null)
             {
-                return Json(new { success = false, message = "Product is already in wishlist" });
+                return Json(new { success = false, message = "Sản phẩm đã có trong mục Yêu Thích" });
             }
 
             var yeuthich = new YeuThich
@@ -61,7 +61,7 @@ namespace TDProjectMVC.Controllers
 
             db.Add(yeuthich);
             await db.SaveChangesAsync();
-            return Json(new { success = true, message = "Product added to wishlist" });
+            return Json(new { success = true, message = "Thêm sản phẩm thành công" });
         }
         [Authorize]
         [HttpPost]
