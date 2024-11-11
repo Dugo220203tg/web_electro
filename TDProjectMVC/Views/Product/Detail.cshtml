@@ -1,0 +1,364 @@
+﻿@model TDProjectMVC.ViewModels.HangHoaVM
+@using TDProjectMVC.ViewModels
+
+@{
+    ViewData["Title"] = "Detail";
+
+    // Declare the variables here once
+    var formattedMoTa = Model.MoTa.Replace("\n", "</div><div class=\"item\">");
+    var finalMoTaHtml = "<div class=\"item\">" + formattedMoTa + "</div>";
+}
+<div id="breadcrumb" class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="breadcrumb-tree">
+                    <li><a href="/Product">Store</a></li>
+                    <li><a href="/Product/@Model.ML">@Model.TenLoai</a></li>
+                    <li><a href="/Product/@Model.NCC">@Model.MaNCC</a></li>
+                    <li class="active">@Model.TenHH</li>
+                </ul>
+            </div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+<!-- SECTION -->
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+            <!-- Product main img -->
+            <div class="col-md-5 col-md-push-2">
+                <div id="product-main-img">
+                    @foreach (var imageUrl in Model.ImageUrls)
+                    {
+                        <div class="product-preview">
+                            <img src="~/Hinh/Hinh/HangHoa/@Model.MaHH/@imageUrl" alt="@Model.TenHH">
+                        </div>
+                    }
+                </div>
+            </div>
+            <!-- /Product main img -->
+            <!-- Product thumb imgs  -->
+            <div class="col-md-2  col-md-pull-5">
+                <div id="product-imgs">
+                    @foreach (var imageUrl in Model.ImageUrls)
+                    {
+                        <div class="product-preview">
+                            <img src="~/Hinh/Hinh/HangHoa/@Model.MaHH/@imageUrl" alt="@Model.TenHH">
+                        </div>
+                    }
+                </div>
+            </div>
+            <!-- /Product thumb imgs -->
+            <!-- Product details -->
+            <div class="col-md-5">
+                <div class="product-details">
+                    <h2 class="product-name">@Model.TenHH</h2>
+                    <div>
+                        <div class="product-rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star-o"></i>
+                        </div>
+                        <a class="review-link" href="#">10 Review(s) | Add your review</a>
+                    </div>
+                    <div>
+                        <h4 class="product-price">
+                            @Model.DonGia.ToString("#,##0 VNĐ")
+                            &nbsp;
+                        </h4>
+                        <del class="product-old-price">
+                            @((Model.DonGia * (100 + Model.GiamGia) / 100).ToString("#,##0 VNĐ"))
+                        </del>
+                        <span class="product-available">In Stock</span>
+                    </div>
+                    <div class="col-md-12">
+                        <div id="js-pd-summary">
+                            <!-- Thẻ div chứa các item -->
+                            @Html.Raw(finalMoTaHtml)
+                        </div>
+                        <a href="javascript:void(0)" id="toggle-summary" class="btn-summary" onclick="toggleSummary()">Mở rộng</a>
+                    </div>
+
+                    @* <div class="product-options">
+                    <label>
+                    Size
+                    <select class="input-select">
+                    <option value="0">@Model.MoTaNgan</option>
+                    </select>
+                    </label>
+                    <label>
+                    Color
+                    <select class="input-select">
+                    <option value="0">Red</option>
+                    </select>
+                    </label>
+                    </div> *@
+                    <div class="add-to-cart">
+                        <form id="addToCartForm">
+                            <div class="qty-label">
+                                Qty
+                                <div class="input-number">
+                                    <input type="number" id="quantity" name="quantity" value="1" min="1">
+                                    <span class="qty-up">+</span>
+                                    <span class="qty-down">-</span>
+                                </div>
+                            </div>
+                            <button type="button" class="add-to-cart-btn" onclick="addToCart(@Model.MaHH, $ ('#quantity').val(), 'Normal')">
+                                <i class="fa fa-shopping-cart"></i> add to cart
+                            </button>
+                        </form>
+                    </div>
+                    <ul class="product-btns">
+                        <li>
+                            <a href="#" onclick="addToWishlist('@Model.MaHH'); return false;">
+                                <i class="fa fa-heart-o"></i> ADD TO WISHLIST
+                            </a>
+                        </li>
+                        <li><a href="#"><i class="fa fa-exchange"></i> add to compare</a></li>
+                    </ul>
+                    <ul class="product-links">
+                        <li>Category:</li>
+                        <li><a href="/Product/@Model.ML">@Model.TenLoai</a></li>
+                        <li><a href="Product/@Model.NCC">@Model.MaNCC</a></li>
+                    </ul>
+
+                    <ul class="product-links">
+                        <li>Share:</li>
+                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                        <li><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                        <li><a href="#"><i class="fa fa-envelope"></i></a></li>
+                    </ul>
+
+                </div>
+            </div>
+            <!-- /Product details -->
+            <!-- Product tab -->
+            <div class="col-md-12">
+                <div id="product-tab">
+                    <!-- product tab nav -->
+                    <ul class="tab-nav">
+                        <li class="active"><a data-toggle="tab" href="#tab1">Thông Tin</a></li>
+                        <li><a data-toggle="tab" href="#tab2">Chi Tiết</a></li>
+                        <li><a data-toggle="tab" href="#tab3">Reviews (3)</a></li>
+                    </ul>
+                    <!-- /product tab nav -->
+                    <!-- product tab content -->
+                    <div class="tab-content">
+                        <!-- tab1  -->
+                        <div id="tab1" class="tab-pane fade in active">
+                            <div class="col-md-12">
+                                @* <p class="group-title">Thông số sản phẩm</p> *@
+                                <div id="js-pd-summary">
+                                    @Html.Raw(finalMoTaHtml)
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /tab1  -->
+                        <!-- tab2  -->
+                        <div id="tab2" class="tab-pane fade in">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    @* <p>@Model.MoTa</p> *@
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /tab2  -->
+                        <!-- tab3  -->
+                        <div id="tab3" class="tab-pane fade in">
+                            <div class="row">
+                                <!-- Rating -->
+                                <div class="col-md-3">
+                                    @await Component.InvokeAsync("DanhGiaSao", new { maHH = @Model.MaHH })
+                                </div>
+                                <!-- /Rating -->
+                                <!-- Reviews -->
+                                <div class="col-md-6">
+                                    <div id="reviews">
+                                        <ul class="reviews">
+                                            @await Component.InvokeAsync("DanhGia", new { maHH = @Model.MaHH })
+                                        </ul>
+                                        <ul class="reviews-pagination">
+                                            <li class="active">1</li>
+                                            <li><a href="#">2</a></li>
+                                            <li><a href="#">3</a></li>
+                                            <li><a href="#">4</a></li>
+                                            <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <!-- /Reviews -->
+                                <!-- Review Form -->
+                                <div class="col-md-3">
+                                    <div id="review-form">
+                                        <form id="commentForm" class="review-form">
+                                            <!-- Hidden field to store the product ID (MaHH) -->
+                                            <input type="hidden" id="MaHH" name="MaHH" value="@Model.MaHH" /> <!-- Assuming you pass MaHH from the model -->
+
+                                            <input class="input" type="text" id="username" placeholder="Your Name">
+                                            <input class="input" type="email" id="useremail" placeholder="Your Email">
+                                            <textarea class="input" id="noiDung" placeholder="Your Review"></textarea>
+
+                                            <div class="input-rating">
+                                                <span>Your Rating: </span>
+                                                <div class="stars">
+                                                    <input id="star5" name="rating" value="5" type="radio"><label for="star5"></label>
+                                                    <input id="star4" name="rating" value="4" type="radio"><label for="star4"></label>
+                                                    <input id="star3" name="rating" value="3" type="radio"><label for="star3"></label>
+                                                    <input id="star2" name="rating" value="2" type="radio"><label for="star2"></label>
+                                                    <input id="star1" name="rating" value="1" type="radio"><label for="star1"></label>
+                                                </div>
+                                            </div>
+
+                                            <button type="button" class="primary-btn" id="submitComment">Submit</button>
+                                        </form>
+                                    </div>
+
+                                    <div id="commentMessage" style="display:none; color:green;">Comment submitted successfully!</div>
+                                    <div id="errorMessage" style="display:none; color:red;">Error submitting comment!</div>
+                                </div>
+                                <!-- /Review Form -->
+                            </div>
+                        </div>
+                        <!-- /tab3  -->
+                    </div>
+                    <!-- /product tab content  -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="section">
+    <!-- container -->
+    <div class="container">
+        <!-- row -->
+        <div class="row">
+
+            <div class="col-md-12">
+                <div class="section-title text-center">
+                    <h3 class="title">Related Products</h3>
+                </div>
+            </div>
+            @foreach (var relatedProduct in ViewBag.RelatedProducts as IEnumerable<HangHoaVM>)
+            {
+                <div class="col-md-3 col-xs-6">
+                    <div class="product">
+                        <a asp-action="Detail" asp-controller="Product" asp-route-id="@relatedProduct.MaHH">
+                            <div class="product-img">
+                                @{
+                                    string firstImageUrl = string.Empty;
+                                    if (!string.IsNullOrEmpty(relatedProduct.Hinh))
+                                    {
+                                        var imageUrls = relatedProduct.Hinh.Split(',');
+                                        firstImageUrl = imageUrls.FirstOrDefault();
+                                    }
+                                }
+
+                                @if (!string.IsNullOrEmpty(firstImageUrl))
+                                {
+                                    <img src="~/Hinh/Hinh/HangHoa/@relatedProduct.MaHH/@firstImageUrl" alt="@relatedProduct.TenHH" style="width:100%;height:300px">
+                                }
+                                else
+                                {
+                                    <img src="~/Hinh/default.jpg" alt="Default Image" style="width:100%;height:300px">
+                                }                                <div class="product-label">
+                                    @if (relatedProduct.GiamGia > 0)
+                                    {
+                                        <span class="sale">-@relatedProduct.GiamGia%</span>
+                                    }
+                                    @if ((DateTime.Now - relatedProduct.NgaySX).TotalDays < 90)
+                                    {
+                                        <span class="new">New</span>
+                                    }
+                                </div>
+                            </div>
+                            <div class="product-body">
+                                <p class="product-category">@relatedProduct.TenLoai</p>
+                                <h3 class="product-name" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">
+                                    <a asp-action="Detail" asp-controller="Product" asp-route-id="@relatedProduct.MaHH">@relatedProduct.TenHH</a>
+                                </h3>
+                                <h4 class="product-price">
+                                    @relatedProduct.DonGia.ToString("#,##0 VNĐ")
+                                    @if (relatedProduct.GiamGia > 0)
+                                    {
+                                        <del class="product-old-price">
+                                            @((relatedProduct.DonGia * (100 + relatedProduct.GiamGia) / 100).ToString("#,##0 VNĐ"))
+                                        </del>
+                                    }
+                                </h4>
+                                <div class="product-rating">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        if (i <= relatedProduct.DiemDanhGia)
+                                        {
+                                            <i class="fa fa-star"></i>
+                                        }
+                                        else
+                                        {
+                                            <i class="fa fa-star-o"></i>
+                                        }
+                                    }
+                                </div>
+                                <div class="product-btns">
+                                    <button class="add-to-wishlist" onclick="addToWishlist('@relatedProduct.MaHH'); return false;">
+                                        <i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span>
+                                    </button>
+                                    <button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
+                                    <button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+                                </div>
+                            </div>
+                        </a>
+                        <div class="add-to-cart">
+                            <button type="button" class="add-to-cart-btn" onclick="addToCart(@relatedProduct.MaHH, 1, 'Normal')">
+                                <i class="fa fa-shopping-cart"></i> Add to cart
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+            <div class="clearfix visible-sm visible-xs"></div>
+        </div>
+        <!-- /row -->
+    </div>
+    <!-- /container -->
+</div>
+@section Styles {
+    <style>
+        #js-pd-summary .item {
+            display: none; /* Ẩn tất cả các thẻ item */
+        }
+
+            #js-pd-summary .item:nth-child(-n+4) {
+                display: block; /* Hiển thị 4 thẻ item đầu tiên */
+            }
+    </style>
+}
+@section Scripts {
+    <script>
+        function toggleSummary() {
+            var summary = $('#js-pd-summary');
+            var toggleButton = $('#toggle-summary');
+
+            if (summary.hasClass('expanded')) {
+                // Đang mở rộng, thu gọn lại còn 4 thẻ item
+                summary.find('.item').slice(4).slideUp();
+                toggleButton.text('Mở rộng');
+                summary.removeClass('expanded');
+            } else {
+                // Mở rộng để hiển thị tất cả các thẻ item
+                summary.find('.item').slideDown();
+                toggleButton.text('Thu gọn');
+                summary.addClass('expanded');
+            }
+        }
+    </script>
+}

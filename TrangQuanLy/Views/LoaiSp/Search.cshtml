@@ -1,0 +1,56 @@
+﻿@model IEnumerable<TrangQuanLy.Models.LoaiSpViewMD>
+
+@{
+    ViewData["Title"] = "Search";
+    Layout = "_Footer-Header";
+
+}
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4 text-primary">
+            <h3 class="mb-4" style="margin-bottom:0px;">Loại sản phẩm</h3>
+            <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
+                <form class="d-none d-md-flex ms-4" asp-action="Search" asp-controller="LoaiSp" method="get">
+                    <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
+                    <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+            <div style="margin-right:9px">
+                <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm loại sản phẩm</a>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0" style="border-color:#0dcaf0;">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
+                        <th scope="col">Mã loại</th>
+                        <th scope="col">Tên Loại</th>
+                        <th scope="col">Hình ảnh</th>
+                        <th scope="col">Mô tả</th>
+                        <th scope="col">Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @await Html.PartialAsync("Loai", Model)
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div style="margin-left: 900px">
+            <ul class="div" role="group" aria-label="Third group" style="display:flex; justify-content:left">
+                @if (ViewBag.TotalPages != null && ViewBag.TotalPages > 0)
+                {
+                    for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        <li class="@(ViewBag.Page == i ? "active" : "") btn btn-info rounded-pill m-2">
+                            <a href="@Url.Action("Index", "LoaiSp", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+                        </li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+</div>

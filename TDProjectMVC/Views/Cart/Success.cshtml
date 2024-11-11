@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Đặt hàng thành công";
+}
+
+<h1>Đặt hàng thành công</h1>
+
+<p>Đơn hàng của bạn đang chờ được duyệt.</p>
+
+<a href="/Home" class="btn btn-primary">Tiếp tục mua sắm</a>
+
+@if (TempData["Message"] != null)
+{
+    <h3 class="text-danger">@TempData["Message"]</h3>
+}

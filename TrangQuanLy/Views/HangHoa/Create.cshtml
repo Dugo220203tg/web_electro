@@ -1,0 +1,276 @@
+﻿@model TrangQuanLy.Models.CreateHangHoaVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "_Footer-Header";
+}
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary rounded h-100 p-4" style="position: relative;">
+        <h5 class="mb-4">Thêm sản phẩm</h5>
+        <a class="close-button" href="/HangHoa/Index">X</a>
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div class="form-content">
+                <div class="form-fields">
+                    <div class="form-group">
+                        <label asp-for="TenHH" class="form-label">Tên sản phẩm</label>
+                        <input asp-for="TenHH" class="form-control" />
+                        <span asp-validation-for="TenHH" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="MaLoai" class="control-label">Loại sản phẩm</label>
+                        <select id="selectLoaiSp" class="form-select form-select-sm mb-3" aria-label=".form-select-sm example">
+                            <option selected="">Chọn nhà cung cấp</option>
+                            @await Component.InvokeAsync("LoaiSp")
+                        </select>
+                        <input id="inputValueLoaiSp" style="display:none;" type="text" class="form-control" name="MaLoai" readonly asp-for="MaLoai">
+                    </div>
+                    <input asp-for="MaLoai" class="form-control" style="display:none" />
+
+                    <div class="mb-3">
+                        <label asp-for="MaNCC" class="control-label">Nhà cung cấp</label>
+                        <select id="selectNCC" class="form-select form-select-sm mb-3" aria-label=".form-select-sm example">
+                            <option selected="">Chọn nhà cung cấp</option>
+                            @await Component.InvokeAsync("HangSp")
+                        </select>
+                        <input id="inputValueNCC" style="display:none;" type="text" class="form-control" name="MaNCC" readonly asp-for="MaNCC">
+                    </div>
+                    <input asp-for="MaNCC" class="form-control" style="display:none" />
+
+                    <label asp-for="DonGia" class="control-label">Đơn giá</label>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">$</span>
+                        <input asp-for="DonGia" class="form-control" />
+                        <span asp-validation-for="DonGia" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label my-3" asp-for="@Model.NgaySX" style="margin-top: 0rem !important;margin-bottom: 0rem !important;"></label>
+                        <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                            <input asp-for="@Model.NgaySX" type="text" class="form-control" data-target="#datetimepicker1" />
+                            <div class="input-group-append" data-target="#datetimepicker1" data-toggle="datetimepicker">
+                                <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                            </div>
+                        </div>
+                        <span asp-validation-for="@Model.NgaySX" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MoTaDonVi" class="control-label">Mô tả ngắn (đơn vị)</label>
+                        <input asp-for="MoTaDonVi" class="form-control" />
+                        <span asp-validation-for="MoTaDonVi" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="MoTa" class="control-label">Mô tả</label>
+                        <textarea asp-for="MoTa" id="MoTa" class="form-control"></textarea>
+                        <span asp-validation-for="MoTa" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="image-content">
+                    <button type="button" class="btn btn-primary mt-3" onclick="addNewImageInput()">Thêm hình ảnh</button>
+                    <div id="imageInputsContainer">
+                        <!-- Hiển thị các ảnh hiện có (nếu có) và trường nhập cho ảnh mới -->
+                        @if (Model != null && !string.IsNullOrEmpty(Model.Hinh))
+                        {
+                            var imageUrls = Model.Hinh.Split(',');
+                            for (int i = 0; i < imageUrls.Length; i++)
+                            {
+                                <div class="image-input-group mb-3">
+                                    <div class="image-preview-item">
+                                        <img src="~/Hinh/Hinh/HangHoa/@Model.MaHH/@imageUrls[i]" alt="@Model.TenHH" class="preview-image">
+                                        <p class="image-name">@imageUrls[i]</p>
+                                    </div>
+                                    <div class="input-group input-group-img">
+                                        <input type="file" class="form-control bg-dark image-input" name="ImageFiles" onchange="previewImage(this)" data-index="@i">
+                                        <button type="button" class="btn btn-danger remove-image" onclick="removeImageInput(this)">Xóa</button>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+
+                    <!-- Thêm trường ẩn để chứa danh sách các tên ảnh -->
+                    <input type="hidden" id="hinhInput" name="Hinh" value="@Model?.Hinh">
+
+                </div>
+
+                <div class="form-group submit-button" style="text-align:center;">
+                    <input type="submit" value="Tạo" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
+            // Cập nhật nội dung từ CKEditor vào trường input
+            var mota = CKEDITOR.instances.MoTa.getData();
+            document.querySelector('[name="MoTa"]').value = mota;
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set selected value for select (MaNCC and MaLoai)
+            function setSelectedValue(selectId, inputId) {
+                const selectElement = document.getElementById(selectId);
+                const inputValueElement = document.getElementById(inputId);
+
+                if (selectElement && inputValueElement) {
+                    const inputValue = inputValueElement.value;
+
+                    if (inputValue) {
+                        for (let i = 0; i < selectElement.options.length; i++) {
+                            if (selectElement.options[i].value === inputValue) {
+                                selectElement.selectedIndex = i;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            setSelectedValue('selectNCC', 'inputValueNCC');
+            setSelectedValue('selectLoaiSp', 'inputValueLoaiSp');
+
+            // Pass value from select to input
+            const selectLoaiSp = document.getElementById('selectLoaiSp');
+            const selectNCC = document.getElementById('selectNCC');
+
+            if (selectLoaiSp) {
+                selectLoaiSp.addEventListener('change', function () {
+                    const inputValue = document.getElementById('inputValueLoaiSp');
+                    if (inputValue) inputValue.value = this.value || '';
+                });
+            }
+
+            if (selectNCC) {
+                selectNCC.addEventListener('change', function () {
+                    const inputValue = document.getElementById('inputValueNCC');
+                    if (inputValue) inputValue.value = this.value || '';
+                });
+            }
+
+            // IMAGE HANDLING IN EDIT HANG HOA
+            window.previewImage = function (input) {
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const previewItem = input.closest('.image-input-group').querySelector('.image-preview-item');
+                        previewItem.innerHTML = '';
+
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.className = 'preview-image';
+                        img.alt = 'Preview';
+
+                        const p = document.createElement('p');
+                        p.className = 'image-name';
+                        p.textContent = input.files[0].name;
+
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(p);
+
+                        updateExistingImageNames();
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+
+            window.addNewImageInput = function () {
+                const container = document.getElementById('imageInputsContainer');
+                if (container) {
+                    const newIndex = container.children.length;
+
+                    const newGroup = document.createElement('div');
+                    newGroup.className = 'image-input-group mb-3';
+                    newGroup.innerHTML = `
+                                                                        <div class="image-preview-item"></div>
+                                                                        <div class="input-group input-group-img">
+                                                                            <input type="file" class="form-control bg-dark image-input" name="ImageFiles" onchange="previewImage(this)" data-index="${newIndex}">
+                                                                            <button type="button" class="btn btn-danger remove-image" onclick="removeImageInput(this)">Xóa</button>
+                                                                        </div>`;
+
+                    container.appendChild(newGroup);
+                }
+            }
+
+            window.removeImageInput = function (button) {
+                const group = button.closest('.image-input-group');
+                if (group) {
+                    group.remove();
+                    updateExistingImageNames();
+                }
+            }
+
+            function updateExistingImageNames() {
+                const imageNames = Array.from(document.querySelectorAll('.image-name')).map(el => el.textContent);
+                const hinhInput = document.getElementById('hinhInput');
+                if (hinhInput) {
+                    hinhInput.value = imageNames.join(',');
+                }
+            }
+
+            // Initialize image inputs
+            const imageInputsContainer = document.getElementById('imageInputsContainer');
+            if (imageInputsContainer && imageInputsContainer.children.length === 0) {
+                addNewImageInput();
+            }
+            updateExistingImageNames();
+
+            // DATE HANDLING IN CREATE HANG HOA
+            if (typeof $ !== 'undefined' && $.fn.datepicker) {
+                $('.datepicker').datepicker({
+                    format: 'dd/mm/yyyy',
+                    autoclose: true,
+                    todayHighlight: true
+                });
+            }
+
+            if (typeof $ !== 'undefined' && $.fn.datetimepicker) {
+                $(".date").datetimepicker({
+                    format: 'YYYY-MM-DD',
+                    icons: {
+                        time: "fa fa-clock-o",
+                        date: "fa fa-calendar",
+                        up: "fa fa-arrow-up",
+                        down: "fa fa-arrow-down"
+                    },
+                    showTodayButton: true,
+                    useCurrent: false
+                }).find('input:first').on("blur", function () {
+                    const date = parseDate($(this).val());
+                    $(this).val(isValidDate(date) ? date : moment().format('YYYY-MM-DD'));
+                });
+            }
+
+            function isValidDate(value) {
+                return !isNaN(Date.parse(value));
+            }
+
+            function parseDate(value) {
+                const m = value.match(/^(\d{1,2})(\/|-)?(\d{1,2})(\/|-)?(\d{4})$/);
+                return m ? `${m[5]}-${("00" + m[3]).slice(-2)}-${("00" + m[1]).slice(-2)}` : value;
+            }
+
+            // Confirm delete
+            const deleteForm = document.getElementById('delete-form');
+            if (deleteForm) {
+                deleteForm.addEventListener('submit', function (event) {
+                    if (!confirm('Bạn có chắc muốn xóa?')) {
+                        event.preventDefault();
+                    }
+                });
+            }
+
+            // Active link highlight
+            const currentUrl = window.location.href;
+            document.querySelectorAll('a[href]').forEach(function (link) {
+                if (currentUrl.endsWith(link.getAttribute('href'))) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Add event listener to the form for image name collection
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function (event) {
+                    updateExistingImageNames();
+                });
+            }
+        });
+    </script>
+}

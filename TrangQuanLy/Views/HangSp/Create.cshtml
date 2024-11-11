@@ -1,0 +1,59 @@
+﻿@model TrangQuanLy.Models.HangSpViewMD
+@{
+    ViewData["Title"] = "Create";
+    Layout = "_Footer-Header";
+}
+<div class="" style="display:flex; align-items:center; justify-content:center">
+    <div class="bg-secondary rounded h-100 p-4" style="margin-top:30px; position: relative;">
+        <h5 class="mb-4">Thêm nhà cung cấp</h5>
+        <a class="close-button" href="/HangSp/Index">X</a>
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="MaNCC" class="control-label"></label>
+                <input asp-for="MaNCC" class="form-control" />
+                <span asp-validation-for="MaNCC" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="TenCongTy" class="control-label"></label>
+                <input asp-for="TenCongTy" class="form-control" />
+                <span asp-validation-for="TenCongTy" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Mota" class="control-label"></label>
+                <input asp-for="Mota" class="form-control" />
+                <span asp-validation-for="Mota" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DiaChi" class="control-label"></label>
+                <input asp-for="DiaChi" class="form-control" />
+                <span asp-validation-for="DiaChi" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="NguoiLienLac" class="control-label"></label>
+                <input asp-for="NguoiLienLac" class="form-control" />
+                <span asp-validation-for="NguoiLienLac" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="DienThoai" class="control-label"></label>
+                <input asp-for="DienThoai" class="form-control" />
+                <span asp-validation-for="DienThoai" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Logo" for="formFile" class="form-label">Chọn hình ảnh</label>
+                <input asp-for="Logo" class="form-control bg-dark" type="file" id="formFile" onchange="previewImage(this)">
+                <span asp-validation-for="Logo" class="text-danger"></span>
+            </div>
+            <img id="imagePreview" src="#" alt="Hình ảnh sản phẩm" style="display: none; max-width: 100%; max-height: 200px;">
+            <img id="imagePreview" src="#" alt="Hình ảnh sản phẩm" style="display: none; max-width: 100%; max-height: 200px;">
+            <div class="mb-3" style="display:grid; place-items:center">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

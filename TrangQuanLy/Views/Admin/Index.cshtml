@@ -1,0 +1,50 @@
+﻿@model IEnumerable<TrangQuanLy.Models.AdminViewModel>
+
+@{
+    ViewData["Title"] = "User List";
+    Layout = "_Footer-Header";
+}
+
+<h1>Users</h1>
+
+<table class="table" id="myTable">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.UserName)</th>
+            <th>@Html.DisplayNameFor(model => model.Password)</th>
+            <th>@Html.DisplayNameFor(model => model.Vaitro)</th>
+            <th>@Html.DisplayNameFor(model => model.Email)</th>
+            <th>@Html.DisplayNameFor(model => model.Hoten)</th>
+            <th>@Html.DisplayNameFor(model => model.HieuLuc)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@Html.DisplayFor(modelItem => item.UserName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Password)</td>
+                <td>@Html.DisplayFor(modelItem => item.Vaitro)</td>
+                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                <td>@Html.DisplayFor(modelItem => item.Hoten)</td>
+                <td>
+                    @if (item.HieuLuc)
+                    {
+                        <span>Đang hoạt động</span>
+                    }
+                    else
+                    {
+                        <span>Không hoạt động</span>
+                    }
+                </td>
+                <td>
+                    <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.UserName })">
+                        <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                    </form>                   
+                    @Html.ActionLink("Delete", "Delete", new { id = item.UserName })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

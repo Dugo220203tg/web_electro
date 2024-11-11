@@ -1,0 +1,14 @@
+﻿@model TDProjectMVC.ViewModels.ConfirmCodeVM
+<div class="verification-details" style="display: grid; place-items: center;">
+    <div class="section-title">
+        <h3 class="title">Nhập mã xác nhận</h3>
+    </div>
+    <form asp-action="NhapMaXacNhan" method="post">
+        <input asp-for="KhachHangId" type="hidden" />
+        <div class="form-group">
+            <input class="input" asp-for="ConfirmationCode" placeholder="Mã xác nhận">
+            <span asp-validation-for="ConfirmationCode" class="text-danger"></span>
+        </div>
+        <button type="submit" class="primary-btn order-submit">Xác nhận</button>
+    </form>
+</div>

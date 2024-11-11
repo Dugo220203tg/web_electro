@@ -1,0 +1,10 @@
+﻿@model IEnumerable<TDProjectMVC.ViewModels.HangHoaVM>
+
+@{
+    ViewData["Title"] = "Search";
+    Layout = "_DanhSachHangHoa";
+}
+
+<body>
+    @await Html.PartialAsync("productItem", Model)
+</body>

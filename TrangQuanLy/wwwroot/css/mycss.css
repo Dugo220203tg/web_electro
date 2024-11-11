@@ -1,0 +1,140 @@
+﻿/* General styles */
+/*body {
+    background-color: #191C24;
+    color: #6C7293;
+}
+*/
+.container-fluid {
+    padding: 20px;
+}
+
+
+/* Form layout */
+.form-content {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+}
+
+.form-fields {
+    flex: 1 1 50%;
+}
+
+.image-content {
+    flex: 1 1 50%;
+}
+
+/* Form input styles */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-label, .control-label {
+    color: #fff;
+}
+
+.form-control, .form-select {
+    background-color: #191C24;
+    border: 1px solid #2A2D3E;
+    color: #fff;
+}
+
+    .form-control:focus, .form-select:focus {
+        border-color: #6C7293;
+        box-shadow: 0 0 0 0.2rem rgba(108, 114, 147, 0.25);
+        color: #fff;
+    }
+
+/* Image input styles */
+.image-input-group {
+    margin-bottom: 1rem;
+    width:250px;
+    height:250px
+}
+
+.image-preview-item {
+    background-color: #2A2D3E;
+    border: 1px solid #6C7293;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+.preview-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 4px;
+}
+
+.image-name {
+    color: #fff;
+    text-align: center;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: #EB1616;
+    border-color: #EB1616;
+}
+
+    .btn-primary:hover {
+        background-color: #c01212;
+    }
+
+.btn-danger {
+    background-color: #dc3545;
+}
+
+    .btn-danger:hover {
+        background-color: #bd2130;
+    }
+
+
+    .close-button:hover {
+        background-color: #c01212;
+    }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .form-content {
+        flex-direction: column;
+    }
+
+    .form-fields, .image-content {
+        width: 100%;
+    }
+}
+.cke_notification_warning{
+    display:none;
+}
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+    text-decoration: none;
+}
+    .close-button:hover {
+        background-color: #c01212;
+    }
+.submit-button {
+    margin-top: auto; /* Đẩy nút xuống cuối */
+}
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.form-content {
+    flex-grow: 1; /* Giúp form nội dung chiếm phần giữa */
+}
+
+.submit-button input {
+    display: block;
+    margin-left: auto;
+    margin-right: auto; /* Căn giữa theo chiều ngang */
+}

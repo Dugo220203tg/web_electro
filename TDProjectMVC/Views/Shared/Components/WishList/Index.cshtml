@@ -1,0 +1,58 @@
+﻿@model IEnumerable<TDProjectMVC.ViewModels.WishListVM>
+<div class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+        <i class="fa fa-heart-o"></i>
+        <span>Your Wishlist</span>
+        <div class="qty_WishList">
+            @Model.Count()
+        </div>
+    </a>
+    <div class="cart-dropdown">
+        <div class="wish-list-container" style="max-height:260px; overflow-y:auto; margin-bottom:10px;">
+            <div class="wish-list">
+                @foreach (var item in Model)
+                {
+                    if (item != null && item.TenHH != null)
+                    {
+                        <div class="product-widget">
+                            <div class="product-img" style="width:60px;height:60px">
+                                @{
+                                    string firstImageUrl = string.Empty;
+                                    if (!string.IsNullOrEmpty(item.Hinh))
+                                    {
+                                        var imageUrls = item.Hinh.Split(',');
+                                        if (imageUrls.Length > 0)
+                                        {
+                                            firstImageUrl = imageUrls[0].Trim();
+                                        }
+                                    }
+                                }
+                                @if (!string.IsNullOrEmpty(firstImageUrl))
+                                {
+                                    <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@firstImageUrl" alt="@item.TenHH" style="width:60px;height:60px">
+                                }
+                                else
+                                {
+                                    <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/image.jpg" alt="Default Image" style="width:60px;height:60px">
+                                }
+                            </div>
+                            <div class="product-body">
+                                <h2 class="product-name" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">
+                                    <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.MaHH">@item.TenHH</a>
+                                </h2>
+                                <div class="product-info" style="display: flex; align-items:center">
+                                    <i class="fa fa-shopping-cart" style="font-size:24px; color:#D10024"></i>
+                                    <h4 class="product-price" style="margin-left: 10px; margin-bottom:-2px; color:#2B2D42">@item.DonGia.ToString("#,##0 VNĐ")</h4>
+                                </div>
+                            </div>
+                            <button class="delete" data-product-id="@item.MaYT" onclick="RemoveWishList(@item.MaYT, this)">
+                                <i class="fa fa-close"></i>
+                            </button>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+

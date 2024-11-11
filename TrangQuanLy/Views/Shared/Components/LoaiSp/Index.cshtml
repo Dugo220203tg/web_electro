@@ -1,0 +1,5 @@
+﻿@model IEnumerable<TrangQuanLy.Models.MiniLoaiSpViewMD>
+@foreach (var item in Model)
+{
+    <option value="@item.MaLoai">@item.TenLoai</option>
+}

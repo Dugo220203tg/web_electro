@@ -1,0 +1,27 @@
+﻿@model IEnumerable<TDProjectMVC.ViewModels.HomeMenuVM>
+
+<div class="section-nav">
+    <ul class="section-tab-nav tab-nav">
+        @foreach (var item in Model.Take(5))
+        {
+            <li class="@((ViewContext.HttpContext.Request.Query["loai"] == item.MaLoai.ToString()) ? "active" : "")">
+                <a asp-controller="Home" asp-action="Index" asp-route-loai="@item.MaLoai">
+                    @item.TenLoai
+                </a>
+            </li>
+        }
+        <a href="/Product" class="view-all" style="
+    position: inline-block;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #ed1b24;
+    padding: 3px 10px 5px 15px;
+    color: #fff;
+    border-radius: 10px;
+    font-weight: 500;
+    border: 1px solid #e5e7eb;">Xem tất cả <i class="fa fa-arrow-circle-right"></i></a>
+    </ul>
+
+</div>
+

@@ -1,0 +1,177 @@
+﻿@model TDProjectMVC.ViewModels.CtDonHangVM
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng";
+}
+
+<style>
+    .timeline {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .step {
+        text-align: center;
+        position: relative;
+        flex: 1;
+    }
+
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        background-color: #f0f0f0;
+        border-radius: 50%;
+        border: 3px solid #4caf50;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto;
+        z-index: 1;
+        position: relative;
+    }
+
+    .step.aitemive .step-icon {
+        background-color: #4caf50;
+        color: white;
+    }
+
+    .step::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background-color: #4caf50;
+        top: 25px;
+        left: -50%;
+        z-index: 0;
+    }
+
+    .step:first-child::before {
+        display: none;
+    }
+
+    .step.inaitemive .step-icon {
+        background-color: #e0e0e0;
+        border-color: #bdbdbd;
+    }
+
+    .step-title {
+        margin-top: 10px;
+        font-size: 14px;
+        color: #4caf50;
+    }
+
+    .step-time {
+        font-size: 12px;
+        color: #999;
+    }
+</style>
+
+<div class="container mt-4">
+    <h2>Chi Tiết Đơn Hàng #@Model.MaHD</h2>
+
+    <!-- Timeline -->
+    <div class="timeline">
+        @{
+            var steps = new[]
+            {
+        new { Icon = "📝", Title = "Đơn Hàng Đã Đặt", Time = Model.NgayDat },
+        new { Icon = "💵", Title = "Đã Xác Nhận", Time = Model.NgayDat.AddMinutes(30) },
+        new { Icon = "🚚", Title = "Đã Giao ĐVVC", Time = Model.NgayDat.AddHours(6) },
+        new { Icon = "📦", Title = "Đang Giao", Time = Model.NgayCan },
+        new { Icon = "⭐", Title = "Đã Giao", Time = Model.NgayGiao }
+        };
+
+            for (int i = 0; i < steps.Length; i++)
+            {
+                var isAitemive = i <= Model.MaTrangThai;
+                <div class="step @(isAitemive ? "aitemive" : "inaitemive")">
+                    <div class="step-icon">@steps[i].Icon</div>
+                    <div class="step-title">@steps[i].Title</div>
+                    <div class="step-time">
+                        @(isAitemive && steps[i].Time != default ? steps[i].Time.ToString("HH:mm dd-MM-yyyy") : "")
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+    <!-- Order Details -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h4>Thông Tin Khách Hàng</h4>
+            <p><strong>Họ tên:</strong> @Model.HoTen</p>
+            <p><strong>Địa chỉ:</strong> @Model.DiaChi</p>
+            <p><strong>Điện thoại:</strong> @Model.DienThoai</p>
+        </div>
+        <div class="col-md-6">
+            <h4>Thông Tin Đơn Hàng</h4>
+            <p><strong>Ngày đặt:</strong> @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</p>
+            <p><strong>Phương thức thanh toán:</strong> @Model.CachThanhToan</p>
+            <p><strong>Phương thức vận chuyển:</strong> @Model.CachVanChuyen</p>
+        </div>
+    </div>
+
+    <!-- Order Items -->
+    <h4 class="mt-4">Chi Tiết Sản Phẩm</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Hình ảnh</th>
+                <th>Đơn giá</th>
+                <th>Số lượng</th>
+                <th>Giảm giá</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.ChiTietHds)
+            {
+                <tr>
+                    <td>@item.TenHangHoa</td>
+                    <td>
+                        @{
+                            string firstImageUrl = string.Empty;
+                            if (!string.IsNullOrEmpty(item.HinhAnh))
+                            {
+                                var imageUrls = item.HinhAnh.Split(',');
+                                firstImageUrl = imageUrls.FirstOrDefault();
+                            }
+                        }
+                        @if (!string.IsNullOrEmpty(firstImageUrl))
+                        {
+                            <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@firstImageUrl" class="img-fluid me-5 rounded-circle" style="width: 65px; height: 65px;" alt="@item.TenHangHoa">
+                        }
+                        else
+                        {
+                            <span>No image available</span>
+                        }
+                    </td>
+                    <td >@item.DonGia.ToString("N0") đ</td>
+                    <td>@item.SoLuong</td>
+                    <td>@item.MaGiamGia%</td>
+                    <td style="color:#D10024">$ @item.ThanhTien.ToString("N0") </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="5" class="text-right"><strong>Phí vận chuyển:</strong></td>
+                <td style="color:#D10024">$ @(((decimal)Model.PhiVanChuyen).ToString("N0"))</td>
+            </tr>
+            <tr >
+                <td colspan="5" class="text-right"><strong>Tổng cộng:</strong></td>
+                <td style="color:#D10024"><strong>$ @string.Format("{0:N0}", Model.ChiTietHds.Sum(x => x.ThanhTien) + Model.PhiVanChuyen)</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <div class="text-right mt-4">
+        <a class="btn btn-secondary" href="@Url.Action("AllDonHang", "DonHang")">Quay lại danh sách đơn hàng</a>
+    </div>
+</div>

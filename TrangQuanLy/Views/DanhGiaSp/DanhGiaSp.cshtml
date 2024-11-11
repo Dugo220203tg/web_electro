@@ -1,0 +1,39 @@
+﻿@model IEnumerable<TrangQuanLy.Models.DanhGiaSpMD>
+
+<body>
+    @foreach (var item in Model)
+    {
+
+        <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.MaKH)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.TenHangHoa)
+            </td>
+            <td style="color: white;">
+                <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@item.FirstImageUrl" alt="@item.FirstImageUrl" style="width:75px;height:75px;" />
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.Sao)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.NoiDung)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.TenTrangThai)
+            </td>
+            <td style="display:flex;align-items: center; color:white">
+                <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaDg })">
+                    <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                </form>
+                |
+                <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
+                    <input type="hidden" name="Maloai" value="@item.MaDg" />
+                    <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+                </form>
+            </td>
+        </tr>
+    }
+</body>

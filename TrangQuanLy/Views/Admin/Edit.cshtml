@@ -1,0 +1,63 @@
+﻿@model TrangQuanLy.Models.AdminViewModel
+
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "_Footer-Header";
+}
+
+<h2>Edit User</h2>
+
+<form asp-action="Edit" method="post">
+    <div class="form-group">
+        <label asp-for="UserName"></label>
+        <input asp-for="UserName" class="form-control" readonly />
+        <span asp-validation-for="UserName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" class="form-control" type="password" />
+        <span asp-validation-for="Password" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Vaitro">Role</label>
+        <select asp-for="Vaitro" class="form-control">
+            <option value="1">Admin</option>
+            <option value="2">User</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" type="email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Hoten"></label>
+        <input asp-for="Hoten" class="form-control" />
+        <span asp-validation-for="Hoten" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="RandomKey"></label>
+        <input asp-for="RandomKey" class="form-control" />
+        <span asp-validation-for="RandomKey" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="HieuLuc">Status</label>
+        <select asp-for="HieuLuc" class="form-control">
+            <option value="true">Đang hoạt động</option>
+            <option value="false">Không hoạt động</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

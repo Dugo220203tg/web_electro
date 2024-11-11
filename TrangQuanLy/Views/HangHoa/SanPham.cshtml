@@ -1,0 +1,56 @@
+﻿@model IEnumerable<TrangQuanLy.Models.HangHoaVM>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.MaHH)
+        </td>
+        <td style="width:220px; word-wrap: break-word; color: white">
+            @Html.DisplayFor(modelItem => item.TenHH)
+        </td>
+        <td style="color: white;">
+            @{
+                string firstImageUrl = string.Empty;
+                if (!string.IsNullOrEmpty(item.Hinh))
+                {
+                    var imageUrls = item.Hinh.Split(',');
+                    firstImageUrl = imageUrls.FirstOrDefault();
+                }
+            }
+
+            @if (!string.IsNullOrEmpty(firstImageUrl))
+            {
+                <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@firstImageUrl" alt="@item.TenHH" style="width:80px;height:80px">
+            }
+            else
+            {
+                <img src="~/Hinh/default.jpg" alt="Default Image" style="width:80px;height:80px">
+            }
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.MaLoai)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.NgaySX)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.MaNCC)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.DonGia)
+        </td>
+        <td style="">
+            <div style="display: inline-grid; grid-template-columns: auto auto auto;">
+                <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaHH })">
+                    <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                </form>
+                |
+                <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
+                    <input type="hidden" name="MaHH" value="@item.MaHH" />
+                    <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+                </form>
+            </div>
+        </td>
+    </tr>
+}

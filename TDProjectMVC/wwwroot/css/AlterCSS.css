@@ -1,0 +1,35 @@
+﻿/* Product main img */
+#product-main-img {
+    margin-bottom: 20px;
+}
+
+    #product-main-img .slick-slide img {
+        display: inline-block;
+        max-width: 100%;
+        height: auto;
+    }
+
+/* Product thumb imgs */
+#product-imgs {
+    margin-bottom: 20px;
+}
+
+    #product-imgs .slick-slide {
+        cursor: pointer;
+    }
+
+        #product-imgs .slick-slide img {
+            display: inline-block;
+            max-width: 100%;
+            height: auto;
+        }
+
+/* Slick carousel styles */
+.slick-slide {
+    outline: none;
+}
+
+.slick-prev:before,
+.slick-next:before {
+    color: #333;
+}

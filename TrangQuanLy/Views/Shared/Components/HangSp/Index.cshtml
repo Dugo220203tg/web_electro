@@ -1,0 +1,6 @@
+﻿@model IEnumerable<TrangQuanLy.Models.MiniHangSpViewMD>
+
+@foreach (var item in Model)
+{
+    <option value="@item.MaNCC">@item.TenCongTy</option>
+}

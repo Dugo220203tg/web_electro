@@ -1,0 +1,17 @@
+﻿@model IEnumerable<TrangQuanLy.Models.TrangThaiHd>
+
+@{
+    var selectedTrangThai = ViewBag.SelectedTrangThai as int?;
+}
+
+@foreach (var item in Model)
+{
+    if (item.MaTrangThai == selectedTrangThai)
+    {
+        <option value="@item.MaTrangThai" selected="selected">@item.TenTrangThai</option>
+    }
+    else
+    {
+        <option value="@item.MaTrangThai">@item.TenTrangThai</option>
+    }
+}

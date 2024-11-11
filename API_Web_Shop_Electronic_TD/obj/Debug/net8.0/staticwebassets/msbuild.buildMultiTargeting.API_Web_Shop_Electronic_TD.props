@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\API_Web_Shop_Electronic_TD.props" />
+</Project>

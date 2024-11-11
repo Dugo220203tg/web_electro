@@ -1,0 +1,96 @@
+﻿/* Global Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #f8f9fa; /* Màu nền */
+}
+
+.container {
+    max-width: 1140px;
+}
+
+/* Table Styles */
+.table {
+    width: 100%;
+    background-color: #fff; /* Màu nền cho bảng */
+    border-collapse: collapse;
+}
+
+    .table th,
+    .table td {
+        padding: 12px; /* Khoảng cách giữa nội dung và viền */
+        vertical-align: middle;
+        border-bottom: 1px solid #dee2e6; /* Viền dưới */
+    }
+
+    .table th {
+        text-align: left; /* Căn lề trái cho tiêu đề cột */
+        font-weight: 600; /* Độ đậm cho tiêu đề cột */
+    }
+
+    /* Product Image */
+    .table img {
+        display: block;
+        margin: 0 auto;
+    }
+
+/* Cart Total Styles */
+.bg-light {
+    background-color: #f8f9fa; /* Màu nền cho phần tổng giỏ hàng */
+}
+
+.p-4 {
+    padding: 1.5rem; /* Khoảng cách lề bên trong */
+}
+
+.display-6 {
+    font-size: 1.75rem; /* Kích thước font cho tiêu đề */
+    margin-bottom: 1rem; /* Khoảng cách dưới cho tiêu đề */
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem; /* Khoảng cách dưới cho phần tổng giỏ hàng */
+}
+
+.mb-0 {
+    margin-bottom: 0; /* Loại bỏ khoảng cách dưới */
+}
+
+/* Button Styles */
+.btn {
+    font-size: 1rem; /* Kích thước font */
+    border-radius: 0.25rem; /* Độ cong của góc */
+}
+
+.rounded-circle {
+    border-radius: 50%; /* Làm tròn các góc để tạo hình tròn */
+}
+
+.border-secondary {
+    border-color: #6c757d; /* Màu viền */
+}
+
+/* Input Styles */
+.form-control {
+    border-radius: 0; /* Độ cong của góc */
+}
+
+.border-bottom {
+    border-width: 0 0 2px; /* Kích thước viền dưới */
+    border-color: #6c757d; /* Màu viền dưới */
+}
+
+.py-3 {
+    padding-top: 0.75rem; /* Khoảng cách lề trên và dưới */
+    padding-bottom: 0.75rem;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem; /* Khoảng cách dưới */
+}
+
+/* Responsive Styles */
+@media (max-width: 576px) {
+    .quantity {
+        width: 80px; /* Kích thước ô nhập số lượng cho các thiết bị có độ rộng tối đa 576px */
+    }
+}

@@ -1,0 +1,128 @@
+﻿.SearchSpace {
+    margin-left: 190px;
+}
+.mytd {
+    padding: 15px;
+}
+.cart-dropdown .cart-list .product-widget .product-img {
+    left: 0px;
+    top: 0px;
+    width: 300px;
+    height: 300px;
+}
+/*=========================================================
+	WishList
+===========================================================*/
+.dropdown-menu {
+    position: absolute;
+    width: 300px;
+    background: #FFF;
+    padding: 15px;
+    -webkit-box-shadow: 0px 0px 0px 2px #E4E7ED;
+    box-shadow: 0px 0px 0px 2px #E4E7ED;
+    z-index: 99;
+    right: 0;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.dropdown.open > .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+}
+
+.dropdown-menu .wish-list {
+    max-height: 180px;
+    overflow-y: scroll;
+    margin-bottom: 15px;
+}
+
+    .dropdown-menu .wish-list .product-widget {
+        padding: 0px;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+    }
+
+        .dropdown-menu .wish-list .product-widget:last-child {
+            margin-bottom: 0px;
+        }
+
+        .dropdown-menu .wish-list .product-widget .product-img {
+            left: 0px;
+            top: 0px;
+            width: 300px;
+            height: 300px;
+        }
+
+        .dropdown-menu .wish-list .product-widget .product-body .product-price {
+            color: #2B2D42;
+        }
+
+.dropdown-menu .cart-btns {
+    margin: 0px -17px -17px;
+}
+
+    .dropdown-menu .cart-btns > a {
+        display: inline-block;
+        width: calc(50% - 0px);
+        padding: 12px;
+        background-color: #D10024;
+        color: #FFF;
+        text-align: center;
+        font-weight: 700;
+        -webkit-transition: 0.2s all;
+        transition: 0.2s all;
+    }
+
+        .dropdown-menu .cart-btns > a:first-child {
+            margin-right: -4px;
+            background-color: #1e1f29;
+        }
+
+        .dropdown-menu .cart-btns > a:hover {
+            opacity: 0.9;
+        }
+
+.dropdown-menu .cart-summary {
+    border-top: 1px solid #E4E7ED;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.header-ctn > div > a > .qty_WishList {
+    position: absolute;
+    right: 15px;
+    top: -10px;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 10px;
+    color: #FFF;
+    background-color: #D10024;
+}
+/* Set the slider track color */
+.noUi-connect {
+    background: #D10024; /* Red color for the filled part */
+}
+
+/* Customize the slider handles */
+.noUi-handle {
+    background: #D10024; /* Red color for the handles */
+    border: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%; /* Circular handle */
+}
+
+/* Customize the slider background line */
+.noUi-target,
+.noUi-base,
+.noUi-origin {
+    background: #e0e0e0; /* Light gray for the unselected part of the slider */
+}
+
+.noUi-horizontal .noUi-handle {
+    top: -5px; /* Position handle correctly */
+}

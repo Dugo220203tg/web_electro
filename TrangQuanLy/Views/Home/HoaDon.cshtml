@@ -1,0 +1,47 @@
+﻿@model IEnumerable<TrangQuanLy.Models.HoaDonViewModel>
+
+@foreach (var item in Model)
+{
+    <tr>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.MaHD)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.MaKH)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.HoTen)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.DienThoai)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.DiaChi)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.NgayDat)
+        </td>
+        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.GhiChu)
+        </td>
+        <td style="color: white;">
+            <select asp-for="@item.MaTrangThai" class="form-select form-select-sm mb-3" aria-label=".form-select-sm example" data-original-value="@item.MaTrangThai" id="selectTrangThai-@item.MaHD">
+                @await Component.InvokeAsync("TrangThaiHd", new { maTrangThai = item.MaTrangThai })
+            </select>
+        </td>
+        <td style="display:flex;align-items: center; color:white">
+            <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaHD })">
+                <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+            </form>
+            |
+            <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
+                <input type="hidden" name="MaHd" value="@item.MaHD" />
+                <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+            </form>
+        </td>
+    </tr>
+}
+@section Scripts {
+    @{
+    }
+}

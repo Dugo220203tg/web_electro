@@ -1,0 +1,132 @@
+﻿@* @model IEnumerable<TrangQuanLy.Models.HoaDonViewModel> *@
+
+@model PaginatedList<HoaDonViewModel>
+@using TrangQuanLy.Helpers;
+@{
+    ViewData["Title"] = "Home Page";
+    Layout = "_Footer-Header";
+}
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-line fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Today Orders</p>
+                    <h6 class="mb-0">
+                        <p>Số Đơn hàng hôm nay: @ViewBag.Statistics.ToDayOrders</p>
+                    </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Order not approved</p>
+                    <h6 class="mb-0">
+                        <p>Đơn hàng chưa được duyệt: @ViewBag.Statistics.NotApprovedOrders</p>
+                    </h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-area fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Tháng</p>
+                    <h6 class="mb-0">Số đơn hàng: @ViewBag.Statistics.TotalOrders</h6>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6 col-xl-3">
+            <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                <div class="ms-3">
+                    <p class="mb-2">Tháng</p>
+                    <h6 class="mb-0">Doanh thu: @ViewBag.Statistics.TotalIncome.ToString("C") VNĐ</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid pt-4 px-4">
+    <div class="row g-4">
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-secondary text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">Worldwide Sales</h6>
+                    <a href="">Show All</a>
+                </div>
+                <canvas id="worldwide-sales" style="display: block; box-sizing: border-box; height: 360px; width: 721px;" width="721" height="360"></canvas>
+            </div>
+        </div>
+        <div class="col-sm-12 col-xl-6">
+            <div class="bg-secondary text-center rounded p-4">
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <h6 class="mb-0">Salse &amp; Revenue</h6>
+                    <a href="">Show All</a>
+                </div>
+                <canvas id="salse-revenue" style="display: block; box-sizing: border-box; height: 360px; width: 721px;" width="721" height="360"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h6 class="mb-0">Recent Salse</h6>
+            <a href="">Show All</a>
+        </div>
+        <div class="table-responsive">
+            <table class="table text-start align-middle table-bordered table-hover mb-0">
+                <thead>
+                    <tr class="text-white">
+                        <th scope="col">Mã hóa đơn</th>
+                        <th scope="col">Mã Khách Hàng</th>
+                        <th scope="col">Họ Tên</th>
+                        <th scope="col">Số điện thoại</th>
+                        <th scope="col">Địa chỉ</th>
+                        <th scope="col">Ngày đặt hàng</th>
+                        <th scope="col">Ghi chú</th>
+                        <th scope="col">Mã trạng thái</th>
+                        <th scope="col">Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        @await Html.PartialAsync("HoaDon", Model)
+                    }
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination Controls -->
+        <div style="text-align:center; margin-top:20px;">
+            <ul class="pagination" style="display: inline-flex;">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">Previous</a>
+                    </li>
+                }
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+                    </li>
+                }
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">Next</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+@section Scripts {
+   
+
+}

@@ -1,0 +1,88 @@
+﻿@model List<TDProjectMVC.ViewModels.DonHangVM>
+<div id="breadcrumb" class="section" style="padding:15px 0px">
+    <div class="container" style="text-align:center;">
+        <div class="row">
+            <div class="col-md-12">
+                <ul id="breadcrumb-tree" class="breadcrumb-tree">
+                    <h2><a href="/">Đơn Hàng</a></h2>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid py-5">
+    <div class="container py-5">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Products</th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var donHang in Model)
+                    {
+                        var orderTotal = 0.0;
+
+                        @foreach (var ct in donHang.ChiTietHds)
+                        {
+                            <tr style="background-color:aliceblue;">
+                                <td style="padding:15px;">
+                                    @{
+                                        string firstImageUrl = string.Empty;
+                                        if (!string.IsNullOrEmpty(ct.HinhAnh))
+                                        {
+                                            var imageUrls = ct.HinhAnh.Split(',');
+                                            firstImageUrl = imageUrls.FirstOrDefault();
+                                        }
+                                    }
+                                    @if (!string.IsNullOrEmpty(firstImageUrl))
+                                    {
+                                        <img src="~/Hinh/Hinh/HangHoa/@ct.MaHH/@firstImageUrl" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="@ct.TenHangHoa">
+                                    }
+                                    else
+                                    {
+                                        <span>No image available</span>
+                                    }
+                                </td>
+                                <td style="padding:15px;">
+                                    <p style="font-weight: bold;">
+                                        <a asp-action="Detail" asp-controller="Product" asp-route-id="@ct.MaHH">
+                                            @ct.TenHangHoa
+                                        </a>
+                                    </p>
+                                    <p>X @ct.SoLuong</p>
+                                </td>
+                                <td style="padding:15px;color:#D10024">$ @ct.DonGia.ToString("0.00")</td>
+                            </tr>
+                            orderTotal += ct.ThanhTien;
+                        }
+                        <tr>
+                            <td style="padding:15px;" colspan="1"></td>
+                            <td class="text-end" style="text-align: right;padding:15px;"><strong>Order Total:</strong></td>
+                            <td style="padding:15px; color:#D10024" colspan="1"><strong>$ @orderTotal.ToString("0.00")</strong></td>
+                        </tr>
+                        <tr>
+                            <td style="padding:15px;" colspan="1"></td>
+                            <td  colspan="1" style="text-align: right;padding:15px;">
+                                <a class="btn btn-danger" href="/DonHang/AllDonHang">
+                                    Lịch sử mua hàng
+                                </a>
+                                <a class="btn btn-danger" asp-action="ChiTietDonHang" asp-controller="DonHang" asp-route-MaHD="@donHang.MaHD">
+                                    Chi tiết đơn hàng
+                                </a>
+                            </td>
+                            <td style="padding:15px;" colspan="1" class="text-end">
+                                <button class="btn btn-danger" onclick="confirmCancelOrder(@donHang.MaHD, this)">
+                                    Hủy đơn hàng
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

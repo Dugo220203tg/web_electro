@@ -1,0 +1,26 @@
+﻿@model TrangQuanLy.Models.DanhMucViewModel
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "_Footer-Header";
+}
+<div class="container-fluid pt-4 px-4" style="display:grid;place-items:center;">
+    <div class="bg-secondary rounded h-100 p-4">
+        <h5 class="mb-4">Cập nhật thông tin</h5>
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaDanhMuc" name="MaDanhMuc" />
+            <div class="form-group">
+                <label asp-for="TenDanhMuc" class="control-label">Tên loại</label>
+                <input asp-for="TenDanhMuc" class="form-control" />
+                <span asp-validation-for="TenDanhMuc" class="text-danger"></span>
+            </div>  
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+        <a class="close-button" href="/DanhMuc/Index">X</a>
+    </div>
+</div>
+
+

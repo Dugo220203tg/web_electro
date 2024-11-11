@@ -1,0 +1,56 @@
+﻿@model TDProjectMVC.ViewModels.RegisterVM
+@{
+    ViewData["Title"] = "Register";
+}
+<div class="billing-details" style="display: grid;
+    place-items: center;">
+    <div class="section-title">
+        <h3 class="title">Register</h3>
+    </div>
+    <form asp-action="DangKy" enctype="multipart/form-data" method="post">
+        <div class="form-group">
+            <input class="input" asp-for="@Model.MaKh" placeholder="User Name">
+            <span asp-validation-for="@Model.MaKh" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input class="input" asp-for="@Model.MatKhau" placeholder="PassWord">
+            <span asp-validation-for="@Model.MatKhau" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input class="input" asp-for="@Model.HoTen" placeholder="Full name">
+            <span asp-validation-for="@Model.HoTen" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input class="input" asp-for="@Model.Email" placeholder="Email">
+            <span asp-validation-for="@Model.Email" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input class="input" asp-for="@Model.DiaChi" placeholder="Address">
+            <span asp-validation-for="@Model.DiaChi" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <div class="input-checkbox">
+                <input type="radio" id="GioiTinhNam" name="GioiTinh" class="form-check-input" value="true" />
+                <label for="GioiTinhNam">Nam</label>
+                <input type="radio" id="GioiTinhNu" name="GioiTinh" class="form-check-input" value="false" />
+                <label for="GioiTinhNu">Nữ</label>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label my-3" asp-for="@Model.NgaySinh"></label>
+            <input asp-for="@Model.NgaySinh" class="form-control" />
+            <span asp-validation-for="@Model.NgaySinh" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input class="input" asp-for="@Model.DienThoai" placeholder="Số Điện Thoại">
+            <span asp-validation-for="@Model.DienThoai" class="text-danger"></span>
+        </div>
+@*         <div class="form-group">
+            <label class="form-label my-3" for="Hinh">Hình<sup>*</sup></label>
+            <input type="file" name="Hinh" class="form-control" />
+        </div> *@
+        <button type="submit" class="primary-btn order-submit" style="margin-top: 20px; margin-left: 110px;" value="">
+            Đăng ký
+        </button>
+    </form>
+</div>

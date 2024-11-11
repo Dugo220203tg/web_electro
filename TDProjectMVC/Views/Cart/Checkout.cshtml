@@ -1,0 +1,172 @@
+﻿@model IEnumerable<TDProjectMVC.ViewModels.CartItem>
+
+@{
+    ViewData["Title"] = "Checkout";
+}
+
+<!-- SECTION -->
+
+<div class="section">
+	</<form asp-action="Checkout">
+	<!-- container -->
+	<div class="container">
+		<!-- row -->
+		<div class="row">
+			<div class="col-md-7">
+				<!-- Billing Details -->
+					<form asp-action="Checkout" asp-controller="Cart" method="post">
+						<div class="billing-details">
+							<div class="form-check my-3">
+								<input type="checkbox" name="GiongKhachHang" class="form-check-input" id="GiongKhachHang" value="false">
+								<label class="form-check-label" for="GiongKhachHang">Giống thông tin khách hàng?</label>
+							</div>
+							<div class="section-title">
+								<h3 class="title">Thông tin khách hàng</h3>
+							</div>
+							<div class="form-group delivery-info">
+								<input class="input" type="text" name="HoTen" placeholder="Full Name">
+							</div>
+							<div class="form-group delivery-info">
+								<input class="input" type="email" name="Email" placeholder="Email">
+							</div>
+							<div class="form-group delivery-info">
+								<input class="input" type="text" name="DiaChi" placeholder="Address">
+							</div>
+							<div class="form-group delivery-info">
+								<input class="input" type="number" name="DienThoai" placeholder="Telephone">
+							</div>
+						</div>
+						<!-- Order notes -->
+						<div class="order-notes">
+							<textarea class="input" name="GhiChu" placeholder="Order Notes"></textarea>
+						</div>
+						<input type="submit" name="payment" class="primary-btn order-submit text-xl-center" value="Đặt hàng (COD)">
+						<input type="submit" name="payment" class="primary-btn order-submit text-xl-center" value="Thanh toán VNPay">
+
+					</form>
+				<!-- /Order notes -->
+				<!-- /Billing Details -->
+				<!-- Shiping Details -->
+				<div class="shiping-details">
+					<div class="section-title">
+						<h3 class="title">Shiping address</h3>
+					</div>
+					<div class="input-checkbox">
+						<input type="checkbox" id="shiping-address">
+						<label for="shiping-address">
+							<span></span>
+							Ship to a diffrent address?
+						</label>
+						<div class="caption">
+							<div class="form-group">
+								<input class="input" type="text" name="HoTen" placeholder="Full Name">
+							</div>
+							<div class="form-group">
+								<input class="input" type="email" name="Email" placeholder="Email">
+							</div>
+							<div class="form-group">
+								<input class="input" type="text" name="DiaChi" placeholder="Address">
+							</div>
+							<div class="form-group">
+								<input class="input" type="tel" name="DienThoai" placeholder="Telephone">
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /Shiping Details -->
+
+			</div>
+
+			<!-- Order Details -->
+			<div class="col-md-5 order-details">
+				<div class="section-title text-center">
+					<h3 class="title">Your Order</h3>
+				</div>
+				<div class="order-summary">
+					<div class="order-col">
+						<div><strong>PRODUCT</strong></div>
+						<div><strong>TOTAL</strong></div>
+					</div>
+					<div class="order-products">
+						@foreach (var item in Model)
+						{
+							<div class="order-col">
+								<div>@item.SoLuong @item.TenHH</div>
+								<div>@item.DonGia.ToString("#,##0 VNĐ")</div>
+							</div>
+						}
+					</div>
+					<div class="order-col">
+						<div>Shiping</div>
+						<div><strong>FREE</strong></div>
+					</div>
+					<div class="order-col">
+						<div><strong>TOTAL</strong></div>
+							<div><strong class="order-total">@Model.Sum(p => p.ThanhTien).ToString("#,##0.00 VNĐ")</strong></div>
+					</div>
+				</div>
+				<div class="payment-method">
+					<div class="input-radio">
+						<input type="radio" name="payment" id="payment-1">
+						<label for="payment-1">
+							<span></span>
+							Thanh toán COD
+						</label>
+						<div class="caption">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+					<div class="input-radio">
+						<input type="radio" name="payment" id="payment-2">
+						<label for="payment-2">
+							<span></span>
+							Thanh toán PAYPAL
+						</label>
+						<div class="caption">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+					<div class="input-radio">
+						<input type="radio" name="payment" id="payment-3">
+						<label for="payment-3">
+							<span></span>
+							Thanh toán VNPAY
+						</label>
+						<div class="caption">
+							<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+						</div>
+					</div>
+				</div>
+				<div class="input-checkbox">
+					<input type="checkbox" id="terms">
+					<label for="terms">
+						<span></span>
+						I've read and accept the <a href="#">terms & conditions</a>
+					</label>
+				</div>
+					<button type="submit" class="primary-btn order-submit text-xl-center">Place order</button>
+				</div>
+			<!-- /Order Details -->
+		</div>
+		<!-- /row -->
+	</div>
+	<!-- /container -->
+	</form>
+</div>
+
+<!-- /SECTION -->
+@section scripts {
+	<script>
+		$(document).ready(function () {
+			$("#GiongKhachHang").change(function () {
+				if ($(this).prop("checked")) {
+					$(this).val(true);
+					$(".delivery-info").addClass("d-none");
+				} else {
+					$(this).val(false);
+					$(".delivery-info").removeClass("d-none");
+				}
+			});
+		});
+	</script>
+}

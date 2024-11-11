@@ -1,0 +1,6 @@
+@API_Web_Shop_Electronic_TD_HostAddress = http://localhost:5000
+
+GET {{API_Web_Shop_Electronic_TD_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

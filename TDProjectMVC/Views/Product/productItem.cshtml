@@ -1,0 +1,80 @@
+﻿@model IEnumerable<TDProjectMVC.ViewModels.HangHoaVM>
+
+<h3><b>@Model.Count()</b> Sản phẩm</h3>
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 col-xs-6">
+            <div class="product">
+                <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.MaHH">
+                    <div class="product-img">
+                        @{
+                            string firstImageUrl = string.Empty;
+                            if (!string.IsNullOrEmpty(item.Hinh))
+                            {
+                                var imageUrls = item.Hinh.Split(',');
+                                firstImageUrl = imageUrls.FirstOrDefault();
+                            }
+                        }
+
+                        @if (!string.IsNullOrEmpty(firstImageUrl))
+                        {
+                            <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@firstImageUrl" alt="@item.TenHH" style="width:100%;height:300px">
+                        }
+                        else
+                        {
+                            <img src="~/Hinh/default.jpg" alt="Default Image" style="width:100%;height:300px">
+                        }
+                        <div class="product-label">
+                            <span class="sale">-@item.GiamGia%</span>
+                            @{
+                                DateTime ngaySanXuat = item.NgaySX;
+                                DateTime ngayHienTai = DateTime.Now;
+                                TimeSpan khoangCachNgay = ngayHienTai - ngaySanXuat;
+                            }
+                            @if (khoangCachNgay.TotalDays < 90)
+                            {
+                                <span class="new">New</span>
+                            }
+                        </div>
+                    </div>
+                    <div class="product-body">
+                        <p class="product-category">@item.TenLoai</p>
+                        <h3 class="product-name" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">
+                            <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.MaHH">@item.TenHH</a>
+                        </h3>
+                        <h4 class="product-price">
+                            @item.DonGia.ToString("#,##0 VNĐ")&nbsp;                    <del class="product-old-price">
+                                @((item.DonGia * (100 + item.GiamGia) / 100).ToString("#,##0 VNĐ"))
+                            </del>
+                        </h4>
+                        <div class="product-rating">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                        </div>
+                        <div class="product-btns">
+                            <button class="add-to-wishlist" onclick="addToWishlist('@item.MaHH')">
+                                <i class="fa fa-heart-o"></i>
+                            </button>
+                            <button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">Add to compare</span></button>
+                            <button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">Quick view</span></button>
+                        </div>
+                    </div>
+                </a>
+                <div class="add-to-cart">
+                    <button type="button" class="add-to-cart-btn" onclick="addToCart('@item.MaHH', 1, 'Normal')">
+                        <i class="fa fa-shopping-cart"></i> Add to cart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        @if ((Model.ToList().IndexOf(item) + 1) % 3 == 0)
+        {
+            <div class="clearfix visible-sm visible-xs"></div>
+        }
+    }
+</div>

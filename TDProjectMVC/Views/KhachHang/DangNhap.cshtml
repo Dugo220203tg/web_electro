@@ -1,0 +1,40 @@
+﻿@model TDProjectMVC.ViewModels.LoginVM
+@{
+    ViewData["Title"] = "DangNhap";
+}
+<head>
+    <!-- Include necessary CSS and scripts for validation -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="~/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/css/style.css" />
+</head>
+
+<div class="billing-details" style="display: grid; place-items: center;">
+    <div class="section-title">
+        <h3 class="title">Login</h3>
+    </div>
+
+    <form asp-action="DangNhap" asp-route-returnurl="@ViewBag.ReturnUrl" method="post">
+        <!-- Validation Summary -->
+@*         <div class="text-danger" asp-validation-summary="All"></div>
+ *@
+        <!-- UserName input -->
+        <div class="form-group">
+            <input class="input" asp-for="UserName" placeholder="User Name" />
+            <span asp-validation-for="UserName" class="text-danger"></span>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-group">
+            <input class="input" asp-for="Password" placeholder="PassWord" />
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+
+        <!-- Submit button -->
+        <button type="submit" class="primary-btn order-submit">Đăng Nhập</button>
+
+        <!-- Other actions -->
+        <a asp-action="QuenMatKhau" asp-controller="Khachhang" class="btn border-danger">Quên mật khẩu ?</a>
+        <a asp-action="DangKy" asp-controller="Khachhang" class="btn border-danger">Đăng ký tài khoản</a>
+    </form>
+</div>

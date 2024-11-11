@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+https://go.microsoft.com/fwlink/?LinkID=208121.
+-->
+<Project>
+  <PropertyGroup>
+    <_PublishTargetUrl>bin\Release\net8.0\publish\</_PublishTargetUrl>
+    <History>True|2024-07-09T07:39:59.1018525Z||;True|2024-07-08T21:53:22.8704586+07:00||;</History>
+    <LastFailureDetails />
+  </PropertyGroup>
+  <ItemGroup>
+    <File Include="wwwroot/js/MyJS.js">
+      <publishTime>10/02/2024 20:39:38</publishTime>
+    </File>
+  </ItemGroup>
+</Project>

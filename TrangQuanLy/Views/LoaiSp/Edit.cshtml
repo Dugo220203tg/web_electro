@@ -1,0 +1,37 @@
+﻿@model TrangQuanLy.Models.LoaiSpViewMD
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "_Footer-Header";
+}
+<div class="container-fluid pt-4 px-4" style="display:grid;place-items:center;">
+    <div class="bg-secondary rounded h-100 p-4">
+        <h5 class="mb-4">Cập nhật thông tin</h5>
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="MaLoai" name="MaLoai" />
+            <div class="form-group">
+                <label asp-for="TenLoai" class="control-label">Tên loại</label>
+                <input asp-for="TenLoai" class="form-control" />
+                <span asp-validation-for="TenLoai" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Hinh" for="formFile" class="form-label">Chọn hình ảnh sản phẩm</label>
+                <input asp-for="Hinh" class="form-control bg-dark" type="file" id="formFile" onchange="previewImage(this)">
+                <span asp-validation-for="Hinh" class="text-danger"></span>
+            </div>
+            <img id="imagePreview" src="~/Hinh/Hinh/Loai/@Model.Hinh" alt="Hình ảnh sản phẩm" style="width:160px;height70px;text-align:center; max-width: 100%; max-height: 200px;">
+            <div class="form-group">
+                <label asp-for="Mota" class="control-label">Mô tả</label>
+                <input asp-for="Mota" class="form-control" />
+                <span asp-validation-for="Mota" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+
+        <a class="close-button" href="/LoaiSp/Index">X</a>
+    </div>
+</div>
+
+
