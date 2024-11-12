@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "msPODOmo1bIPVZK3q5/KQnunm+iC8yh5rzNBzkumKeM=",
+  "Hash": "1xm0xzlTRHw8AMLQ0wiKO0oM+WXcZ8x7cSEziMbbChk=",
   "Source": "TDProjectMVC",
   "BasePath": "_content/TDProjectMVC",
   "Mode": "Default",
@@ -32999,25 +32999,6 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\index.html"
-    },
-    {
-      "Identity": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\js\\10022024.js",
-      "SourceId": "TDProjectMVC",
-      "SourceType": "Discovered",
-      "ContentRoot": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\",
-      "BasePath": "_content/TDProjectMVC",
-      "RelativePath": "js/10022024.js",
-      "AssetKind": "All",
-      "AssetMode": "All",
-      "AssetRole": "Primary",
-      "AssetMergeBehavior": "PreferTarget",
-      "AssetMergeSource": "",
-      "RelatedAsset": "",
-      "AssetTraitName": "",
-      "AssetTraitValue": "",
-      "CopyToOutputDirectory": "Never",
-      "CopyToPublishDirectory": "PreserveNewest",
-      "OriginalItemSpec": "wwwroot\\js\\10022024.js"
     },
     {
       "Identity": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\js\\bootstrap.min.js",

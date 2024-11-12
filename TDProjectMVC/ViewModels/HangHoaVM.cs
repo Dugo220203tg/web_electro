@@ -19,6 +19,11 @@
         public List<string> ImageUrls { get; set; }
         public int CountDg { get; set; }
         public string TenDanhMuc {  get; set; }
+        public int ReviewCount { get; set; }
+        public List<DanhGiaVM> DanhGias { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
+
     }
     public class ChiTietHangHoaVM
     {

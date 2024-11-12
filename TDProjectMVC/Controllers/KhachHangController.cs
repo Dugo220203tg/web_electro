@@ -53,6 +53,13 @@ namespace TDProjectMVC.Controllers
                     ModelState.AddModelError("loi", "Username đã được sử dụng");
                     TempData["error"] = "Username đã được sử dụng";
                 }
+                var emailkhachHangExit = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.Email == model.Email);
+
+                if (emailkhachHangExit != null)
+                {
+                    ModelState.AddModelError("loi", "Email đã được sử dụng");
+                    TempData["error"] = "Email đã được sử dụng";
+                }
                 else
                 {
                     var khachHang = _mapper.Map<KhachHang>(model);

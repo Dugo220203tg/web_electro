@@ -16,7 +16,7 @@
             <div class="col-md-12">
                 <ul class="breadcrumb-tree">
                     <li><a href="/Product">Store</a></li>
-                    <li><a href="/Product/@Model.ML">@Model.</a></li>
+                    <li><a href="/Product/@Model.ML">@Model.ML</a></li>
                     <li><a href="/Product/@Model.NCC">@Model.MaNCC</a></li>
                     <li class="active">@Model.TenHH</li>
                 </ul>
@@ -172,15 +172,10 @@
                                 <!-- Reviews -->
                                 <div class="col-md-6">
                                     <div id="reviews">
-                                        <ul class="reviews">
-                                            @await Component.InvokeAsync("DanhGia", new { maHH = @Model.MaHH })
-                                        </ul>
+                                        <div id="reviews">
+                                            @await Component.InvokeAsync("DanhGia", new { maHH = Model.MaHH, page = 1 })
+                                        </div>
                                         <ul class="reviews-pagination">
-                                            <li class="active">1</li>
-                                            <li><a href="#">2</a></li>
-                                            <li><a href="#">3</a></li>
-                                            <li><a href="#">4</a></li>
-                                            <li><a href="#"><i class="fa fa-angle-right"></i></a></li>
                                         </ul>
                                     </div>
                                 </div>
