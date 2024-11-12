@@ -29,8 +29,12 @@ namespace TrangQuanLy.Models
             }
         }
     }
-
-
+    public class CategorySalesStatistics
+    {
+        public int DanhMucId { get; set; }
+        public int Month { get; set; }
+        public int TotalQuantitySold { get; set; }
+    }
     public class HoaDonViewModel
     {
         [Key]

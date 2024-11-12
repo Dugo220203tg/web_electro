@@ -29,6 +29,13 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 			return Ok(model);
 		}
+		[HttpGet]
+		public async Task<IActionResult> Statistics()
+		{
+			var statistics = await ChiTietHoaDonRepository.GetStatisticsAsync();
+			return Ok(statistics);
+		}
+
 		[HttpGet("{MaCt}")]
 		public async Task<IActionResult> GetById([FromRoute] int MaCt)
 		{

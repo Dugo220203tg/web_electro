@@ -20,7 +20,7 @@
  *@
         <!-- UserName input -->
         <div class="form-group">
-            <input class="input" asp-for="UserName" placeholder="User Name" />
+            <input class="input" asp-for="UserName" placeholder="User Name or Email" />
             <span asp-validation-for="UserName" class="text-danger"></span>
         </div>
 
@@ -34,7 +34,7 @@
         <button type="submit" class="primary-btn order-submit">Đăng Nhập</button>
 
         <!-- Other actions -->
-        <a asp-action="QuenMatKhau" asp-controller="Khachhang" class="btn border-danger">Quên mật khẩu ?</a>
+        <a asp-action="ResetPassword" asp-controller="Khachhang" class="btn border-danger">Quên mật khẩu ?</a>
         <a asp-action="DangKy" asp-controller="Khachhang" class="btn border-danger">Đăng ký tài khoản</a>
     </form>
 </div>

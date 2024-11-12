@@ -29,6 +29,7 @@ namespace TDProjectMVC.Controllers
             _mailSender = mailSender;
         }
         #region ---Login---
+        [HttpGet]
         public IActionResult DangKy()
         {
             return View(new RegisterVM());
@@ -90,30 +91,133 @@ namespace TDProjectMVC.Controllers
 
             return View(model);
         }
-
-        public IActionResult NhapMaXacNhan(string khachHangId)
+        [HttpGet]
+        public IActionResult NhapMaXacNhan(string khachHangId, string type = "Register")
         {
-            return View(new ConfirmCodeVM { KhachHangId = khachHangId });
+            return View(new ConfirmCodeVM
+            {
+                KhachHangId = khachHangId,
+                Type = type
+            });
         }
-
         [HttpPost]
         public async Task<IActionResult> NhapMaXacNhan(ConfirmCodeVM model)
         {
             var khachHang = await db.KhachHangs.FindAsync(model.KhachHangId);
-            if (khachHang != null && khachHang.RandomKey == model.ConfirmationCode)
+
+            if (khachHang == null)
             {
-                khachHang.HieuLuc = true;
-                await db.SaveChangesAsync();
-                TempData["success"] = "Tài khoản của bạn đã được kích hoạt!";
-                return RedirectToAction("DangNhap");
+                ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng.");
+                return View(model);
             }
-            ModelState.AddModelError("loi", "Mã xác nhận không hợp lệ.");
-            return View(model);
+
+            if (khachHang.RandomKey != model.ConfirmationCode)
+            {
+                ModelState.AddModelError("", "Mã xác nhận không hợp lệ.");
+                return View(model);
+            }
+
+            try
+            {
+                switch (model.Type)
+                {
+                    case "Register":
+                        // Xử lý xác nhận đăng ký
+                        khachHang.HieuLuc = true;
+                        await db.SaveChangesAsync();
+                        TempData["success"] = "Tài khoản của bạn đã được kích hoạt!";
+                        return RedirectToAction("DangNhap");
+
+                    case "ResetPassword":
+                        // Xử lý xác nhận reset password
+                        khachHang.HieuLuc = true; // Đảm bảo tài khoản được kích hoạt
+                        khachHang.RandomKey = null; // Xóa mã xác nhận sau khi đã sử dụng
+                        await db.SaveChangesAsync();
+                        TempData["success"] = "Mật khẩu đã được đặt lại thành công!";
+                        return RedirectToAction("DangNhap");
+
+                    default:
+                        ModelState.AddModelError("", "Loại xác nhận không hợp lệ.");
+                        return View(model);
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", $"Có lỗi xảy ra: {ex.Message}");
+                return View(model);
+            }
+        }
+        #endregion
+        #region ---RESET PASSWORD---
+        [HttpGet]
+        public IActionResult ResetPassword()
+        {
+            return View(new ResetPassword());
+        }
+        [HttpPost]
+        [AllowAnonymous] // Cho phép truy cập không cần đăng nhập
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPassword model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                // Kiểm tra email tồn tại
+                var khachHang = await db.KhachHangs
+                    .SingleOrDefaultAsync(kh => kh.Email == model.email);
+
+                if (khachHang == null)
+                {
+                    ModelState.AddModelError("", "Email không tồn tại trong hệ thống");
+                    TempData["error"] = "Email không tồn tại trong hệ thống";
+                    return View(model);
+                }
+
+                // Kiểm tra mật khẩu xác nhận
+                if (model.Passwordcheck != model.newpassword)
+                {
+                    ModelState.AddModelError("", "Mật khẩu xác nhận không khớp");
+                    TempData["error"] = "Mật khẩu xác nhận không khớp";
+                    return View(model);
+                }
+
+                // Tạo random key mới và cập nhật mật khẩu
+                khachHang.RandomKey = MyUtil.GenerateRamdomKey();
+                khachHang.MatKhau = model.newpassword.ToMd5Hash(khachHang.RandomKey);
+
+                // Gửi email xác nhận
+                var emailSent = await _mailSender.SendEmailAsync(
+                    model.email,
+                    "Mã xác nhận đổi mật khẩu",
+                    khachHang.RandomKey
+                );
+
+                if (!emailSent)
+                {
+                    ModelState.AddModelError("", "Không thể gửi email xác nhận");
+                    TempData["error"] = "Không thể gửi email xác nhận";
+                    return View(model);
+                }
+
+                // Lưu thay đổi vào database
+                await db.SaveChangesAsync();
+
+                TempData["success"] = "Vui lòng kiểm tra email và nhập mã xác nhận";
+                return RedirectToAction("NhapMaXacNhan", new { khachHangId = khachHang.MaKh, type = "ResetPassword" });
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra: " + ex.Message);
+                TempData["error"] = "Có lỗi xảy ra: " + ex.Message;
+                return View(model);
+            }
         }
 
-
         #endregion
-
         #region ---DangNhap---
         [HttpGet]
         public IActionResult DangNhap(string? ReturnUrl)
@@ -129,56 +233,75 @@ namespace TDProjectMVC.Controllers
                 return View(model);
             }
 
-            var khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == model.UserName);
-            if (khachHang == null)
+            try
             {
-                ModelState.AddModelError("", "Thông tin đăng nhập không chính xác");
-                TempData["error"] = "Thông tin đăng nhập không chính xác";
+                // Tìm khách hàng theo username hoặc email
+                var khachHang = await db.KhachHangs
+                    .SingleOrDefaultAsync(kh => kh.MaKh == model.UserName || kh.Email == model.UserName);
+
+                // Kiểm tra tài khoản tồn tại
+                if (khachHang == null)
+                {
+                    ModelState.AddModelError("", "Thông tin đăng nhập không chính xác");
+                    TempData["error"] = "Thông tin đăng nhập không chính xác";
+                    return View(model);
+                }
+
+                // Kiểm tra vai trò
+                if (khachHang.VaiTro == 1)
+                {
+                    ModelState.AddModelError("", "Tài khoản không có quyền truy cập");
+                    TempData["error"] = "Tài khoản không có quyền truy cập";
+                    return View(model);
+                }
+
+                // Kiểm tra tài khoản bị khóa
+                if (!khachHang.HieuLuc)
+                {
+                    ModelState.AddModelError("", "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.");
+                    TempData["error"] = "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.";
+                    return View(model);
+                }
+
+                // Kiểm tra mật khẩu
+                var hashedPassword = model.Password.ToMd5Hash(khachHang.RandomKey);
+                if (khachHang.MatKhau != hashedPassword)
+                {
+                    ModelState.AddModelError("", "Thông tin đăng nhập không chính xác");
+                    TempData["error"] = "Thông tin đăng nhập không chính xác";
+                    return View(model);
+                }
+
+                // Tạo claims cho đăng nhập
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, khachHang.MaKh),
+            new Claim(ClaimTypes.Email, khachHang.Email),
+            new Claim(ClaimTypes.Name, khachHang.HoTen),
+            new Claim(ClaimTypes.Role, "Customer"),
+            new Claim("CustomerID", khachHang.MaKh)
+        };
+
+                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+
+                // Đăng nhập
+                await HttpContext.SignInAsync(claimsPrincipal);
+
+                // Chuyển hướng
+                if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                {
+                    return Redirect(ReturnUrl);
+                }
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError("", "Có lỗi xảy ra trong quá trình đăng nhập");
+                TempData["error"] = "Có lỗi xảy ra trong quá trình đăng nhập";
+                // Log error
                 return View(model);
             }
-
-            if (khachHang.VaiTro == 1)
-            {
-                ModelState.AddModelError("", "Tài khoản không có quyền truy cập");
-                TempData["error"] = "Tài khoản không có quyền truy cập";
-                return View(model);
-            }
-
-            if (!khachHang.HieuLuc)
-            {
-                ModelState.AddModelError("", "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.");
-                TempData["error"] = "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.";
-
-                return View(model);
-            }
-
-            if (khachHang.MatKhau != model.Password.ToMd5Hash(khachHang.RandomKey))
-            {
-                ModelState.AddModelError("", "Thông tin đăng nhập không chính xác");
-                TempData["error"] = "Thông tin đăng nhập không chính xácc";
-                return View(model);
-            }
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, khachHang.MaKh),
-                new Claim(ClaimTypes.Email, khachHang.Email),
-                new Claim(ClaimTypes.Name, khachHang.HoTen),
-                new Claim(ClaimTypes.Role, "Customer"),
-                new Claim("CustomerID", khachHang.MaKh)
-
-            };
-            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-            await HttpContext.SignInAsync(claimsPrincipal);
-
-            if (Url.IsLocalUrl(ReturnUrl))
-            {
-                return Redirect(ReturnUrl);
-            }
-
-            return RedirectToAction("Index", "Home");
         }
         #endregion
 
@@ -191,7 +314,7 @@ namespace TDProjectMVC.Controllers
         }
         #endregion
 
-        #region ---Chuc Nang---
+        #region ---Xem Thông Tin --- Cập nhật thông tin --- Bình luận sản phẩm ---
 
         [Authorize]
         public IActionResult Profile()
@@ -259,6 +382,7 @@ namespace TDProjectMVC.Controllers
             ViewBag.ErrorMessage = "Không tìm thấy thông tin khách hàng.";
             return View("Error"); // Thay thế "Error" bằng tên View chứa trang thông báo lỗi của bạn.
         }
+
 
         [Authorize]
         [HttpPost]

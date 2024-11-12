@@ -15,6 +15,12 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public string? HinhAnh { get; set; }
 		public int MaDanhMuc { get; set; }
 	}
+	public class CategorySalesStatistics
+	{
+		public int DanhMucId { get; set; }
+		public int Month { get; set; }
+		public int TotalQuantitySold { get; set; }
+	}
 	public class PostChiTietHoaDonMD
 	{
 		public int MaHD { get; set; }
