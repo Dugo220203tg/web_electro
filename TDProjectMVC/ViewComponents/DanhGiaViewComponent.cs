@@ -8,35 +8,64 @@ namespace TDProjectMVC.ViewComponents
     public class DanhGiaViewComponent : ViewComponent
     {
         private readonly Hshop2023Context db;
+        private const int PageSize = 3;
+
         public DanhGiaViewComponent(Hshop2023Context db)
         {
             this.db = db;
         }
+
         public int GetReviewCountAsync(int maHH)
         {
-            return  db.DanhGiaSps.Count(d => d.MaHh == maHH);
+            return db.DanhGiaSps.Count(d => d.MaHh == maHH);
         }
-        public IViewComponentResult Invoke(int maHH)
-        {
-            var reviewCount = GetReviewCountAsync(maHH);
 
-            var data = db.DanhGiaSps
-                .Where(dg => dg.MaHh == maHH)
-                .Select(lo => new DanhGiaVM
-                {
-                    MaKH = lo.MaKh,
-                    Ngay = (DateTime)lo.Ngay,
-                    NoiDung = lo.NoiDung,
-                    MaHH = lo.MaHh,
-                    Sao = (int)lo.Sao,
-                })
-                .ToList();
-            var model = new DanhGiaListViewModel
+        public IViewComponentResult Invoke(int maHH, int page = 1)
+        {
+            try
             {
-                ReviewCount = reviewCount,
-                DanhGias = data
-            };
-            return View("Index", data);
+                var reviewCount = GetReviewCountAsync(maHH);
+                var totalPages = Math.Max(1, (int)Math.Ceiling(reviewCount / (double)PageSize));
+                page = Math.Min(Math.Max(1, page), totalPages); // Ensure page is within valid range
+
+                var data = db.DanhGiaSps
+                    .Where(dg => dg.MaHh == maHH)
+                    .OrderByDescending(dg => dg.Ngay)
+                    .Skip((page - 1) * PageSize)
+                    .Take(PageSize)
+                    .Select(lo => new DanhGiaVM
+                    {
+                        MaKH = lo.MaKh,
+                        Ngay = (DateTime)lo.Ngay,
+                        NoiDung = lo.NoiDung,
+                        MaHH = lo.MaHh,
+                        Sao = (int)lo.Sao,
+                    })
+                    .ToList();
+
+                var model = new DanhGiaListViewModel
+                {
+                    ReviewCount = reviewCount,
+                    DanhGias = data ?? new List<DanhGiaVM>(), // Ensure DanhGias is never null
+                    CurrentPage = page,
+                    TotalPages = totalPages,
+                    MaHH = maHH
+                };
+
+                return View("Default", model); // Change to match your actual view name
+            }
+            catch (Exception ex)
+            {
+                // Return empty model instead of null
+                return View("Default", new DanhGiaListViewModel
+                {
+                    ReviewCount = 0,
+                    DanhGias = new List<DanhGiaVM>(),
+                    CurrentPage = 1,
+                    TotalPages = 1,
+                    MaHH = maHH
+                });
+            }
         }
     }
 }

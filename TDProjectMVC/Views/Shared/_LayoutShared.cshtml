@@ -242,8 +242,8 @@
         });
     </script>
 
-@*     <script src="~/js/MyJSs.js"></script>*@ 
-    <script src="~/js/10022024.js"></script>
+
+    <script src="~/js/12112024js"></script>
     @RenderSection("Scripts", required: false)
     <script type="text/javascript">
         function confirmCancelOrder(orderId, btn) {
@@ -390,6 +390,34 @@
                     window.location.href = currentUrl.href; // Reload the page without 'danhmuc'
                 }
             });
+        });
+    </script>
+    @*     Script đánh giá sản phẩm trong detail *@
+    <script>
+        function loadReviewPage(maHH, page) {
+            if (!maHH || !page) return;
+
+            $('#reviews-content').fadeOut(200, function () {
+                $.ajax({
+                    url: `/Product/LoadReviews`,
+                    type: 'GET',
+                    data: { maHH: maHH, page: page },
+                    success: function (result) {
+                        $('#reviews').html(result);
+                        $('#reviews-content').fadeIn(200);
+                    },
+                    error: function (err) {
+                        console.error('Error loading reviews:', err);
+                        toastr.error('Có lỗi xảy ra khi tải đánh giá');
+                        $('#reviews-content').fadeIn(200);
+                    }
+                });
+            });
+        }
+
+        // Initialize tooltips and other UI elements if needed
+        $(document).ready(function () {
+            // Any initialization code here
         });
     </script>
 </body>

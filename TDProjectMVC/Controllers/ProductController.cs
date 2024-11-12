@@ -163,5 +163,10 @@ namespace TDProjectMVC.Controllers
 
             return View(result);
         }
+        [HttpGet]
+        public IActionResult LoadReviews(int maHH, int page = 1)
+        {
+            return ViewComponent("DanhGia", new { maHH = maHH, page = page });
+        }
     }
 }

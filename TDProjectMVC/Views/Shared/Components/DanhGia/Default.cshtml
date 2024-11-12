@@ -1,0 +1,80 @@
+﻿
+@model TDProjectMVC.ViewModels.DanhGiaListViewModel
+@{
+    var hasReviews = Model?.DanhGias != null && Model.DanhGias.Any();
+}
+
+<div id="reviews-content" 
+    style="position: relative;
+            min-height: 300px;">
+    @if (hasReviews)
+    {
+        <ul class="reviews">
+            @foreach (var review in Model.DanhGias)
+            {
+                <li>
+                    <div class="review-heading">
+                        <h5 class="name">@review.MaKH</h5>
+                        <p class="date">@review.Ngay.ToString("dd MMM yyyy, HH:mm")</p>
+                        <div class="review-rating">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= review.Sao)
+                                {
+                                    <i class="fa fa-star"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa fa-star-o empty"></i>
+                                }
+                            }
+                        </div>
+                    </div>
+                    <div class="review-body">
+                        <p>@review.NoiDung</p>
+                    </div>
+                </li>
+            }
+        </ul>
+
+        @if (Model.TotalPages > 1)
+        {
+            <ul class="reviews-pagination" style=" position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    padding: 0px 0;
+    background-color: #fff;">
+                @if (Model.CurrentPage > 1)
+                {
+                    <li><a href="javascript:void(0)" onclick="loadReviewPage(@Model.MaHH, @(Model.CurrentPage - 1))"><i class="fa fa-angle-left"></i></a></li>
+                }
+
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    if (i == Model.CurrentPage)
+                    {
+                        <li class="active">@i</li>
+                    }
+                    else
+                    {
+                        <li><a href="javascript:void(0)" onclick="loadReviewPage(@Model.MaHH, @i)">@i</a></li>
+                    }
+                }
+
+                @if (Model.CurrentPage < Model.TotalPages)
+                {
+                    <li><a href="javascript:void(0)" onclick="loadReviewPage(@Model.MaHH, @(Model.CurrentPage + 1))"><i class="fa fa-angle-right"></i></a></li>
+                }
+            </ul>
+        }
+    }
+    else
+    {
+        <div class="no-reviews">
+            <p>Chưa có đánh giá nào cho sản phẩm này</p>
+        </div>
+    }
+</div>
