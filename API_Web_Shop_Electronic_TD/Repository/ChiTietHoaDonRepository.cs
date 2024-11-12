@@ -82,6 +82,27 @@ namespace API_Web_Shop_Electronic_TD.Repository
 					.ThenInclude(h => h.MaLoaiNavigation)
 				.FirstOrDefaultAsync(ct => ct.MaCt == MaCt);
 		}
+		async Task<List<CategorySalesStatistics>> ICtHoaDon.GetStatisticsAsync()
+		{
+			return await db.ChiTietHds
+				.Include(ct => ct.MaHhNavigation)
+					.ThenInclude(h => h.MaLoaiNavigation)
+				.GroupBy(ct => new
+				{
+					CategoryId = ct.MaHhNavigation.MaLoaiNavigation.DanhMucId,
+					Month = ct.MaHdNavigation.NgayDat.Month // Assuming NgayDat stores order date
+				})
+				.Select(group => new CategorySalesStatistics
+				{
+					DanhMucId = (int)group.Key.CategoryId,
+					Month = group.Key.Month,
+					TotalQuantitySold = group.Sum(ct => ct.SoLuong)
+				})
+				.OrderBy(stats => stats.DanhMucId)
+				.ThenBy(stats => stats.Month)
+				.ToListAsync();
+		}
+
 
 		async Task<ChiTietHd?> ICtHoaDon.UpdateAsync(int MaCt, PostChiTietHoaDonMD model)
 		{

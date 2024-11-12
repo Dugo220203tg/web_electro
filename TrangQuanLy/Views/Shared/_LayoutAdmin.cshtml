@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Web Admin of TungDuong</title>
+    <title>Web Electro Admin</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -50,8 +50,9 @@
     <script src="@Url.Content("~/lib/tempusdominus/js/moment-timezone.min.js")"></script>
     <script src="@Url.Content("~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js")"></script>
     <script src="~/js/main.js"></script>
-@*     <script src="~/js/myjs - Copy.js"></script>
- *@
+    @*  <script src="@Url.Content("~/js/myjs.js")"></script> *@
+
+    <!-- cheditor cho phần mô tả sản phẩm -->
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -65,12 +66,14 @@
             });
         });
     </script>
+    <!-- --- -->
 
     <!-- DataTable JS -->
     <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
     <script>
         let table = new DataTable('#myTable');
     </script>
+    <!-- --- -->
 
     <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.all.min.js"></script>
@@ -94,11 +97,12 @@
             }
         });
     </script>
+    <!-- --- -->
 
-   @*  <script src="@Url.Content("~/js/myjs.js")"></script> *@
-   
     <!-- Section for additional scripts -->
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- Cập nhật trạng thái hóa đơn nhanh -->
     <script>
         function attachEventListeners() {
             console.log('Attempting to attach event listeners');
@@ -171,34 +175,67 @@
         document.addEventListener('DOMContentLoaded', attachEventListeners);
 
     </script>
+    <!-- --- -->
+
+    <!-- Biểu đồ admin -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        var ctx1 = $("#worldwide-sales").get(0).getContext("2d");
-        var myChart1 = new Chart(ctx1, {
-            type: "bar",
-            data: {
-                labels: @Html.Raw(Json.Serialize(ViewBag.Labels)),
-                datasets: [
-                    {
-                        label: 'Linh Kiện',
-                        data: @Html.Raw(Json.Serialize(ViewBag.SalesData1)),
-                        backgroundColor: "rgba(235, 22, 22, .7)"
+        document.addEventListener('DOMContentLoaded', function () {
+            var ctx = document.getElementById('worldwide-sales').getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: "bar",
+                data: {
+                    labels: @Html.Raw(Json.Serialize(ViewBag.Labels)),
+                    datasets: [
+                        {
+                            label: 'Linh kiện',
+                            data: @Html.Raw(Json.Serialize(ViewBag.SalesData1)),
+                            backgroundColor: "rgba(235, 22, 22, .7)"
+                        },
+                        {
+                            label: 'Màn hình',
+                            data: @Html.Raw(Json.Serialize(ViewBag.SalesData8)),
+                            backgroundColor: "rgba(22, 160, 133, .7)"
+                        },
+                        {
+                            label: 'Laptop',
+                            data: @Html.Raw(Json.Serialize(ViewBag.SalesData11)),
+                            backgroundColor: "rgba(52, 152, 219, .7)"
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            min: 0,
+                            max: 100,
+                            ticks: {
+                                stepSize: 10 // Mỗi bước là 10 đơn vị
+                            },
+                            title: {
+                                display: true,
+                                text: 'Số lượng bán ra'
+                            }
+                        }
                     },
-                    {
-                        label: 'Màn Hình',
-                        data: @Html.Raw(Json.Serialize(ViewBag.SalesData8)),
-                        backgroundColor: "rgba(22, 160, 133, .7)"
-                    },
-                    {
-                        label: 'Laptop',
-                        data: @Html.Raw(Json.Serialize(ViewBag.SalesData11)),
-                        backgroundColor: "rgba(52, 152, 219, .7)"
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (context) {
+                                    return context.dataset.label + ': ' + context.parsed.y + ' sản phẩm';
+                                }
+                            }
+                        }
                     }
-                ]
-            },
-            options: {
-                responsive: true
-            }
+                }
+            });
         });
     </script>
+    <!-- --- -->
 </body>
 </html>

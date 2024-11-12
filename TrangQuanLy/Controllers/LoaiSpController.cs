@@ -58,7 +58,7 @@ namespace TrangQuanLy.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;
+                string data = await response.Content.ReadAsStringAsync();
                 LoaiSp = JsonConvert.DeserializeObject<List<LoaiSpViewMD>>(data);
             }
             else

@@ -19,7 +19,7 @@ namespace TrangQuanLy.Controllers
         }
         [Authorize]
         [HttpGet]
-        public IActionResult Index(int? page, int? pagesize)
+        public async Task<IActionResult> Index(int? page, int? pagesize)
         {
             if (page == null)
             {
@@ -35,7 +35,7 @@ namespace TrangQuanLy.Controllers
 
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;
+                string data = await response.Content.ReadAsStringAsync();
                 DanhGia = JsonConvert.DeserializeObject<List<DanhGiaSpMD>>(data);
             }
             int totalItems = DanhGia.Count();
@@ -53,11 +53,11 @@ namespace TrangQuanLy.Controllers
 
             // Send a request to the API to get all HangHoa entities
             List<DanhGiaSpMD> DanhGiaSp = new List<DanhGiaSpMD>();
-            HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/DanhGiaSp/GetAll").Result;
+            HttpResponseMessage response =  _client.GetAsync(_client.BaseAddress + "/DanhGiaSp/GetAll").Result;
 
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;
+                string data = await response.Content.ReadAsStringAsync();
                 DanhGiaSp = JsonConvert.DeserializeObject<List<DanhGiaSpMD>>(data);
             }
             else
@@ -139,13 +139,11 @@ namespace TrangQuanLy.Controllers
                     TempData["success"] = "Employee Update!";
                     return RedirectToAction("Index");
                 }
-                // Nếu có lỗi, trả về view và truyền model vào view
                 return View();
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                // Nếu có lỗi, trả về view và truyền model vào view
                 return View();
             }
         }

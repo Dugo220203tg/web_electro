@@ -1,14 +1,38 @@
 ﻿@model TDProjectMVC.ViewModels.ConfirmCodeVM
-<div class="verification-details" style="display: grid; place-items: center;">
+@{
+    ViewData["Title"] = Model.Type == "Register" ? "Xác nhận đăng ký" : "Xác nhận đổi mật khẩu";
+}
+
+<div class="billing-details" style="display: grid; place-items: center;">
     <div class="section-title">
-        <h3 class="title">Nhập mã xác nhận</h3>
+        <h3 class="title">@ViewData["Title"]</h3>
     </div>
+
+    @if (TempData["error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["error"]
+        </div>
+    }
+
     <form asp-action="NhapMaXacNhan" method="post">
-        <input asp-for="KhachHangId" type="hidden" />
+        <input type="hidden" asp-for="KhachHangId" />
+        <input type="hidden" asp-for="Type" />
+
         <div class="form-group">
-            <input class="input" asp-for="ConfirmationCode" placeholder="Mã xác nhận">
+            <label>Mã xác nhận đã được gửi đến email của bạn</label>
+            <input class="input" asp-for="ConfirmationCode" placeholder="Nhập mã xác nhận">
             <span asp-validation-for="ConfirmationCode" class="text-danger"></span>
         </div>
-        <button type="submit" class="primary-btn order-submit">Xác nhận</button>
+
+        <button type="submit" class="primary-btn order-submit" style="margin-top: 20px;">
+            Xác nhận
+        </button>
     </form>
 </div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,4 +1,4 @@
-(function ($) {
+﻿(function ($) {
     "use strict";
 
     // Spinner
@@ -65,44 +65,7 @@
 
 
     // Worldwide Sales Chart
-    //var ctx1 = $("#worldwide-sales").get(0).getContext("2d");
-    //var myChart1 = new Chart(ctx1, {
-    //    type: "bar",
-    //    data: {
-    //        labels: @Html.Raw(Json.Serialize(ViewBag.Labels)),
-    //        datasets: [
-    //            {
-    //                label: 'Category 1 Sales',
-    //                data: @Html.Raw(Json.Serialize(ViewBag.SalesData1)),
-    //                backgroundColor: "rgba(235, 22, 22, .7)"
-    //            },
-    //            {
-    //                label: 'Category 8 Sales',
-    //                data: @Html.Raw(Json.Serialize(ViewBag.SalesData8)),
-    //                backgroundColor: "rgba(22, 160, 133, .7)"
-    //            },
-    //            {
-    //                label: 'Category 11 Sales',
-    //                data: @Html.Raw(Json.Serialize(ViewBag.SalesData11)),
-    //                backgroundColor: "rgba(52, 152, 219, .7)"
-    //            }
-    //        ]
-    //    },
-    //    options: {
-    //        responsive: true,
-    //        scales: {
-    //            y: {
-    //                beginAtZero: true,
-    //                title: {
-    //                    display: true,
-    //                    text: 'Quantity Sold'
-    //                }
-    //            }
-    //        }
-    //    }
-    //});
-
-
+    
 
     // Salse & Revenue Chart
     var ctx2 = document.getElementById("salse-revenue").getContext("2d");
