@@ -8,7 +8,7 @@
 <div class="container-fluid pt-4 px-4">
     <div class="bg-secondary text-center rounded p-4">
         <div class="d-flex align-items-center justify-content-between mb-4 text-primary">
-            <h3 class="mb-4" style="margin-bottom:0px;">Loại sản phẩm</h3>
+            <h3 class="mb-4" style="margin-bottom:0px;">Đánh giá chất lượng</h3>
             <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
                 <form class="d-none d-md-flex ms-4" asp-action="Search" asp-controller="DanhGiaSp" method="get">
                     <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
@@ -45,22 +45,41 @@
         <!-- Pagination Controls -->
         <div style="text-align:center; margin-top:20px;">
             <ul class="pagination" style="display: inline-flex;">
-                @if (Model.HasPreviousPage)
+                @{
+                    int pageIndex = Model.PageIndex;
+                    int totalPages = Model.TotalPages;
+                    int pageSizeValue = ViewBag.PageSize;
+                    int startPage = ((pageIndex - 1) / 5) * 5 + 1;
+                    int endPage = Math.Min(startPage + 4, totalPages);
+                }
+                @if (startPage > 1)
                 {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">Previous</a>
+                    <li class="page_item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
                     </li>
                 }
-                @for (var i = 1; i <= Model.TotalPages; i++)
+                @if (pageIndex > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
+                    </li>
+                }
+                @for (var i = startPage; i <= endPage; i++)
                 {
                     <li class="page-item @(Model.PageIndex == i ? "active" : "")">
                         <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
                     </li>
                 }
-                @if (Model.HasNextPage)
+                @if (pageIndex < totalPages)
                 {
                     <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">Next</a>
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
+                    </li>
+                }
+                @if (endPage < totalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
                     </li>
                 }
             </ul>

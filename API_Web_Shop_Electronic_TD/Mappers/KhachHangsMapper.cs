@@ -16,9 +16,13 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 			{
 				UserName = Model.MaKh,
 				Password = Model.MatKhau,
-				Vaitro = Model.VaiTro,
+				Vaitro = 0,
 				Email = Model.Email,
-				RandomKey = Model.RandomKey
+				RandomKey = Model.RandomKey,
+				HoTen = Model.HoTen,
+				HieuLuc = Model.HieuLuc,
+				DiaChi = Model.DiaChi,
+				DienThoai = Model.DienThoai,
 			};
 		}
 		public static KhachHang ToKhachHangCreateDTO(this DangKyMD Model)

@@ -31,88 +31,12 @@ namespace TrangQuanLy.Controllers
         }
         #endregion
         #region --- DANG NHAP ---
-        //[HttpPost]
-        //public async Task<IActionResult> DangNhap(AdminViewModel model, string? ReturnUrl)
-        //{
-        //    ViewBag.ReturnUrl = ReturnUrl;
-        //    try
-        //    {
-        //        AdminViewModel khachhangs = new AdminViewModel();
-        //        HttpResponseMessage respone = await _client.GetAsync(_client.BaseAddress + "/KhachHangs/GetById/" + model.UserName);
-        //        if (respone.IsSuccessStatusCode)
-        //        {
-        //            // Deserialize response data
-        //            string data = await respone.Content.ReadAsStringAsync();
-        //            khachhangs = JsonConvert.DeserializeObject<AdminViewModel>(data);
-
-        //            // Validate user
-        //            if (khachhangs != null)
-        //            {
-        //                // Check if user is active
-        //                if (khachhangs.Vaitro == 1)
-        //                {
-        //                    // Check if password is correct
-        //                    if (khachhangs.Password == model.Password.ToMd5Hash(khachhangs.RandomKey))
-        //                    {
-        //                        // Authentication successful, create claims
-        //                        var claims = new List<Claim>
-        //                {
-        //                    new Claim(ClaimTypes.Email, khachhangs.Email),
-        //                    new Claim(ClaimTypes.Name, khachhangs.UserName),
-        //                    new Claim("CustomerID", khachhangs.UserName),
-        //                    new Claim(ClaimTypes.Role, "Customer")
-        //                };
-        //                        var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-        //                        var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
-
-        //                        // Sign in user
-        //                        await HttpContext.SignInAsync(claimsPrincipal);
-
-        //                        // Redirect user to returnUrl if it's a local URL, otherwise redirect to home
-        //                        if (Url.IsLocalUrl(ReturnUrl))
-        //                        {
-        //                            return Redirect(ReturnUrl);
-        //                        }
-        //                        else
-        //                        {
-        //                            return Redirect("/HangHoa/Index");
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        ModelState.AddModelError("loi", "Mật khẩu không đúng");
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    ModelState.AddModelError("loi", "Tài khoản không hoạt động");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                ModelState.AddModelError("loi", "Thông tin đăng nhập không đúng");
-        //            }
-        //        }
-        //        else
-        //        {
-        //            ModelState.AddModelError("loi", "Lỗi khi gửi yêu cầu đăng nhập đến API");
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ModelState.AddModelError("loi", "Lỗi: " + ex.Message);
-        //    }
-
-        //    // If ModelState is invalid or authentication fails, return view
-        //    return Redirect(ReturnUrl ?? "/HangHoa/Index");
-        //}
-
-        //[HttpGet]
-        //public IActionResult DangNhap(string? ReturnUrl)
-        //{
-        //    ViewBag.ReturnUrl = ReturnUrl;
-        //    return View();
-        //}
+        [HttpGet]
+        public IActionResult DangNhap(string? ReturnUrl)
+        {
+            ViewBag.ReturnUrl = ReturnUrl;
+            return View();
+        }
         [HttpPost]
         public async Task<IActionResult> DangNhap(AdminViewModel model, string? ReturnUrl)
         {
@@ -185,12 +109,7 @@ namespace TrangQuanLy.Controllers
             // If authentication fails, return to the login view
             return View(model);
         }
-        [HttpGet]
-        public IActionResult DangNhap(string? ReturnUrl)
-        {
-            ViewBag.ReturnUrl = ReturnUrl;
-            return View();
-        }
+
         #endregion
         #region --- DANG KY ---
 
@@ -225,8 +144,16 @@ namespace TrangQuanLy.Controllers
 
         #endregion
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(int? page, int? pagesize)
         {
+            if (page == null)
+            {
+                page = 1;
+            }
+            if (pagesize == null)
+            {
+                pagesize = 5;
+            }
             List<AdminViewModel> khachhang = new List<AdminViewModel>();
             HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/KhachHangs/GetAll").Result;
 
@@ -235,7 +162,13 @@ namespace TrangQuanLy.Controllers
                 string data = response.Content.ReadAsStringAsync().Result;
                 khachhang = JsonConvert.DeserializeObject<List<AdminViewModel>>(data);
             }
-            return View(khachhang);
+            int totalItems = khachhang.Count();
+            var paginatedList = PaginatedList<AdminViewModel>.CreateAsync(khachhang.AsQueryable(), page ?? 1, pagesize ?? 5);
+            ViewBag.Page = page;
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.PageSize = pagesize;
+
+            return View(paginatedList);
         }
         [Authorize]
         [HttpGet]
@@ -284,5 +217,24 @@ namespace TrangQuanLy.Controllers
             }
         }
 
+        [HttpPost, ActionName("Delete")]
+        public IActionResult DeleteConfirm(int Username)
+        {
+            try
+            {
+                HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/KhachHangs/Delete/" + Username).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    TempData["success"] = "Xóa thành công!";
+                    return RedirectToAction("Index");
+                }
+                return View("Index", "Admin");
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return View();
+            }
+        }
     }
 }

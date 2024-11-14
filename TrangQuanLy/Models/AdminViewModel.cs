@@ -18,7 +18,10 @@ namespace TrangQuanLy.Models
 		public string Hoten { get; set; }
         public string RandomKey { get; set; }
         public bool HieuLuc { get; set; }
-	}
+        public string DiaChi { get; set; }
+        public string DienThoai { get; set; }
+
+    }
     public class AdminDkMD
     {
         [Display(Name = "User Name")]
