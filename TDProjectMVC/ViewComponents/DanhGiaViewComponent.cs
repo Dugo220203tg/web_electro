@@ -17,7 +17,7 @@ namespace TDProjectMVC.ViewComponents
 
         public int GetReviewCountAsync(int maHH)
         {
-            return db.DanhGiaSps.Count(d => d.MaHh == maHH);
+            return db.DanhGiaSps.Count(d => d.MaHh == maHH && d.TrangThai == 1);
         }
 
         public IViewComponentResult Invoke(int maHH, int page = 1)
@@ -29,7 +29,7 @@ namespace TDProjectMVC.ViewComponents
                 page = Math.Min(Math.Max(1, page), totalPages); // Ensure page is within valid range
 
                 var data = db.DanhGiaSps
-                    .Where(dg => dg.MaHh == maHH)
+                    .Where(dg => dg.MaHh == maHH && dg.TrangThai == 1)
                     .OrderByDescending(dg => dg.Ngay)
                     .Skip((page - 1) * PageSize)
                     .Take(PageSize)

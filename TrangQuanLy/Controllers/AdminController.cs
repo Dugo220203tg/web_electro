@@ -49,7 +49,7 @@ namespace TrangQuanLy.Controllers
                     var khachHang = JsonConvert.DeserializeObject<AdminViewModel>(data);
                     if (khachHang != null)
                     {
-                        if (khachHang.Vaitro != 1) // Assuming 0 is for admin role
+                        if (khachHang.Vaitro != 1)
                         {
                             ModelState.AddModelError("", "Sai quyền đăng nhập");
                             TempData["error"] = "Sai quyền đăng nhập";
@@ -161,7 +161,10 @@ namespace TrangQuanLy.Controllers
             {
                 string data = response.Content.ReadAsStringAsync().Result;
                 khachhang = JsonConvert.DeserializeObject<List<AdminViewModel>>(data);
+                khachhang = khachhang.Where(k => k.Vaitro == 0).ToList();
+
             }
+
             int totalItems = khachhang.Count();
             var paginatedList = PaginatedList<AdminViewModel>.CreateAsync(khachhang.AsQueryable(), page ?? 1, pagesize ?? 5);
             ViewBag.Page = page;
@@ -216,7 +219,7 @@ namespace TrangQuanLy.Controllers
                 return View(model);
             }
         }
-
+        [Authorize]
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirm(int Username)
         {

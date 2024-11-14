@@ -33,7 +33,7 @@ namespace TrangQuanLy.Models
         {
             get
             {
-                return TrangThai == 1 ? "Hiển Thị" : "Ẩn";
+                return TrangThai == 1 ? "Hiển Thị" : "Đã Ẩn";
             }
         }
     }

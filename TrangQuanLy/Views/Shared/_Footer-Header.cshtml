@@ -7,10 +7,10 @@
     <!-- Spinner Start -->
     @* <div id="spinner" class="show bg-dark position-fixed translate-middle w-100 vh-100 top-50 start-50 d-flex align-items-center justify-content-center">
 
-        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
 
-            <span class="sr-only">Loading...</span>
-        </div>
+    <span class="sr-only">Loading...</span>
+    </div>
     </div> *@
     <!-- Spinner End -->
     <!-- Sidebar Start MENU -->
@@ -20,7 +20,7 @@
 
             <a href="index.html" class="navbar-brand mx-4 mb-3">
 
-                <h3 class="text-primary"><i class="fa fa-user-edit me-2"></i>DarkPan</h3>
+                <h3 class="text-primary"><img class="rounded-circle me-lg-2" src="~/Hinh/logo.png" alt="" style="width: 60px; height: 60px;"></i>Electro</h3>
             </a>
             <div class="d-flex align-items-center ms-4 mb-4">
 
@@ -48,21 +48,15 @@
                         <a href="element.html" class="dropdown-item">Other Elements</a>
                     </div>
                 </div>
-                <a href="/HangHoa" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Hàng Hóa</a>
-                <a href="/LoaiSp" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Loại sản phẩm</a>
-                <a href="/HangSp" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Nhà cung cấp</a>
-                <a href="/DanhMuc" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Danh mục</a>
-                <a href="/DanhGiaSp" class="nav-item nav-link"><i class="fa fa-comment me-2"></i>Đánh giá Sp</a>
-
+                <a href="/HangHoa" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Hàng Hóa</a>
+                <a href="/DanhGiaSp" class="nav-item nav-link"><i class="bi bi-chat-left-text-fill"></i>Đánh giá</a>
                 <div class="nav-item dropdown">
-
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="far fa-file-alt me-2"></i>Pages</a>
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-collection"></i>Phân Loại</a>
                     <div class="dropdown-menu bg-transparent border-0">
-
-                        <a href="signin.html" class="dropdown-item">Sign In</a>
-                        <a href="signup.html" class="dropdown-item">Sign Up</a>
-                        <a href="404.html" class="dropdown-item">404 Error</a>
-                        <a href="blank.html" class="dropdown-item">Blank Page</a>
+                        <a href="/LoaiSp" class="dropdown-item nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Loại sản phẩm</a>
+                        <a href="/HangSp" class="dropdown-item nav-item nav-link"><i class="fa fa-table me-2"></i>Nhà cung cấp</a>
+                        <a href="/DanhMuc" class="dropdown-item nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Danh mục</a>
+                        @*  <a href="blank.html" class="dropdown-item">Blank Page</a>*@
                     </div>
                 </div>
             </div>
@@ -192,24 +186,24 @@
         <!-- Navbar End -->
         @RenderBody()
         <!-- Footer Start -->
-@*         <div class="container-fluid pt-4 px-4">
+        @*         <div class="container-fluid pt-4 px-4">
 
-            <div class="bg-secondary rounded-top p-4">
+        <div class="bg-secondary rounded-top p-4">
 
-                <div class="row">
+        <div class="row">
 
-                    <div class="col-12 col-sm-6 text-center text-sm-start">
+        <div class="col-12 col-sm-6 text-center text-sm-start">
 
-                        &copy; <a href="#">Your Site Name</a>, All Right Reserved.
-                    </div>
-                    <div class="col-12 col-sm-6 text-center text-sm-end">
+        &copy; <a href="#">Your Site Name</a>, All Right Reserved.
+        </div>
+        <div class="col-12 col-sm-6 text-center text-sm-end">
 
-                        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                        Designed By <a href="https://htmlcodex.com">HTML Codex</a>
-                        <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-                    </div>
-                </div>
-            </div>
+        <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
+        Designed By <a href="https://htmlcodex.com">HTML Codex</a>
+        <br>Distributed By: <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+        </div>
+        </div>
+        </div>
         </div> *@
         <!-- Footer End -->
     </div>

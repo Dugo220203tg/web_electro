@@ -85,8 +85,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			try
 			{
 				var khachHangsMD = await KhachHangsRepository.GetAllAsync();
-				var khachhangs = khachHangsMD.Where(s => s.VaiTro == 0);
-				var model = khachhangs.Select(k => k.ToKhachHangDo()).ToList();
+				var model = khachHangsMD.Select(k => k.ToKhachHangDo()).ToList();
 
 				return Ok(model);
 			}

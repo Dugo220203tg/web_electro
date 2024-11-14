@@ -66,9 +66,12 @@
 
                 <!-- Right column: Image content -->
                 <div class="image-content">
-                    <button type="button" class="btn btn-primary mt-3" onclick="addNewImageInput()">Thêm hình ảnh</button>
-                    <div id="imageInputsContainer">
-                        <!-- Existing images and inputs for new images -->
+                    <button type="button"
+                            class="btn btn-primary btn-add-image"
+                            onclick="window.ImageHandler.addNewImageInput()">
+                        Thêm ảnh
+                    </button>                    <div id="imageInputsContainer">
+                        <!-- Hiển thị các ảnh hiện có (nếu có) và trường nhập cho ảnh mới -->
                         @if (Model != null && !string.IsNullOrEmpty(Model.Hinh))
                         {
                             var imageUrls = Model.Hinh.Split(',');
@@ -77,18 +80,16 @@
                                 <div class="image-input-group mb-3">
                                     <div class="image-preview-item">
                                         <img src="~/Hinh/Hinh/HangHoa/@Model.MaHH/@imageUrls[i]" alt="@Model.TenHH" class="preview-image">
-@*                                         <p class="image-name">@imageUrls[i]</p>
- *@                                    </div>
+                                        @*<p class="image-name">@imageUrls[i]</p>*@
+                                    </div>
                                     <div class="input-group input-group-img">
-                                        <input type="file" class="form-control bg-dark image-input" name="ImageFiles" onchange="previewImage(this)" data-index="@i">
-                                        <button type="button" class="btn btn-danger remove-image" onclick="removeImageInput(this)">Xóa</button>
+                                        <input type="file" class="form-control bg-dark image-input" name="ImageFiles" onchange="window.ImageHandler.previewImage(this)" data-index="@i">
+                                        <button type="button" class="btn btn-danger remove-image" onclick="window.ImageHandler.removeImageInput(this)">Xóa</button>
                                     </div>
                                 </div>
                             }
                         }
                     </div>
-                    <!-- Hidden input for image list -->
-                    <input type="hidden" id="hinhInput" name="Hinh" value="@Model?.Hinh">
                 </div>
             </div>
 
@@ -105,7 +106,6 @@
         display: flex;
         flex-direction: column;
         gap: 13px;
-
     }
 
     /* Styling the individual image input groups */
@@ -209,11 +209,11 @@
                     const newGroup = document.createElement('div');
                     newGroup.className = 'image-input-group mb-3';
                     newGroup.innerHTML = `
-                                                                                <div class="image-preview-item"></div>
-                                                                                <div class="input-group input-group-img">
-                                                                                    <input type="file" class="form-control bg-dark image-input" name="ImageFiles" onchange="previewImage(this)" data-index="${newIndex}">
-                                                                                    <button type="button" class="btn btn-danger remove-image" onclick="removeImageInput(this)">Xóa</button>
-                                                                                </div>`;
+                                                                                        <div class="image-preview-item"></div>
+                                                                                        <div class="input-group input-group-img">
+                                                                                            <input type="file" class="form-control bg-dark image-input" name="ImageFiles" onchange="previewImage(this)" data-index="${newIndex}">
+                                                                                            <button type="button" class="btn btn-danger remove-image" onclick="removeImageInput(this)">Xóa</button>
+                                                                                        </div>`;
 
                     container.appendChild(newGroup);
                 }

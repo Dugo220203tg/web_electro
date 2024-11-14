@@ -13,18 +13,18 @@ using TrangQuanLy.Helpers;
 
 namespace TrangQuanLy.Controllers
 {
-	public class HomeController : Controller
-	{
+    public class HomeController : Controller
+    {
         private readonly HttpClient _client;
         Uri baseAddress = new Uri("https://localhost:7109/api");
         public HomeController(ILogger<HomeController> logger)
-		{
+        {
             _client = new HttpClient();
             _client.BaseAddress = baseAddress;
         }
-		public IActionResult Privacy()
-		{
-			return View();
+        public IActionResult Privacy()
+        {
+            return View();
         }
         [Authorize]
         [HttpGet]
@@ -58,6 +58,8 @@ namespace TrangQuanLy.Controllers
                 var staticHoaDonList = hoaDonList.Where(h => h.MaTrangThai == 0).ToList();
                 var TodayHoaDonList = hoaDonList.Where(h => h.NgayDat.Date == DateTime.Today).ToList();
 
+                DateTime sixMonthsAgo = currentDate.AddMonths(-5); // Lấy 6 tháng (tháng hiện tại và 5 tháng trước)
+
                 // Calculate statistics for current month
                 var statisticss = new HoaDonStatisticsViewModel
                 {
@@ -75,14 +77,25 @@ namespace TrangQuanLy.Controllers
                 {
                     string statsData = await statisticsResponse.Content.ReadAsStringAsync();
                     var statistics = JsonConvert.DeserializeObject<List<CategorySalesStatistics>>(statsData);
-
+                   
+                    var statisticsData = statistics.Where(s =>
+    new DateTime(currentYear, s.Month, 1) >= new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1) &&
+    new DateTime(currentYear, s.Month, 1) <= new DateTime(currentYear, currentMonth, 1)
+).ToList();
                     // Xử lý dữ liệu cho biểu đồ
-                    var months = statistics.Select(s => s.Month).Distinct().OrderBy(m => m).ToList();
-
+                    var months = Enumerable.Range(0, 6)
+                        .Select(i => currentDate.AddMonths(-i))
+                        .OrderBy(d => d)
+                        .Select(d => d.Month)
+                        .ToList();
                     // Chuẩn bị dữ liệu cho từng danh mục
-                    var category1Data = GetCategoryData(statistics, 1, months);
+                    var category1Data = GetCategoryData(statisticsData, 1, months);
                     var category8Data = GetCategoryData(statistics, 8, months);
                     var category11Data = GetCategoryData(statistics, 11, months);
+                    var labels = months.Select(m => $"Tháng {m}").ToList();
+
+                    ViewBag.Labels = labels;
+
 
                     // Truyền dữ liệu thống kê qua ViewBag
                     ViewBag.Labels = months.Select(m => $"Tháng {m}").ToList();
@@ -109,9 +122,11 @@ namespace TrangQuanLy.Controllers
         }
         private List<int> GetCategoryData(List<CategorySalesStatistics> statistics, int categoryId, List<int> months)
         {
-            return months.Select(month =>
-                statistics.FirstOrDefault(s => s.DanhMucId == categoryId && s.Month == month)?.TotalQuantitySold ?? 0
-            ).ToList();
+            return months.Select(month => {
+                var statForMonth = statistics.FirstOrDefault(s =>
+                    s.Month == month && s.DanhMucId == categoryId);
+                return statForMonth?.TotalQuantitySold ?? 0;
+            }).ToList();
         }
 
         [Authorize]
@@ -180,7 +195,7 @@ namespace TrangQuanLy.Controllers
             }
             if (query != null)
             {
-                searchResult = HoaDon.Where(h => h.HoTen.Contains(query) ).ToList();
+                searchResult = HoaDon.Where(h => h.HoTen.Contains(query)).ToList();
                 return View(searchResult);
             }
             if (query == null)

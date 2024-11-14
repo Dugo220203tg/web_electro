@@ -4,6 +4,15 @@
     color: #6C7293;
 }
 */
+.btn-add-image{
+    margin-top: -55px;
+}
+.btn-account-status {
+    width: 130px; /* Chọn chiều rộng đủ để chứa cả hai văn bản */
+}
+.btn-comment-status{
+    width:160px;
+}
 .container-fluid {
     padding: 20px;
 }
@@ -48,11 +57,12 @@
 /* Image input styles */
 .image-input-group {
     margin-bottom: 1rem;
-    width:250px;
-    height:250px
+    width:240px;
+    height:340px
 }
 
 .image-preview-item {
+    background-image: url(~/Hinh/default.jpg);
     background-color: #2A2D3E;
     border: 1px solid #6C7293;
     border-radius: 4px;
@@ -120,7 +130,7 @@
         background-color: #c01212;
     }
 .submit-button {
-    margin-top: auto; /* Đẩy nút xuống cuối */
+    
 }
 form {
     display: flex;

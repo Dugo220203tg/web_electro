@@ -21,14 +21,15 @@
             <td style="color: white;">
                 @Html.DisplayFor(modelItem => item.NoiDung)
             </td>
-            <td style="color: white;">
+            <td id="status-text-@item.MaDg" style="color: white;">
                 @Html.DisplayFor(modelItem => item.TenTrangThai)
             </td>
             <td style="display:flex;align-items: center; color:white">
-                <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaDg })">
-                    <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
-                </form>
-                |
+                <input type="button"
+                       id="status-button-@item.MaDg"
+                       class="btn btn-outline-info m-2 btn-comment-status"
+                       value="@(item.TrangThai == 1 ? "Ẩn đánh giá" : "Hiển thị đánh giá")"
+                       onclick="toggleAccountStatus('@item.MaDg', @(item.TrangThai))" />
                 <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
                     <input type="hidden" name="Maloai" value="@item.MaDg" />
                     <input type="submit" value="Delete" class="btn btn-outline-info m-2" />

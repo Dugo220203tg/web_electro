@@ -4,11 +4,12 @@
     --secondary: #191C24;
     --light: #6C7293;
     --dark: #000000;
+    --bs-white:#ffffff;
 }
 
 .back-to-top {
     position: fixed;
-    display: none;
+    --bs-white display: none;
     right: 45px;
     bottom: 45px;
     z-index: 99;
@@ -121,7 +122,7 @@
 /*** Navbar ***/
 .sidebar .navbar .navbar-nav .nav-link {
     padding: 7px 20px;
-    color: var(--light);
+    color: var(--bs-white);
     font-weight: 500;
     border-left: 3px solid var(--secondary);
     border-radius: 0 30px 30px 0;

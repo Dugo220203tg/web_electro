@@ -2,7 +2,7 @@
 @using TrangQuanLy.Helpers;
 @{
     ViewData["Title"] = "Home Page";
-   Layout = "_Footer-Header";
+    Layout = "_Footer-Header";
 }
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
@@ -47,7 +47,7 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
         <div class="col-sm-12 col-xl-6">
@@ -77,7 +77,7 @@
             <a href="">Show All</a>
         </div>
         <div class="table-responsive">
-            <table class="table text-start align-middle table-bordered table-hover mb-0">
+            <table class="table text-start align-middle table-bordered table-hover mb-0" id="myTable">
                 <thead>
                     <tr class="text-white">
                         <th scope="col">Mã hóa đơn</th>
@@ -144,5 +144,14 @@
     </div>
 </div>
 @section Scripts {
-       
+    <script type="module">
+        import { initializeSalesChart } from './js/myjs.js';
+
+        const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
+        const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
+        const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
+        const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
+
+        initializeSalesChart(labels, salesData1, salesData8, salesData11);
+    </script>
 }

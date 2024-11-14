@@ -26,11 +26,12 @@
     <!-- Customized Bootstrap Stylesheet -->
     <link href="@Url.Content("~/css/bootstrap.min.css")" rel="stylesheet">
 
+    <link rel="stylesheet" href="https://cdn.ckeditor.com/ckeditor5/43.3.1/ckeditor5.css">
+
     <!-- Template Stylesheet -->
     <link href="@Url.Content("~/css/style.css")" rel="stylesheet">
     <link href="@Url.Content("~/css/mycss.css")" rel="stylesheet">
-    <link href="//cdn.datatables.net/2.1.8/css/dataTables.dataTables.min.css" rel="stylesheet">
-
+    @* <link href="~/DataTable/datatables.min.css" rel="stylesheet"> *@
     <!-- SWEET ALERT-->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.min.css" rel="stylesheet">
 </head>
@@ -41,40 +42,41 @@
     <!-- Footer và các phần tử khác của trang web -->
     <!-- External Scripts -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/chart/chart.min.js"></script>
-    <script src="@Url.Content("~/lib/easing/easing.min.js")"></script>
-    <script src="@Url.Content("~/lib/waypoints/waypoints.min.js")"></script>
-    <script src="@Url.Content("~/lib/owlcarousel/owl.carousel.min.js")"></script>
-    <script src="@Url.Content("~/lib/tempusdominus/js/moment.min.js")"></script>
-    <script src="@Url.Content("~/lib/tempusdominus/js/moment-timezone.min.js")"></script>
-    <script src="@Url.Content("~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js")"></script>
+    <script src="~/lib/easing/easing.min.js"></script>
+    <script src="~/lib/waypoints/waypoints.min.js"></script>
+    <script src="~/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="~/lib/tempusdominus/js/moment.min.js"></script>
+    <script src="~/lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="~/js/main.js"></script>
-    @*  <script src="@Url.Content("~/js/myjs.js")"></script> *@
 
     <!-- cheditor cho phần mô tả sản phẩm -->
+    @*     <script src="~/ckeditor/ckeditor.js"></script>*@
     <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            // Khởi tạo CKEditor
+            // Initialize CKEditor
             var editor = CKEDITOR.replace('MoTa');
 
-            // Xử lý sự kiện submit form
+            // Handle form submission
             document.querySelector('form').addEventListener('submit', function (e) {
-                // Cập nhật nội dung từ CKEditor vào textarea trước khi gửi form
-                editor.updateElement();
+                // Get the data from CKEditor
+                var mota = editor.getData();
+                // Set it in the textarea (sync CKEditor with textarea)
+                document.querySelector('[name="MoTa"]').value = mota;
             });
         });
     </script>
     <!-- --- -->
-
     <!-- DataTable JS -->
-    <script src="//cdn.datatables.net/2.1.8/js/dataTables.min.js"></script>
+    @*    <script src="~/DataTable/datatables.min.js"></script>
     <script>
-        let table = new DataTable('#myTable');
-    </script>
+    let table = new DataTable('#myTable');
+    </script> *@
     <!-- --- -->
-
     <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.all.min.js"></script>
     <script>
@@ -98,144 +100,44 @@
         });
     </script>
     <!-- --- -->
-
     <!-- Section for additional scripts -->
     @await RenderSectionAsync("Scripts", required: false)
-
-    <!-- Cập nhật trạng thái hóa đơn nhanh -->
+    <script type="module" src="~/js/myjs.js"></script>
     <script>
-        function attachEventListeners() {
-            console.log('Attempting to attach event listeners');
+        function toggleAccountStatus(maDg, currentStatus) {
+            const newStatus = currentStatus === 1 ? 0 : 1;
+            const button = document.getElementById(`status-button-${maDg}`);
+            const statusText = document.getElementById(`status-text-${maDg}`);
 
-            // Select all dropdowns that start with 'selectTrangThai-'
-            var statusSelects = document.querySelectorAll('select[id^="selectTrangThai-"]');
-            console.log('Found ' + statusSelects.length + ' select elements');
+            $.ajax({
+                type: "POST",
+                url: 'https://localhost:7109/api/DanhGiaSp/UpdateTrangThai',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ MaDg: maDg, TrangThai: newStatus }),
+                success: function (response) {
+                    alert(response.message);
 
-            // Loop through each select element and attach the 'change' event listener
-            statusSelects.forEach(function (select) {
-                console.log('Attaching listener to', select.id);
+                    // Update button text and status after toggling
+                    button.value = newStatus === 1 ? "Ẩn đánh giá" : "Hiển thị đánh giá";
+                    button.setAttribute("onclick", `toggleAccountStatus('${maDg}', ${newStatus})`);
 
-                select.addEventListener('change', function () {
-                    console.log('Change event triggered for', this.id);
-
-                    // Extract the order ID (maHD) from the select element's ID
-                    var maHD = this.id.split('-')[1];
-                    confirmChangeTrangThai(maHD, this);
-                });
-            });
-        }
-
-        // Function to handle the confirmation and AJAX request for changing status
-        function confirmChangeTrangThai(maHD, selectElement) {
-            console.log('confirmChangeTrangThai called for order:', maHD);
-
-            // Get the newly selected status value
-            var newMaTrangThai = selectElement.value;
-
-            // Get the original status value (in case we need to revert)
-            var originalValue = selectElement.getAttribute('data-original-value');
-
-            // Confirm with the user before proceeding
-            if (confirm("Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng này không?")) {
-                console.log('User confirmed status change. Sending AJAX request...');
-
-                // Make the AJAX POST request
-                $.ajax({
-                    url: 'https://localhost:7109/api/HoaDon/UpdateTrangThai',  // Correct API endpoint
-                    type: 'POST',
-                    data: JSON.stringify({
-                        maHD: maHD,                // Pass the order ID (maHD)
-                        maTrangThai: newMaTrangThai // Pass the new status value (maTrangThai)
-                    }),
-                    contentType: 'application/json',
-                    success: function (response) {
-                        console.log('AJAX request successful. Status updated.');
-                        alert('Cập nhật trạng thái thành công!');
-
-                        // Update the original value to the new value
-                        selectElement.setAttribute('data-original-value', newMaTrangThai);
-                    },
-                    error: function (xhr) {
-                        console.error('AJAX request failed:', xhr.statusText);
-
-                        // Show error and revert the select element to the original value
-                        alert('Cập nhật trạng thái thất bại: ' + xhr.responseText);
-                        selectElement.value = originalValue;
-                    }
-                });
-            } else {
-                console.log('User cancelled status change. Reverting select value.');
-
-                // If the user cancels, revert to the original status value
-                selectElement.value = originalValue;
-            }
-        }
-
-        // Call the function to attach event listeners when the page loads
-        document.addEventListener('DOMContentLoaded', attachEventListeners);
-
-    </script>
-    <!-- --- -->
-
-    <!-- Biểu đồ admin -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var ctx = document.getElementById('worldwide-sales').getContext('2d');
-            var myChart = new Chart(ctx, {
-                type: "bar",
-                data: {
-                    labels: @Html.Raw(Json.Serialize(ViewBag.Labels)),
-                    datasets: [
-                        {
-                            label: 'Linh kiện',
-                            data: @Html.Raw(Json.Serialize(ViewBag.SalesData1)),
-                            backgroundColor: "rgba(235, 22, 22, .7)"
-                        },
-                        {
-                            label: 'Màn hình',
-                            data: @Html.Raw(Json.Serialize(ViewBag.SalesData8)),
-                            backgroundColor: "rgba(22, 160, 133, .7)"
-                        },
-                        {
-                            label: 'Laptop',
-                            data: @Html.Raw(Json.Serialize(ViewBag.SalesData11)),
-                            backgroundColor: "rgba(52, 152, 219, .7)"
-                        }
-                    ]
+                    // Update the status text to reflect the new state
+                    statusText.textContent = newStatus === 1 ? "Hiển Thị" : "Đã Ẩn";
                 },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            min: 0,
-                            max: 100,
-                            ticks: {
-                                stepSize: 10 // Mỗi bước là 10 đơn vị
-                            },
-                            title: {
-                                display: true,
-                                text: 'Số lượng bán ra'
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return context.dataset.label + ': ' + context.parsed.y + ' sản phẩm';
-                                }
-                            }
-                        }
-                    }
+                error: function (xhr) {
+                    alert("Có lỗi xảy ra: " + xhr.responseText);
                 }
             });
+        }
+
+    </script>
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#myTable').DataTable();
+
         });
     </script>
-    <!-- --- -->
 </body>
 </html>
