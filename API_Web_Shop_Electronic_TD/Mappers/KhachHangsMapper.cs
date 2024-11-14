@@ -16,7 +16,7 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 			{
 				UserName = Model.MaKh,
 				Password = Model.MatKhau,
-				Vaitro = 0,
+				Vaitro = Model.VaiTro,
 				Email = Model.Email,
 				RandomKey = Model.RandomKey,
 				HoTen = Model.HoTen,

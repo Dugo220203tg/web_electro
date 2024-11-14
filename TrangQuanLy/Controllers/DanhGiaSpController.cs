@@ -46,36 +46,50 @@ namespace TrangQuanLy.Controllers
             return View(paginatedList);
         }
         [HttpGet]
-        public async Task<IActionResult> Search(string? query)
+        public async Task<IActionResult> Search(string? query, int? page, int? pagesize)
         {
-            // Initialize HangHoaVM list to store search results
-            List<DanhGiaSpMD> searchResult = new List<DanhGiaSpMD>();
+            page ??= 1;
+            pagesize ??= 5;
 
-            // Send a request to the API to get all HangHoa entities
-            List<DanhGiaSpMD> DanhGiaSp = new List<DanhGiaSpMD>();
-            HttpResponseMessage response =  _client.GetAsync(_client.BaseAddress + "/DanhGiaSp/GetAll").Result;
+            List<DanhGiaSpMD> searchResult = new List<DanhGiaSpMD>();
+            HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/DanhGiaSp/GetAll").Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                DanhGiaSp = JsonConvert.DeserializeObject<List<DanhGiaSpMD>>(data);
+                List<DanhGiaSpMD> DanhGiaSp = JsonConvert.DeserializeObject<List<DanhGiaSpMD>>(data);
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    searchResult = DanhGiaSp.Where(h =>
+                        MyUtil.RemoveDiacritics(h.TenHangHoa).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.MaKH).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.NoiDung).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0
+                    ).ToList();
+
+                }
+                else
+                {
+                    searchResult = DanhGiaSp;
+                }
             }
             else
             {
                 return View("Error");
             }
-            if (query != null)
-            {
-                searchResult = DanhGiaSp.Where(h => MyUtil.RemoveDiacritics(h.TenHangHoa)
-                    .IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0).ToList();
-                return View(searchResult);
-            }
-            if (query == null)
-            {
-                return View(DanhGiaSp);
-            }
-            return View();
+
+            // Tạo danh sách phân trang từ searchResult
+            var paginatedList = PaginatedList<DanhGiaSpMD>.CreateAsync(searchResult.AsQueryable(), page.Value, pagesize.Value);
+
+            // Gửi thông tin phân trang đến View
+            ViewBag.Page = page;
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.PageSize = pagesize;
+            ViewBag.Query = query;  // Truyền từ khóa tìm kiếm để giữ nguyên khi phân trang
+
+            return View(paginatedList);
         }
+
         [HttpGet]
         public IActionResult Create()
         {

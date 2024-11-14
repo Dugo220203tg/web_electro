@@ -20,27 +20,25 @@
         <table class="table" id="myTable">
             <thead>
                 <tr class="text-white">
-                    <th scope="col">UserName</th>
-                    <th scope="col">Password</th>
-                    <th scope="col">Họ tên</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Số điện thoại</th>
-                    <th scope="col">Địa chỉ</th>
-                    <th scope="col">Hiệu lực</th>
-                    <th scope="col">Chức năng</th>
+                    <th scope="col" style="color: white; text-align:left;">UserName</th>
+                    <th scope="col" style="color: white; text-align:left;">Họ tên</th>
+                    <th scope="col" style="color: white; text-align:left;">Email</th>
+                    <th scope="col" style="color: white; text-align:left;">Số điện thoại</th>
+                    <th scope="col" style="color: white; text-align:left;">Địa chỉ</th>
+                    <th scope="col" style="color: white; text-align:left;">Hiệu lực</th>
+                    <th scope="col" style="color: white; text-align:left;">Chức năng</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach (var item in Model)
                 {
                     <tr>
-                        <td style="color: white;">@Html.DisplayFor(modelItem => item.UserName)</td>
-                        <td style="color: white;">@Html.DisplayFor(modelItem => item.Password)</td>
-                        <td style="color: white;">@Html.DisplayFor(modelItem => item.Hoten)</td>
-                        <td style="color: white;">@Html.DisplayFor(modelItem => item.Email)</td>
-                        <td style="color: white;">@Html.DisplayFor(modelItem => item.DienThoai)</td>
-                        <td style="color: white;">@Html.DisplayFor(modelItem => item.DiaChi)</td>
-                        <td style="color: white;">
+                        <td style="color: white; text-align:left;">@Html.DisplayFor(modelItem => item.UserName)</td>
+                        <td style="color: white; text-align:left;">@Html.DisplayFor(modelItem => item.Hoten)</td>
+                        <td style="color: white; text-align:left;">@Html.DisplayFor(modelItem => item.Email)</td>
+                        <td style="color: white; text-align:left;">@Html.DisplayFor(modelItem => item.DienThoai)</td>
+                        <td style="color: white; text-align:left;">@Html.DisplayFor(modelItem => item.DiaChi)</td>
+                        <td style="color: white; text-align:left;" id="status-text-@item.UserName">
                             @if (item.HieuLuc == true)
                             {
                                 <span>Đang hoạt động</span>
@@ -51,10 +49,11 @@
                             }
                         </td>
                         <td style="display:flex;align-items: center; color:white">
-                            <form id="delete-form" style="margin-right:5px" method="post" asp-action="Edit">
-                                <input type="hidden" name="Username" value="@item.UserName" />
-                                <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
-                            </form>
+                            <input type="button"
+                                   id="status-button-@item.UserName"
+                                   class="btn btn-outline-info m-2 btn-account-status"
+                                   value="@(item.HieuLuc ? "Khóa tài khoản" : "Mở tài khoản")"
+                                   onclick="toggleAccountStatus('@item.UserName', @(item.HieuLuc.ToString().ToLower()))" />
                             <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
                                 <input type="hidden" name="Username" value="@item.UserName" />
                                 <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
@@ -62,8 +61,9 @@
                         </td>
                     </tr>
                 }
-                <!-- Pagination Controls -->
             </tbody>
+
+
         </table>
         <div style="text-align:center; margin-top:20px;">
             <ul class="pagination" style="display: inline-flex;">

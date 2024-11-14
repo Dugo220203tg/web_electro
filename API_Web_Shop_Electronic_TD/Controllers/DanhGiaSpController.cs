@@ -163,6 +163,28 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
+		[HttpPost]
+		public IActionResult UpdateTrangThai([FromBody] UpdateTrangThaiDanhGiaSpVM model)
+		{
+			try
+			{
+				var danhGia = db.DanhGiaSps.Find(model.MaDg);
+				if (danhGia != null)
+				{
+					// Update the status based on the provided value
+					danhGia.TrangThai = model.TrangThai;
+					db.SaveChanges();
+
+					var message = model.TrangThai == 1 ? "Đã hiển thị đánh giá" : "Đã ẩn đánh giá";
+					return Ok(new { message });
+				}
+				return NotFound(new { message = "Lỗi chưa xác định." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = ex.Message });
+			}
+		}
 		[HttpDelete]
 		[Route("{MaDg:int}")]
 		public async Task<IActionResult> Delete([FromRoute] int MaDg)

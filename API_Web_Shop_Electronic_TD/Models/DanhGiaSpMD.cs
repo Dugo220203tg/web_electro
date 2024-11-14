@@ -26,4 +26,10 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public int MaHH { get; set; }
 		public int TrangThai { get; set; }
 	}
+	public class UpdateTrangThaiDanhGiaSpVM
+	{
+		public int MaDg { get; set; }
+		public int TrangThai { get; set; }
+
+	}
 }
