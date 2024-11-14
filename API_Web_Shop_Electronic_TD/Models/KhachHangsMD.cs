@@ -20,6 +20,9 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public string DiaChi { get; set; }
 		public string DienThoai { get; set; }
 		public string RandomKey { get; set; }
+		public string HoTen { get; set; }
+		public bool HieuLuc {  get; set; }
+
 
 	}
 	public class DangNhapMD
@@ -99,5 +102,10 @@ namespace API_Web_Shop_Electronic_TD.Models
 		[Required(ErrorMessage = "Mật khẩu mới là bắt buộc")]
 		[MinLength(6, ErrorMessage = "Mật khẩu mới phải có ít nhất 6 ký tự")]
 		public string NewPassword { get; set; }
+	}
+	public class UpdateHieuLucVMD
+	{
+		public string UserName { get; set; }
+		public bool HieuLuc { get; set; }
 	}
 }

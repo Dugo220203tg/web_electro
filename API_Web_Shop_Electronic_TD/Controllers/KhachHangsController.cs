@@ -20,13 +20,13 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 	[Route("api/[controller]/[action]")]
 	[ApiController]
 	public class KhachHangsController : Controller
-    {
+	{
 		private readonly IKhachHangRepository KhachHangsRepository;
 		private readonly Hshop2023Context db;
 
 
-		public KhachHangsController( IKhachHangRepository KhachHangsRepository, Hshop2023Context db)
-        {
+		public KhachHangsController(IKhachHangRepository KhachHangsRepository, Hshop2023Context db)
+		{
 			this.KhachHangsRepository = KhachHangsRepository;
 			this.db = db;
 		}
@@ -85,7 +85,8 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			try
 			{
 				var khachHangsMD = await KhachHangsRepository.GetAllAsync();
-				var model = khachHangsMD.Select(s => s.ToKhachHangDo()).ToList();
+				var khachhangs = khachHangsMD.Where(s => s.VaiTro == 0);
+				var model = khachhangs.Select(k => k.ToKhachHangDo()).ToList();
 
 				return Ok(model);
 			}
@@ -95,7 +96,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
-		
+
 		[HttpGet("{MaKh}")]
 		public async Task<IActionResult> GetById([FromRoute] string MaKh)
 		{
@@ -187,6 +188,36 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				return StatusCode(500, new { message = "Đã xảy ra lỗi trong quá trình xử lý", error = ex.Message });
 			}
 		}
+
+		[HttpPost]
+		public IActionResult UpdateTrangThai([FromBody] UpdateHieuLucVMD model)
+		{
+			try
+			{
+				var khachhangs = db.KhachHangs.Find(model.UserName);
+				if (khachhangs != null)
+				{
+					if (model.HieuLuc == false)
+					{
+						khachhangs.HieuLuc = false;
+						db.SaveChanges();
+						return Ok(new { message = "Đã khóa sử dụng tài khoản !" });
+					}
+					else if (model.HieuLuc == true)
+					{
+						khachhangs.HieuLuc = true;
+						db.SaveChanges();
+						return Ok(new { message = "Đã mở khóa tài khoản !" });
+					}
+				}
+				return NotFound(new { message = "Lỗi chưa xác định." });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, ex.Message);
+			}
+		}
+
 		[HttpDelete]
 		[Route("{MaKh}")]
 		public async Task<IActionResult> Delete([FromRoute] string MaKh)

@@ -183,6 +183,7 @@
     <script src="~/js/nouislider.min.js"></script>
     <script src="~/js/jquery.zoom.min.js"></script>
     <script src="~/js/main.js"></script>
+    <script src="~/js/12112024.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- SWEET ALERT -->
@@ -241,9 +242,6 @@
             });
         });
     </script>
-
-
-    <script src="~/js/12112024js"></script>
     @RenderSection("Scripts", required: false)
     <script type="text/javascript">
         function confirmCancelOrder(orderId, btn) {
@@ -396,7 +394,6 @@
     <script>
         function loadReviewPage(maHH, page) {
             if (!maHH || !page) return;
-
             $('#reviews-content').fadeOut(200, function () {
                 $.ajax({
                     url: `/Product/LoadReviews`,

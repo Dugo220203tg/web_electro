@@ -40,7 +40,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		}
 
 
-
 		public async Task<DanhGiaSp?> DeleteAsync(int MaDg)
 		{
 			var Model = await db.DanhGiaSps.FirstOrDefaultAsync(x => x.MaDg == MaDg);

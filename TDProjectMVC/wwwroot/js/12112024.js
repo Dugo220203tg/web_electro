@@ -144,76 +144,6 @@ if (loaiParam) {
         activeLi.classList.add("active");
     }
 }
-
-//-----WISH-LIST-----
-// Function to add item to wishlist
-function AddToWishList(maHH) {
-    $.ajax({
-        url: '/WishList/AddToWishList',
-        type: 'POST',
-        data: { maHH: maHH },
-        success: function (response) {
-            if (response.success) {
-                // Update wishlist count directly with the returned count
-                $('.qty_WishList').text(response.count);
-                // Update wishlist content
-                updateWishlistContent();
-                // Show success message
-                toastr.success(response.message);
-            } else {
-                toastr.warning(response.message);
-            }
-        },
-        error: function (xhr) {
-            toastr.error(xhr.responseJSON?.message || 'Đã xảy ra lỗi, vui lòng thử lại sau');
-        }
-    });
-}
-
-// Function to remove item from wishlist
-function RemoveWishList(maYT, element) {
-    $.ajax({
-        url: '/WishList/RemoveWishList',
-        type: 'POST',
-        data: { id: maYT },
-        success: function (response) {
-            if (response.success) {
-                // Remove the product widget from DOM with animation
-                $(element).closest('.product-widget').fadeOut(300, function () {
-                    $(this).remove();
-                });
-                // Update wishlist count directly with the returned count
-                $('.qty_WishList').text(response.count);
-                toastr.success(response.message);
-            } else {
-                toastr.error(response.message);
-            }
-        },
-        error: function (xhr) {
-            toastr.error(xhr.responseJSON?.message || 'Đã xảy ra lỗi, vui lòng thử lại sau');
-        }
-    });
-}
-
-// Function to update wishlist content
-function updateWishlistContent() {
-    $.ajax({
-        url: '/WishList/GetWishListContent',
-        type: 'GET',
-        success: function (response) {
-            $('.wish-list').html(response);
-        },
-        error: function (xhr) {
-            console.error('Error updating wishlist content:', xhr);
-        }
-    });
-}
-
-// Initialize wishlist when page loads
-$(document).ready(function () {
-    updateWishlistContent();
-});
-
 // Pagination link click handler
 $(".page-link").click(function (e) {
     e.preventDefault();
@@ -240,3 +170,146 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+//---------------------------------------------Your Cart-----------------------------------------------
+
+
+
+//---------------------------------------------WISH-LIST-----------------------------------------------
+// Function to add item to wishlist
+function addToWishlist(id) {
+    $.ajax({
+        url: "/WishList/AddToWishList",
+        type: "POST",
+        data: { MaHH: id },
+        success: function (result) {
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Thành công",
+                    text: result.message,
+                    showConfirmButton: false,
+                    timer: 1500,
+                });
+                updateWishList(); // Update the wishlist display
+                updateWishListCount(); // Update the wishlist count
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi",
+                    text: result.message,
+                });
+            }
+        },
+        error: function () {
+            Swal.fire({
+                icon: "error",
+                title: "Lỗi",
+                text: "Đã xảy ra lỗi khi thêm sản phẩm vào danh sách yêu thích",
+            });
+        },
+    });
+}
+
+// Function to remove an item from the wishlist
+function RemoveWishList(id, element) {
+    $.ajax({
+        url: "/WishList/RemoveWishList",
+        type: "POST",
+        data: { id: id },
+        success: function (result) {
+            if (result.success) {
+                Swal.fire({
+                    icon: "success",
+                    title: "Xóa thành công",
+                    text: "Đã xóa sản phẩm khỏi danh sách yêu thích",
+                    showConfirmButton: false,
+                    timer: 1000,
+                }).then(() => {
+                    $(element).closest(".product-widget").remove();
+                    updateWishList(); // Update the wishlist display
+                    updateWishListCount(); // Update the wishlist count
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Lỗi",
+                    text: result.message,
+                });
+            }
+        },
+        error: function (xhr) {
+            let errorMessage = "Đã xảy ra lỗi khi xóa sản phẩm khỏi danh sách yêu thích";
+            if (xhr.status === 409) {
+                errorMessage = "Sản phẩm đã bị xóa hoặc thay đổi trước đó.";
+            }
+            Swal.fire({
+                icon: "error",
+                title: "Lỗi",
+                text: errorMessage,
+            });
+        },
+    });
+}
+
+// Function to update the wishlist count
+function updateWishListCount() {
+    $.ajax({
+        url: "/WishList/GetWishListCount",
+        type: "GET",
+        success: function (data) {
+            $('.qty_WishList').text(data.count); // Update count in the UI
+        },
+        error: function () {
+            console.log("Error updating wishlist count");
+        }
+    });
+}
+function updateWishList() {
+    $.ajax({
+        url: "/WishList/Index",
+        type: "GET",
+        success: function (data) {
+            $('.wish-list').empty(); // Làm trống danh sách trước khi cập nhật
+            $.each(data, function (index, item) {
+                var productHtml = `
+                    <div class="product-widget">
+                        <div class="product-img" style="width:60px;height:60px">
+                            ${(() => {
+                        let firstImageUrl = '';
+                        if (item.hinh) {
+                            const imageUrls = item.hinh.split(',');
+                            if (imageUrls.length > 0) {
+                                firstImageUrl = imageUrls[0].trim();
+                            }
+                        }
+                        return firstImageUrl ?
+                            `<img src="/Hinh/Hinh/HangHoa/${item.maHH}/${firstImageUrl}" alt="${item.tenHH}" style="width:60px;height:60px">` :
+                            '';
+                    })()}
+                        </div>
+                        <div class="product-body">
+                            <h2 class="product-name" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">
+                                <a href="#">${item.tenHH}</a>
+                            </h2>
+                            <h4 class="product-price">$ ${item.donGia}</h4>
+                        </div>
+                        <button class="delete" data-product-id="${item.maYT}" onclick="RemoveWishList(${item.maYT}, this)">
+                            <i class="fa fa-close"></i>
+                        </button>
+                    </div>
+                `;
+                $('.wish-list').append(productHtml);
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log(error); // Log lỗi nếu không thể lấy danh sách yêu thích
+        }
+    });
+}
+
+// Initialize wishlist on document ready
+$(document).ready(function () {
+    updateWishList(); // Cập nhật danh sách yêu thích khi trang được tải
+});
+//---------------------------------------------WISH-LIST-----------------------------------------------
+

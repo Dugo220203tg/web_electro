@@ -17,7 +17,6 @@ namespace TDProjectMVC.ViewComponents
             // Lấy ID của người dùng hiện tại, bạn cần thay đổi dòng này tùy theo cách bạn lấy thông tin người dùng đã đăng nhập trong ứng dụng của mình
             //var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var userID = @User.Identity.Name;
-            // Lấy danh sách yêu thích của người dùng hiện tại
             var data = db.YeuThiches
                             .Where(yt => yt.MaKh == userID)
                             .Select(lo => new WishListVM
@@ -32,7 +31,7 @@ namespace TDProjectMVC.ViewComponents
                                 TenNCC = lo.MaHhNavigation.MaNccNavigation.TenCongTy,
                             })
                             .OrderBy(p => p.TenHH)
-                            .ToList(); // Thêm ToList() để thực thi truy vấn LINQ và lấy danh sách kết quả
+                            .ToList(); 
 
             return View("Index",data);
         }

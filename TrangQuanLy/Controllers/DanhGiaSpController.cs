@@ -29,7 +29,6 @@ namespace TrangQuanLy.Controllers
             {
                 pagesize = 5;
             }
-            ViewBag.PageSize = pagesize;
             List<DanhGiaSpMD> DanhGia = new List<DanhGiaSpMD>();
             HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/DanhGiaSp/GetAll").Result;
 
@@ -42,6 +41,7 @@ namespace TrangQuanLy.Controllers
             var paginatedList = PaginatedList<DanhGiaSpMD>.CreateAsync(DanhGia.AsQueryable(), page ?? 1, pagesize ?? 5);
             ViewBag.Page = page;
             ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.PageSize = pagesize;
 
             return View(paginatedList);
         }
@@ -157,7 +157,7 @@ namespace TrangQuanLy.Controllers
                 HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/DanhGiaSp/Delete/" + MaDg).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Employee Delete!";
+                    TempData["success"] = "Xóa thành công!";
                     return RedirectToAction("Index");
                 }
                 return View("Index", "DanhGiaSp");

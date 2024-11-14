@@ -28,7 +28,7 @@ namespace TDProjectMVC.Controllers
             _mapper = mapper;
             _mailSender = mailSender;
         }
-        #region ---Login---
+        #region ---Register---
         [HttpGet]
         public IActionResult DangKy()
         {
@@ -298,6 +298,7 @@ namespace TDProjectMVC.Controllers
                 // Chuyển hướng
                 if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                 {
+                    TempData["success"] = "Đăng nhập thành công!";
                     return Redirect(ReturnUrl);
                 }
                 return RedirectToAction("Index", "Home");
@@ -322,7 +323,6 @@ namespace TDProjectMVC.Controllers
         #endregion
 
         #region ---Xem Thông Tin --- Cập nhật thông tin --- Bình luận sản phẩm ---
-
         [Authorize]
         public IActionResult Profile()
         {
