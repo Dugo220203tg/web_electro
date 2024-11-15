@@ -105,6 +105,23 @@ namespace TrangQuanLy.Controllers
                     ViewBag.Statistics = statisticss;
 
                 }
+                var DataSellProduct = await _client.GetAsync(_client.BaseAddress + "/ChiTietHoaDon/DataSellProduct");
+
+                if (DataSellProduct.IsSuccessStatusCode)
+                {
+                    // Read and deserialize the response
+                    string datasell = await DataSellProduct.Content.ReadAsStringAsync();
+                    var statics = JsonConvert.DeserializeObject<List<DataSellProduct>>(datasell);
+
+                    // Pass data to ViewBag
+                    ViewBag.DataSellProduct = statics;
+                }
+                else
+                {
+                    // Handle error response or set default data
+                    ViewBag.DataSellProduct = new List<DataSellProduct>();
+                    ViewBag.ErrorMessage = "Unable to retrieve sales data.";
+                }
 
                 // Tạo phân trang
                 PaginatedList<HoaDonViewModel> paginatedList = PaginatedList<HoaDonViewModel>.CreateAsync(
@@ -120,6 +137,29 @@ namespace TrangQuanLy.Controllers
                 return View("Error");
             }
         }
+        public async Task<IActionResult> GetDataSellProduct()
+        {
+            // Make the API call to get data
+            var DataSellProduct = await _client.GetAsync(_client.BaseAddress + "/ChiTietHoaDon/DataSellProduct");
+            if (DataSellProduct.IsSuccessStatusCode)
+            {
+                // Read and deserialize the response
+                string datasell = await DataSellProduct.Content.ReadAsStringAsync();
+                var statics = JsonConvert.DeserializeObject<List<DataSellProduct>>(datasell);
+
+                // Pass data to ViewBag
+                ViewBag.DataSellProduct = statics;
+            }
+            else
+            {
+                // Handle error response or set default data
+                ViewBag.DataSellProduct = new List<DataSellProduct>();
+                ViewBag.ErrorMessage = "Unable to retrieve sales data.";
+            }
+
+            return View();
+        }
+
         private List<int> GetCategoryData(List<CategorySalesStatistics> statistics, int categoryId, List<int> months)
         {
             return months.Select(month => {

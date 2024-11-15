@@ -67,17 +67,17 @@ function initializeSalesChart(labels, salesData1, salesData8, salesData11) {
                 {
                     label: 'Linh kiện',
                     data: salesData1,
-                    backgroundColor: "rgba(235, 22, 22, .3)"
+                    backgroundColor: "rgba(235, 22, 22, .4)"
                 },
                 {
                     label: 'Màn hình',
                     data: salesData8,
-                    backgroundColor: "rgba(235, 22, 22, .5)"
+                    backgroundColor: "rgba(235, 22, 22, .6)"
                 },
                 {
                     label: 'Laptop',
                     data: salesData11,
-                    backgroundColor: "rgba(235, 22, 22, .7)"
+                    backgroundColor: "rgba(235, 22, 22, .8)"
                 }
             ]
         },

@@ -52,6 +52,7 @@
     <script src="~/lib/tempusdominus/js/moment-timezone.min.js"></script>
     <script src="~/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="~/js/main.js"></script>
+    <script type="module" src="~/js/myjs.js"></script>
 
     <!-- cheditor cho phần mô tả sản phẩm -->
     @*     <script src="~/ckeditor/ckeditor.js"></script>*@
@@ -102,9 +103,8 @@
     <!-- --- -->
     <!-- Section for additional scripts -->
     @await RenderSectionAsync("Scripts", required: false)
-    <script type="module" src="~/js/myjs.js"></script>
     <script>
-        function toggleAccountStatus(maDg, currentStatus) {
+        function toggleCommentStatus(maDg, currentStatus) {
             const newStatus = currentStatus === 1 ? 0 : 1;
             const button = document.getElementById(`status-button-${maDg}`);
             const statusText = document.getElementById(`status-text-${maDg}`);
@@ -119,7 +119,7 @@
 
                     // Update button text and status after toggling
                     button.value = newStatus === 1 ? "Ẩn đánh giá" : "Hiển thị đánh giá";
-                    button.setAttribute("onclick", `toggleAccountStatus('${maDg}', ${newStatus})`);
+                    button.setAttribute("onclick", `toggleCommentStatus('${maDg}', ${newStatus})`);
 
                     // Update the status text to reflect the new state
                     statusText.textContent = newStatus === 1 ? "Hiển Thị" : "Đã Ẩn";
@@ -132,11 +132,249 @@
 
     </script>
     <link rel="stylesheet" href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" />
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
     <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
     <script>
         $(document).ready(function () {
-            $('#myTable').DataTable();
+            $('#myTable').DataTable({
+                // Cấu hình ngôn ngữ tiếng Việt
+                language: {
+                    url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json',
+                },
+                // Tắt phân trang mặc định vì đã có phân trang từ server
+                paging: false,
+                // Cấu hình các tùy chọn khác
+                ordering: true,
+                searching: false,
+                info: false,
+                // Responsive
+                responsive: true,
+                // Tùy chỉnh style
+                autoWidth: false,
+                columnDefs: [
+                    {
+                        targets: -1, // cột cuối cùng (chức năng)
+                        orderable: false, // không cho phép sắp xếp
+                        searchable: false
+                    }
+                ],
+                // Tùy chỉnh độ dài của bảng
+                scrollY: '50vh',
+                scrollCollapse: true,
+            });
+        });
+    </script>
+    <script>
 
+        function toggleMode() {
+            const body = document.body;
+            const isDarkMode = body.classList.contains('dark-mode');
+
+            // Toggle classes
+            body.classList.toggle('dark-mode');
+            body.classList.toggle('light-mode');
+
+            // Save preference to localStorage
+            localStorage.setItem('theme', isDarkMode ? 'light' : 'dark');
+
+            // Update button icons
+            updateThemeIcons(!isDarkMode);
+        }
+
+        function updateThemeIcons(isDark) {
+            const lightIcon = document.querySelector('.icon-light');
+            const darkIcon = document.querySelector('.icon-dark');
+
+            if (isDark) {
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline-block';
+            } else {
+                lightIcon.style.display = 'inline-block';
+                darkIcon.style.display = 'none';
+            }
+        }
+
+        // Initialize theme on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const body = document.body;
+
+            if (savedTheme === 'dark') {
+                body.classList.add('dark-mode');
+                body.classList.remove('light-mode');
+            } else {
+                body.classList.add('light-mode');
+                body.classList.remove('dark-mode');
+            }
+
+            updateThemeIcons(savedTheme === 'dark');
+        });
+    </script>
+    <style>
+        /* Dark mode styles */
+        :root {
+            --bg-dark: #191C24;
+            --text-dark: #fff;
+            --sidebar-dark: #191C24;
+            --content-dark: #000000;
+            --bg-light: #fff;
+            --text-light: #191C24;
+            --sidebar-light: antiquewhite;
+            --content-light: #f5f7fd;
+        }
+
+        /* Dark mode */
+        .dark-mode .bg-secondary {
+            background-color: var(--bg-dark) !important;
+        }
+
+        .dark-mode .table {
+            color: var(--text-dark) !important;
+        }
+
+        .dark-mode .sidebar {
+            background-color: var(--sidebar-dark) !important;
+        }
+
+        .dark-mode .content {
+            background-color: var(--content-dark) !important;
+        }
+
+        .dark-mode .navbar {
+            background-color: var(--bg-dark) !important;
+        }
+
+        .dark-mode .dropdown-menu {
+            background-color: var(--bg-dark) !important;
+            color: var(--text-dark) !important;
+        }
+
+        /* Light mode */
+        .light-mode .bg-secondary {
+            background-color: var(--bg-light) !important;
+        }
+
+        .light-mode .table {
+            color: var(--text-light) !important;
+        }
+
+        .light-mode .sidebar {
+            background-color: var(--sidebar-light) !important;
+        }
+
+        .light-mode .content {
+            background-color: var(--content-light) !important;
+        }
+
+        .light-mode .navbar {
+            background-color: var(--bg-light) !important;
+        }
+
+        .light-mode .dropdown-menu {
+            background-color: var(--bg-light) !important;
+            color: var(--text-light) !important;
+        }
+
+    </style>
+    <script>
+        function toggleAccountStatus(username, currentStatus) {
+            currentStatus = (currentStatus === 'true' || currentStatus === true);
+
+            $.ajax({
+                url: `https://localhost:7109/api/KhachHangs/UpdateTrangThai`,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    UserName: username,
+                    HieuLuc: !currentStatus
+                }),
+                success: function (response) {
+                    const button = $("#status-button-" + username);
+                    const statusText = $("#status-text-" + username + " span");
+
+                    if (currentStatus) {
+                        button.val("Mở tài khoản");
+                        statusText.text("Không hoạt động");
+                    } else {
+                        button.val("Khóa tài khoản");
+                        statusText.text("Đang hoạt động");
+                    }
+
+                    button.attr("onclick", `toggleAccountStatus('${username}', ${!currentStatus})`);
+                    alert(response.message || "Cập nhật trạng thái thành công!");
+                },
+                error: function (xhr, status, error) {
+                    console.error("Error:", error);
+                    alert("Đã có lỗi xảy ra: " + (xhr.responseText || "Không thể cập nhật trạng thái"));
+                }
+            });
+        }
+    </script>
+    <script>
+        $(document).ready(function () {
+            $(".testimonial-carousel").owlCarousel({
+                items: 1, // Show only one product at a time
+                loop: true, // Enable looping
+                margin: 10,
+                nav: true, // Enable navigation buttons
+                dots: true, // Enable dots for pagination
+                navText: ["<div class='owl-prev'>‹</div>", "<div class='owl-next'>›</div>"]
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const items = document.querySelectorAll('.testimonial-item');
+            const dots = document.querySelectorAll('.owl-dot');
+            let currentIndex = 0;
+            const autoPlayDelay = 5000; // 5 seconds
+            let autoPlayInterval;
+
+            function showItem(index) {
+                // Remove all classes first
+                items.forEach(item => {
+                    item.classList.remove('active', 'prev', 'next');
+                });
+                dots.forEach(dot => dot.classList.remove('active'));
+
+                // Add appropriate classes
+                items[currentIndex].classList.remove('active');
+                items[currentIndex].classList.add('prev');
+
+                currentIndex = index;
+
+                items[currentIndex].classList.add('active');
+                dots[currentIndex].classList.add('active');
+
+                // Reset autoplay timer
+                resetAutoPlay();
+            }
+
+            function nextItem() {
+                const nextIndex = (currentIndex + 1) % items.length;
+                showItem(nextIndex);
+            }
+
+            function resetAutoPlay() {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = setInterval(nextItem, autoPlayDelay);
+            }
+
+            // Add click event to each dot
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showItem(index);
+                });
+            });
+
+            // Start autoplay
+            resetAutoPlay();
+
+            // Pause autoplay on hover
+            const carousel = document.querySelector('.owl-carousel');
+            carousel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+            carousel.addEventListener('mouseleave', resetAutoPlay);
         });
     </script>
 </body>

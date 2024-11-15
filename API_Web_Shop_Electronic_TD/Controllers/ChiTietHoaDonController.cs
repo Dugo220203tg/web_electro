@@ -35,7 +35,12 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			var statistics = await ChiTietHoaDonRepository.GetStatisticsAsync();
 			return Ok(statistics);
 		}
-
+		[HttpGet]
+		public async Task<IActionResult> DataSellProduct()
+		{
+			var statistics = await ChiTietHoaDonRepository.GetDataSellProduct();
+			return Ok(statistics);
+		}
 		[HttpGet("{MaCt}")]
 		public async Task<IActionResult> GetById([FromRoute] int MaCt)
 		{
@@ -177,5 +182,6 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			// Trả về phản hồi NoContent nếu xóa thành công
 			return NoContent();
 		}
+
 	}
 }

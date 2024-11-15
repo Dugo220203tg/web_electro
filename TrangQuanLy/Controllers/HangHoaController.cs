@@ -4,6 +4,9 @@ using System.Text;
 using TrangQuanLy.Models;
 using Microsoft.AspNetCore.Authorization;
 using TrangQuanLy.Helpers;
+using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Drawing.Printing;
+using Microsoft.CodeAnalysis.Elfie.Diagnostics;
 
 namespace TrangQuanLy.Controllers
 {
@@ -52,37 +55,54 @@ namespace TrangQuanLy.Controllers
         [HttpGet]
         [Authorize]
 
-        public async Task<IActionResult> Search(string? query)
+        public async Task<IActionResult> Search(string? query, int? page, int? pagesize)
         {
+            if (page == null)
+            {
+                page = 1;
+            }
+            if (pagesize == null)
+            {
+                pagesize = 9;
+            }
             // Initialize HangHoaVM list to store search results
             List<HangHoaVM> searchResult = new List<HangHoaVM>();
 
             // Send a request to the API to get all HangHoa entities
-            List<HangHoaVM> Hanghoa = new List<HangHoaVM>();
-            HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetAll").Result;
+            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/HangHoa/GetAll");
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
-                Hanghoa = JsonConvert.DeserializeObject<List<HangHoaVM>>(data);
+                List<HangHoaVM> Hanghoa = JsonConvert.DeserializeObject<List<HangHoaVM>>(data);
+
+                if (!string.IsNullOrEmpty(query))
+                {
+                    searchResult = Hanghoa.Where(h =>
+                    MyUtil.RemoveDiacritics(h.TenHH).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                MyUtil.RemoveDiacritics(h.TenLoai).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                MyUtil.RemoveDiacritics(h.Hinh).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                                MyUtil.RemoveDiacritics(h.MoTa).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0
+                            ).ToList();
+                }
+                else
+                {
+                    searchResult = Hanghoa;
+                }
             }
             else
             {
                 return View("Error");
             }
-            if(query != null)
-            {
-            searchResult = Hanghoa.Where(h => h.TenHH.Contains(query)).ToList();
-            return View(searchResult);
-            }
-            if(query == null)
-            {
-                return View(Hanghoa);
+            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(searchResult.AsQueryable(), page.Value, pagesize.Value);
+            // Pass the current page and page size as ViewBag for rendering pagination controls in the view
+            ViewBag.Page = page;
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.PageSize = pagesize;
+            ViewBag.Query = query;  // Truyền từ khóa tìm kiếm để giữ nguyên khi phân trang
 
-            }
-            return View();
+            return View(paginatedList);
         }
-
         [Authorize]
         [HttpGet]
         public IActionResult Create()
@@ -97,9 +117,9 @@ namespace TrangQuanLy.Controllers
             {
                 // Serialize the model
                 string data = JsonConvert.SerializeObject(model);
-               
+
                 System.Diagnostics.Debug.WriteLine("Serialized Data: " + data);
-                
+
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
 
                 // Post the data to the API
@@ -175,7 +195,7 @@ namespace TrangQuanLy.Controllers
         }
         [Authorize]
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm( int MaHH)
+        public IActionResult DeleteConfirm(int MaHH)
         {
             try
             {
@@ -185,7 +205,7 @@ namespace TrangQuanLy.Controllers
                     TempData["success"] = "Xóa thành công!";
                     return RedirectToAction("Index");
                 }
-                return View("Index","HangHoa");
+                return View("Index", "HangHoa");
             }
             catch (Exception ex)
             {

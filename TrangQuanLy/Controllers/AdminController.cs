@@ -173,6 +173,55 @@ namespace TrangQuanLy.Controllers
 
             return View(paginatedList);
         }
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> Search(string? query, int? page, int? pagesize)
+        {
+            // Set default values for pagination if not provided
+            page ??= 1;
+            pagesize ??= 5;
+
+            // Initialize list to store search results
+            List<AdminViewModel> searchResult = new List<AdminViewModel>();
+
+            // Send a request to the API to get all KhachHang entities
+            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/KhachHangs/GetAll");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                List<AdminViewModel> nguoidung = JsonConvert.DeserializeObject<List<AdminViewModel>>(data);
+
+                // If there's a search query, filter the results
+                if (!string.IsNullOrEmpty(query))
+                {
+                    searchResult = nguoidung.Where(h =>
+                        MyUtil.RemoveDiacritics(h.UserName).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.Hoten).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.DienThoai).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.Email).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0
+                    ).ToList();
+                }
+                else
+                {
+                    searchResult = nguoidung; // No query, so show all results
+                }
+            }
+            else
+            {
+                return View("Error"); // Handle API error
+            }
+            var paginatedList = PaginatedList<AdminViewModel>.CreateAsync(searchResult.AsQueryable(), page.Value, pagesize.Value);
+
+            // Pass the current page and page size as ViewBag for rendering pagination controls in the view
+            ViewBag.Page = page;
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.PageSize = pagesize;
+            ViewBag.Query = query;  // Truyền từ khóa tìm kiếm để giữ nguyên khi phân trang
+
+            return View(paginatedList);
+        }
+
         [Authorize]
         [HttpGet]
         public IActionResult Edit(string id)

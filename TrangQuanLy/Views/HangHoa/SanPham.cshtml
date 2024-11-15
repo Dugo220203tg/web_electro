@@ -1,15 +1,16 @@
 ﻿@model IEnumerable<TrangQuanLy.Models.HangHoaVM>
-
+<style>
+    .image-product img{
+        mix-blend-mode: brightness(0) invert(1);
+    }
+</style>
 @foreach (var item in Model)
 {
     <tr>
-        <td style="color: white;">
-            @Html.DisplayFor(modelItem => item.MaHH)
-        </td>
-        <td style="width:220px; word-wrap: break-word; color: white">
-            @Html.DisplayFor(modelItem => item.TenHH)
-        </td>
-        <td style="color: white;">
+
+        <td class="product-name image-product" style="width:220px; word-wrap: break-word; color: white;-webkit-line-clamp: 1;display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;">
             @{
                 string firstImageUrl = string.Empty;
                 if (!string.IsNullOrEmpty(item.Hinh))
@@ -27,18 +28,23 @@
             {
                 <img src="~/Hinh/default.jpg" alt="Default Image" style="width:80px;height:80px">
             }
-        </td>
-        <td style="color: white;">
+            @Html.DisplayFor(modelItem => item.TenHH)
             @Html.DisplayFor(modelItem => item.MaLoai)
         </td>
-        <td style="color: white;">
-            @Html.DisplayFor(modelItem => item.NgaySX)
+        <td >
+            @Html.DisplayFor(modelItem => item.MaHH)
         </td>
-        <td style="color: white;">
+        <td>
+            @Html.DisplayFor(modelItem => item.SoLuong)
+        </td>
+        <td >
+            @Html.DisplayFor(modelItem => item.MaLoai)
+        </td>
+        <td >
             @Html.DisplayFor(modelItem => item.MaNCC)
         </td>
-        <td style="color: white;">
-            @Html.DisplayFor(modelItem => item.DonGia)
+        <td >
+            @item.DonGia.ToString("#,##0 VNĐ")
         </td>
         <td style="">
             <div style="display: inline-grid; grid-template-columns: auto auto auto;">
