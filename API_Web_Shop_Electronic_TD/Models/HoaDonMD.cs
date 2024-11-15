@@ -100,5 +100,14 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public int MaHD { get; set; }
 		public int MaTrangThai { get; set; }
 	}
-	
+	public class DataSellProductVMD
+	{
+		public int MaHH { get; set; }
+		public int SoLuong { get; set; }
+		public string TenHangHoa { get; set; }
+		public string TenDanhMuc { get; set; }
+		public double DonGia { get; set; }
+		public int DiemDanhGia {  get; set; }
+		public string HinhAnh {  get; set; }
+	}
 }

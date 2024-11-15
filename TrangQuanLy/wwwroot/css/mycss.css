@@ -4,7 +4,32 @@
     color: #6C7293;
 }
 */
-.btn-add-image{
+.bg-secondary.dark-mode {
+    background-color: #191C24
+}
+.table.dark-mode{
+    color:#fff;
+}
+.sidebar.dark-mode {
+    background-color: #191C24;
+}
+.bg-secondary.light-mode {
+    background-color: #fff
+}
+.content.dark-mode {
+    background: #000000
+}
+
+.table.light-mode {
+    color: #191C24;
+}
+.sidebar.light-mode{
+    background-color:antiquewhite;
+}
+.content.light-mode{
+    background:#fff
+}
+.btn-add-image {
     margin-top: -55px;
 }
 .btn-account-status {
@@ -17,7 +42,12 @@
     padding: 20px;
 }
 
-
+.product-name {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    -webkit-line-clamp: 1;
+}
 /* Form layout */
 .form-content {
     display: flex;
@@ -147,4 +177,103 @@ form {
     display: block;
     margin-left: auto;
     margin-right: auto; /* Căn giữa theo chiều ngang */
+}
+
+
+/* Thiết lập chung cho dropdown item */
+.dropdown-item {
+    position: relative;
+    padding-right: 40px; /* Chừa không gian cho icon */
+}
+
+/* Ẩn icon sáng và tối khi không hover */
+.icon-light, .icon-dark {
+    display: none;
+    position: absolute;
+    right: 10px; /* Canh chỉnh icon ở góc phải */
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Khi hover vào .settings-item, hiển thị icon sáng và tối */
+.settings-item:hover .icon-light,
+.settings-item:hover .icon-dark {
+    display: inline;
+}
+
+/* Tùy chỉnh icon sáng và tối khác nhau */
+.icon-light {
+    color: #FFD700; /* Màu vàng cho icon sáng (mặt trời) */
+}
+.icon-dark {
+    color: #4B0082; /* Màu tối cho icon tối (mặt trăng) */
+}
+
+
+
+
+/*Phần hiển thị sản phẩm bán chạy home*/
+.owl-carousel {
+    display: block;
+}
+
+.testimonial-carousel {
+    position: relative;
+}
+
+.testimonial-item {
+    text-align: center;
+    padding: 20px;
+    display: none;
+}
+
+    .testimonial-item.active {
+        display: block;
+    }
+
+.owl-dots {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.owl-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    margin: 0 5px;
+    background: #ccc;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+    .owl-dot.active {
+        background: #000;
+    }
+
+.product-image {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin: 0 auto 1rem;
+    border-radius: 4px;
+}
+
+.product-name {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+}
+
+.product-price {
+    color: #2563eb;
+    margin-bottom: 0.5rem;
+}
+
+.product-rating {
+    color: white;
+    margin-bottom: 0.25rem;
+}
+
+.product-sold {
+    font-size: 0.875rem;
+    color: white;
 }

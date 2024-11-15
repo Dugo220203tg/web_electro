@@ -3,28 +3,28 @@
 @foreach (var item in Model)
 {
     <tr>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.MaHD)
         </td>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.MaKH)
         </td>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.HoTen)
         </td>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.DienThoai)
         </td>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.DiaChi)
         </td>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.NgayDat)
         </td>
-        <td style="color: white;">
+        <td>
             @Html.DisplayFor(modelItem => item.GhiChu)
         </td>
-        <td style="color: white;">
+        <td>
             <select asp-for="@item.MaTrangThai" class="form-select form-select-sm mb-3" aria-label=".form-select-sm example" data-original-value="@item.MaTrangThai" id="selectTrangThai-@item.MaHD">
                 @await Component.InvokeAsync("TrangThaiHd", new { maTrangThai = item.MaTrangThai })
             </select>

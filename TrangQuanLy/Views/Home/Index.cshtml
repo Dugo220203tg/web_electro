@@ -12,7 +12,7 @@
                 <div class="ms-3">
                     <p class="mb-2">Today Orders</p>
                     <h6 class="mb-0">
-                        <p>Số Đơn hàng hôm nay: @ViewBag.Statistics.ToDayOrders</p>
+                        Số Đơn hàng hôm nay: @ViewBag.Statistics.ToDayOrders
                     </h6>
                 </div>
             </div>
@@ -23,7 +23,7 @@
                 <div class="ms-3">
                     <p class="mb-2">Order not approved</p>
                     <h6 class="mb-0">
-                        <p>Đơn hàng chưa được duyệt: @ViewBag.Statistics.NotApprovedOrders</p>
+                        Đơn hàng chưa được duyệt: @ViewBag.Statistics.NotApprovedOrders
                     </h6>
                 </div>
             </div>
@@ -56,102 +56,204 @@
                     <h6 class="mb-0">Worldwide Sales</h6>
                     <a href="">Show All</a>
                 </div>
-                <canvas id="worldwide-sales" style="display: block; box-sizing: border-box; height: 360px; width: 721px;" width="721" height="360"></canvas>
+                <canvas id="worldwide-sales" style="display: block; box-sizing: border-box; height: 360px !important; width: 721px !important;" width="721" height="360"></canvas>
             </div>
         </div>
         <div class="col-sm-12 col-xl-6">
-            <div class="bg-secondary text-center rounded p-4">
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h6 class="mb-0">Salse &amp; Revenue</h6>
-                    <a href="">Show All</a>
+            <div class="bg-secondary rounded h-100 p-4">
+                <h6 class="mb-4">TOP SELL PRODUCT</h6>
+                <div class="owl-carousel testimonial-carousel">
+                    <div class="owl-stage-outer">
+                        <div class="owl-stage">
+                            @{
+                                var products = ViewBag.DataSellProduct as List<DataSellProduct>;
+                            }
+                            @if (products != null && products.Any())
+                            {
+                                @foreach (var product in products)
+                                {
+                                    <div class="testimonial-item @(products.IndexOf(product) == 0 ? "active" : "")">
+                                        @{
+                                            string firstImageUrl = string.Empty;
+                                            if (!string.IsNullOrEmpty(product.HinhAnh))
+                                            {
+                                                var imageUrls = product.HinhAnh.Split(',');
+                                                firstImageUrl = imageUrls.FirstOrDefault();
+                                            }
+                                        }
+                                        @if (!string.IsNullOrEmpty(firstImageUrl))
+                                        {
+                                            <img class="product-image" src="~/Hinh/Hinh/HangHoa/@product.MaHH/@firstImageUrl" alt="@product.TenHangHoa">
+                                        }
+                                        else
+                                        {
+                                            <img class="product-image" src="~/Hinh/default.jpg" alt="Default Image">
+                                        }
+                                        <h5 class="product-name">@product.TenHangHoa</h5>
+                                        <p class="product-price">@product.DonGia.ToString("#,##0 VNĐ")</p>
+                                        <p class="product-rating">Rating: @product.DiemDanhGia stars</p>
+                                        <small class="product-sold">@product.SoLuong units sold</small>
+                                    </div>
+                                }
+                                <div class="owl-dots">
+                                    @for (int i = 0; i < products.Count; i++)
+                                    {
+                                        <div class="owl-dot @(i == 0 ? "active" : "")" data-index="@i">
+                                            <span></span>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p>No sales data available.</p>
+                            }
+                        </div>
+                    </div>
                 </div>
-                <canvas id="salse-revenue" style="display: block; box-sizing: border-box; height: 360px; width: 721px;" width="721" height="360"></canvas>
             </div>
         </div>
     </div>
-</div>
-<div class="container-fluid pt-4 px-4">
-    <div class="bg-secondary text-center rounded p-4">
-        <div class="d-flex align-items-center justify-content-between mb-4">
-            <h6 class="mb-0">Recent Salse</h6>
-            <a href="">Show All</a>
-        </div>
-        <div class="table-responsive">
-            <table class="table text-start align-middle table-bordered table-hover mb-0" id="myTable">
-                <thead>
-                    <tr class="text-white">
-                        <th scope="col">Mã hóa đơn</th>
-                        <th scope="col">Mã Khách Hàng</th>
-                        <th scope="col">Họ Tên</th>
-                        <th scope="col">Số điện thoại</th>
-                        <th scope="col">Địa chỉ</th>
-                        <th scope="col">Ngày đặt hàng</th>
-                        <th scope="col">Ghi chú</th>
-                        <th scope="col">Mã trạng thái</th>
-                        <th scope="col">Chức năng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        @await Html.PartialAsync("HoaDon", Model)
+    <div class="container-fluid pt-4 px-4">
+        <div class="bg-secondary text-center rounded p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h6 class="mb-0">Recent Salse</h6>
+                <a href="">Show All</a>
+            </div>
+            <div class="table-responsive">
+                <table class="table text-start align-middle table-bordered table-hover mb-0" id="">
+                    <thead>
+                        <tr class="text-white">
+                            <th>Mã hóa đơn</th>
+                            <th>Mã Khách Hàng</th>
+                            <th>Họ Tên</th>
+                            <th>Số điện thoại</th>
+                            <th>Địa chỉ</th>
+                            <th>Ngày đặt hàng</th>
+                            <th>Ghi chú</th>
+                            <th>Mã trạng thái</th>
+                            <th>Chức năng</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @await Html.PartialAsync("HoaDon", Model)
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination Controls -->
+            <div style="text-align:center; margin-top:20px;">
+                <ul class="pagination" style="display: inline-flex;">
+                    @{
+                        int pageIndex = Model.PageIndex;
+                        int totalPages = Model.TotalPages;
+                        int pageSizeValue = ViewBag.PageSize;
+                        int startPage = ((pageIndex - 1) / 5) * 5 + 1;
+                        int endPage = Math.Min(startPage + 4, totalPages);
                     }
-                </tbody>
-            </table>
-        </div>
-        <!-- Pagination Controls -->
-        <div style="text-align:center; margin-top:20px;">
-            <ul class="pagination" style="display: inline-flex;">
-                @{
-                    int pageIndex = Model.PageIndex;
-                    int totalPages = Model.TotalPages;
-                    int pageSizeValue = ViewBag.PageSize;
-                    int startPage = ((pageIndex - 1) / 5) * 5 + 1;
-                    int endPage = Math.Min(startPage + 4, totalPages);
-                }
-                @if (startPage > 1)
-                {
-                    <li class="page_item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
-                    </li>
-                }
-                @if (pageIndex > 1)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
-                    </li>
-                }
-                @for (var i = startPage; i <= endPage; i++)
-                {
-                    <li class="page-item @(Model.PageIndex == i ? "active" : "")">
-                        <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
-                    </li>
-                }
-                @if (pageIndex < totalPages)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
-                    </li>
-                }
-                @if (endPage < totalPages)
-                {
-                    <li class="page-item">
-                        <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
-                    </li>
-                }
-            </ul>
+                    @if (startPage > 1)
+                    {
+                        <li class="page_item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
+                        </li>
+                    }
+                    @if (pageIndex > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
+                        </li>
+                    }
+                    @for (var i = startPage; i <= endPage; i++)
+                    {
+                        <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                            <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+                        </li>
+                    }
+                    @if (pageIndex < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
+                        </li>
+                    }
+                    @if (endPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
+                        </li>
+                    }
+                </ul>
+            </div>
         </div>
     </div>
-</div>
-@section Scripts {
-    <script type="module">
-        import { initializeSalesChart } from './js/myjs.js';
+    @section Scripts {
+        <script type="module">
+            import { initializeSalesChart } from './js/myjs.js';
 
-        const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
-        const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
-        const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
-        const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
+            const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
+            const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
+            const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
+            const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
 
-        initializeSalesChart(labels, salesData1, salesData8, salesData11);
-    </script>
-}
+            initializeSalesChart(labels, salesData1, salesData8, salesData11);
+        </script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const items = document.querySelectorAll('.testimonial-item');
+                const dots = document.querySelectorAll('.owl-dot');
+                let currentIndex = 0;
+                const autoPlayDelay = 5000; // 5 seconds
+                let autoPlayInterval;
+
+                function showItem(index) {
+                    // Remove all classes first
+                    items.forEach(item => {
+                        item.classList.remove('active', 'prev', 'next');
+                    });
+                    dots.forEach(dot => dot.classList.remove('active'));
+
+                    // Add appropriate classes
+                    items[currentIndex].classList.remove('active');
+                    items[currentIndex].classList.add('prev');
+
+                    currentIndex = index;
+
+                    items[currentIndex].classList.add('active');
+                    dots[currentIndex].classList.add('active');
+
+                    // Reset autoplay timer
+                    resetAutoPlay();
+                }
+
+                function nextItem() {
+                    const nextIndex = (currentIndex + 1) % items.length;
+                    showItem(nextIndex);
+                }
+
+                function resetAutoPlay() {
+                    clearInterval(autoPlayInterval);
+                    autoPlayInterval = setInterval(nextItem, autoPlayDelay);
+                }
+
+                // Add click event to each dot
+                dots.forEach(dot => {
+                    dot.addEventListener('click', function () {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        showItem(index);
+                    });
+                });
+
+                // Start autoplay
+                resetAutoPlay();
+
+                // Pause autoplay on hover
+                const carousel = document.querySelector('.owl-carousel');
+                carousel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+                carousel.addEventListener('mouseleave', resetAutoPlay);
+            });
+        </script>
+
+
+    }
+

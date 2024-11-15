@@ -18,6 +18,17 @@ namespace TrangQuanLy.Models
         public string MaNCC { get; set; }
         public double DonGia { get; set; }
         public double SoLanXem { get; set; }
+        public int SoLuong { get; set; }
+        public string TenLoai {  get; set; }
+        public string TrangThai
+        {
+            get
+            {
+                return SoLuong == 0 ? "Hết hàng" : "Còn hàng";
+            }
+        }
+
+
     }
     public class AllHangHoaVM
     {

@@ -102,14 +102,65 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				.ThenBy(stats => stats.Month)
 				.ToListAsync();
 		}
+		async Task<List<DataSellProductVMD>> ICtHoaDon.GetDataSellProduct()
+		{
+			// Step 1: Perform the initial query and grouping on the server
+			var groupedData = await db.ChiTietHds
+					.Include(ct => ct.MaHhNavigation)
+						.ThenInclude(h => h.MaLoaiNavigation)
+					.GroupBy(ct => new
+					{
+						CategoryId = ct.MaHhNavigation.MaLoaiNavigation.DanhMucId,
+						NameCategory = ct.MaHhNavigation.MaLoaiNavigation.DanhMuc.TenDanhMuc,
+						ProductId = ct.MaHhNavigation.MaHh,
+						ProductName = ct.MaHhNavigation.TenHh,
+						ProductPrice = ct.MaHhNavigation.DonGia,
+						DanhGia = ct.MaHhNavigation.DanhGiaSps.Any()
+							? (int)Math.Round(ct.MaHhNavigation.DanhGiaSps.Average(dg => dg.Sao ?? 0))
+							: 0,
+							HinhAnh = ct.MaHhNavigation.Hinh
+					})
+					.Select(group => new
+					{
+						group.Key.CategoryId,
+						group.Key.NameCategory,
+						group.Key.ProductId,
+						group.Key.ProductName,
+						group.Key.ProductPrice,
+						group.Key.DanhGia,
+						group.Key.HinhAnh,
+						TotalQuantitySold = group.Sum(ct => ct.SoLuong)
+					})
+					.ToListAsync();
 
+
+			// Step 2: Perform the second grouping and ordering in memory
+			var result = groupedData
+				.GroupBy(g => g.CategoryId)
+				.SelectMany(g => g
+					.OrderByDescending(p => p.TotalQuantitySold)
+					.Take(1)
+					.Select(p => new DataSellProductVMD
+					{
+						TenDanhMuc = p.NameCategory,
+						MaHH = p.ProductId,
+						TenHangHoa = p.ProductName,
+						SoLuong = p.TotalQuantitySold,
+						DonGia = (double)p.ProductPrice,
+						DiemDanhGia = p.DanhGia,
+						HinhAnh = p.HinhAnh
+					}))
+				.ToList();
+
+			return result;
+		}
 
 		async Task<ChiTietHd?> ICtHoaDon.UpdateAsync(int MaCt, PostChiTietHoaDonMD model)
 		{
 			try
 			{
 				var Model = await db.ChiTietHds.FirstOrDefaultAsync(x => x.MaCt == MaCt);
-				
+
 				if (Model == null)
 				{
 					throw new KeyNotFoundException($"Không tìm thấy chi tiết hóa đơn với mã {MaCt}");
