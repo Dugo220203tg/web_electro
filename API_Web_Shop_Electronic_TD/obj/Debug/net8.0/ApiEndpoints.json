@@ -1,0 +1,781 @@
+[
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "DataSellProduct",
+    "RelativePath": "api/ChiTietHoaDon/DataSellProduct",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "Delete",
+    "RelativePath": "api/ChiTietHoaDon/Delete/{MaLoai}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaCt",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "MaLoai",
+        "Type": "",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "GetAll",
+    "RelativePath": "api/ChiTietHoaDon/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "GetById",
+    "RelativePath": "api/ChiTietHoaDon/GetById/{MaCt}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaCt",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "Post",
+    "RelativePath": "api/ChiTietHoaDon/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.PostChiTietHoaDonMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "Statistics",
+    "RelativePath": "api/ChiTietHoaDon/Statistics",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
+    "Method": "Update",
+    "RelativePath": "api/ChiTietHoaDon/Update/{MaCt}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaCt",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.PostChiTietHoaDonMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
+    "Method": "Delete",
+    "RelativePath": "api/DanhGiaSp/Delete/{MaDg}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaDg",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
+    "Method": "GetAll",
+    "RelativePath": "api/DanhGiaSp/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
+    "Method": "GetById",
+    "RelativePath": "api/DanhGiaSp/GetById/{MaDg}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaDg",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
+    "Method": "Post",
+    "RelativePath": "api/DanhGiaSp/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CreateDanhGiaSpMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
+    "Method": "Update",
+    "RelativePath": "api/DanhGiaSp/Update/{MaDg}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaDg",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CreateDanhGiaSpMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
+    "Method": "UpdateTrangThai",
+    "RelativePath": "api/DanhGiaSp/UpdateTrangThai",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.UpdateTrangThaiDanhGiaSpVM",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhMucController",
+    "Method": "Delete",
+    "RelativePath": "api/DanhMuc/Delete/{MaDanhMuc}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaDanhMuc",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhMucController",
+    "Method": "GetAll",
+    "RelativePath": "api/DanhMuc/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhMucController",
+    "Method": "GetById",
+    "RelativePath": "api/DanhMuc/GetById/{MaDanhMuc}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaDanhMuc",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhMucController",
+    "Method": "Post",
+    "RelativePath": "api/DanhMuc/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.DanhMucMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhMucController",
+    "Method": "Update",
+    "RelativePath": "api/DanhMuc/Update/{MaDanhMuc}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaDanhMuc",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.DanhMucMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "Delete",
+    "RelativePath": "api/HangHoa/Delete/{Mahh}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Mahh",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "GetAll",
+    "RelativePath": "api/HangHoa/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "GetById",
+    "RelativePath": "api/HangHoa/GetById/{MaHH}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaHH",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "Post",
+    "RelativePath": "api/HangHoa/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CreateHangHoaMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "Put",
+    "RelativePath": "api/HangHoa/Put",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "Model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.HangHoaMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "Update",
+    "RelativePath": "api/HangHoa/Update/{MaHh}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaHh",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.UpdateHangHoaMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangSpController",
+    "Method": "Delete",
+    "RelativePath": "api/HangSp/Delete/{MaNcc}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaNcc",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangSpController",
+    "Method": "GetAll",
+    "RelativePath": "api/HangSp/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangSpController",
+    "Method": "GetById",
+    "RelativePath": "api/HangSp/GetById/{MaNcc}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaNcc",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangSpController",
+    "Method": "Post",
+    "RelativePath": "api/HangSp/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.HangSpMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangSpController",
+    "Method": "Update",
+    "RelativePath": "api/HangSp/Update/{MaNcc}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaNcc",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.HangSpMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HoaDonController",
+    "Method": "Delete",
+    "RelativePath": "api/HoaDon/Delete/{MaHd}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaHd",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HoaDonController",
+    "Method": "GetAll",
+    "RelativePath": "api/HoaDon/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HoaDonController",
+    "Method": "GetById",
+    "RelativePath": "api/HoaDon/GetById/{MaHd}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaHd",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HoaDonController",
+    "Method": "Post",
+    "RelativePath": "api/HoaDon/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.HoaDonMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HoaDonController",
+    "Method": "Update",
+    "RelativePath": "api/HoaDon/Update/{MaHd}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaHd",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.HoaDonMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HoaDonController",
+    "Method": "UpdateTrangThai",
+    "RelativePath": "api/HoaDon/UpdateTrangThai",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.HoaDonUpdateStatusModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "Delete",
+    "RelativePath": "api/KhachHangs/Delete/{MaKh}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaKh",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "GetAll",
+    "RelativePath": "api/KhachHangs/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "GetById",
+    "RelativePath": "api/KhachHangs/GetById/{MaKh}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaKh",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "Login",
+    "RelativePath": "api/KhachHangs/Login/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.LoginDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "Post",
+    "RelativePath": "api/KhachHangs/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.AdminDkMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "Update",
+    "RelativePath": "api/KhachHangs/Update/{MaKh}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaKh",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.UpdateKH",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "UpdatePassword",
+    "RelativePath": "api/KhachHangs/UpdatePassword/UpdatePassword",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.UpdatePasswordDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "UpdateTrangThai",
+    "RelativePath": "api/KhachHangs/UpdateTrangThai",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.UpdateHieuLucVMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.LoaiSpController",
+    "Method": "Delete",
+    "RelativePath": "api/LoaiSp/Delete/{MaLoai}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaLoai",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.LoaiSpController",
+    "Method": "GetAll",
+    "RelativePath": "api/LoaiSp/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.LoaiSpController",
+    "Method": "GetById",
+    "RelativePath": "api/LoaiSp/GetById/{MaLoai}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaLoai",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.LoaiSpController",
+    "Method": "GetByName",
+    "RelativePath": "api/LoaiSp/GetByName/{TenLoai}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "TenLoai",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.LoaiSpController",
+    "Method": "Post",
+    "RelativePath": "api/LoaiSp/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CreateLoaiSpMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.LoaiSpController",
+    "Method": "Update",
+    "RelativePath": "api/LoaiSp/Update/{MaLoai}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "MaLoai",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CreateLoaiSpMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.TrangThaiHdController",
+    "Method": "GetAll",
+    "RelativePath": "api/TrangThaiHd/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  }
+]
