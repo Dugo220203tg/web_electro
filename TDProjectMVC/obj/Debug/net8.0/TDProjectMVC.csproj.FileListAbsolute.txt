@@ -78,7 +78,6 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Refle
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Runtime.Caching.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Security.Cryptography.ProtectedData.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Security.Permissions.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Text.Json.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Windows.Extensions.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\af\Humanizer.resources.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\ar\Humanizer.resources.dll
