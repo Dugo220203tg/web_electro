@@ -272,32 +272,37 @@ function updateWishList() {
             $('.wish-list').empty(); // Làm trống danh sách trước khi cập nhật
             $.each(data, function (index, item) {
                 var productHtml = `
-                    <div class="product-widget">
-                        <div class="product-img" style="width:60px;height:60px">
-                            ${(() => {
-                        let firstImageUrl = '';
-                        if (item.hinh) {
-                            const imageUrls = item.hinh.split(',');
-                            if (imageUrls.length > 0) {
-                                firstImageUrl = imageUrls[0].trim();
-                            }
-                        }
-                        return firstImageUrl ?
-                            `<img src="/Hinh/Hinh/HangHoa/${item.maHH}/${firstImageUrl}" alt="${item.tenHH}" style="width:60px;height:60px">` :
-                            '';
-                    })()}
-                        </div>
-                        <div class="product-body">
-                            <h2 class="product-name" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">
-                                <a href="#">${item.tenHH}</a>
-                            </h2>
-                            <h4 class="product-price">$ ${item.donGia}</h4>
-                        </div>
-                        <button class="delete" data-product-id="${item.maYT}" onclick="RemoveWishList(${item.maYT}, this)">
-                            <i class="fa fa-close"></i>
-                        </button>
+             <div class="product-widget">
+                    <div class="product-img" style="width:60px;height:60px">
+                        ${(() => {
+                                let firstImageUrl = '';
+                                if (item.hinh) {
+                                    const imageUrls = item.hinh.split(',');
+                                    if (imageUrls.length > 0) {
+                                        firstImageUrl = imageUrls[0].trim();
+                                    }
+                                }
+                                return firstImageUrl
+                                    ? `<img src="/Hinh/Hinh/HangHoa/${item.maHH}/${firstImageUrl}" alt="${item.tenHH}" style="width:60px;height:60px">`
+                                    : '';
+                            })()}
                     </div>
-                `;
+                    <div class="product-body" style="position: relative;">
+                        <h2 class="product-name" style="display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; text-overflow: ellipsis;">
+                            <a href="#">${item.tenHH}</a>
+                        </h2>
+                        <div class="product-info" style="display: flex; align-items: center;">
+                            <h4 class="product-price">${parseInt(item.donGia).toLocaleString('vi-VN')} VNĐ</h4>
+                            <i class="fa fa-shopping-cart icon-cart"
+                               style="font-size:24px; color:#D10024; pointer-events:auto;"
+                               onclick="addToCart(${item.maHH}, 1, 'Normal')"></i>
+                        </div>
+                    </div>
+                    <button class="delete" data-product-id="${item.maYT}" onclick="RemoveWishList(${item.maYT}, this)">
+                        <i class="fa fa-close"></i>
+                    </button>
+                </div>
+            `;
                 $('.wish-list').append(productHtml);
             });
         },

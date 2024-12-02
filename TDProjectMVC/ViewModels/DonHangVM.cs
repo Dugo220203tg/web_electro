@@ -11,10 +11,18 @@ namespace TDProjectMVC.ViewModels
         public int SoLuong { get; set; }
         public double DonGia { get; set; }
         public string? TenHangHoa { get; set; }
-        public int MaGiamGia { get; set; }
+        public int? MaGiamGia { get; set; }
         public string? HinhAnh { get; set; }
         public double ThanhTien => SoLuong * DonGia * (1 - (double)MaGiamGia / 100);
 
+    }
+    // ViewModel mới để hỗ trợ truyền dữ liệu
+    public class OrderViewModel
+    {
+        public DonHangVM LatestOrder { get; set; }
+        public List<DonHangVM> OtherOrders { get; set; }
+        public int CurrentPage { get; set; }
+        public int TotalPages { get; set; }
     }
     public class DonHangVM
     {

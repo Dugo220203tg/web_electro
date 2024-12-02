@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
 using TDProjectMVC.Data;
+using TDProjectMVC.Helpers;
 using TDProjectMVC.ViewModels;
 
 namespace TDProjectMVC.Controllers
@@ -17,52 +18,110 @@ namespace TDProjectMVC.Controllers
             db = context;
 
         }
-        public IActionResult Index()
+        public IActionResult Index(int page = 1, int pageSize = 10)
         {
-            var MaKh = User.Identity.Name;
-            // Truy vấn hóa đơn từ database
-            var hoaDons = db.HoaDons.AsQueryable();
+            // Validate input parameters
+            page = Math.Max(1, page);
+            pageSize = Math.Max(1, pageSize);
 
-            // Nếu MaKh không null hoặc rỗng, lọc theo khách hàng
-            if (!string.IsNullOrEmpty(MaKh))
-            {
-                hoaDons = hoaDons.Where(hd => hd.MaKh == MaKh);
-            }
-            hoaDons = hoaDons.Where(hd => hd.MaTrangThai == 1 || hd.MaTrangThai == 2 || hd.MaTrangThai == 0);
-            // Lấy chi tiết hóa đơn liên kết với các hóa đơn vừa truy vấn
-            var result = hoaDons.Select(hd => new DonHangVM
-            {
-                MaHD = hd.MaHd,
-                MaKH = hd.MaKh,
-                NgayDat = hd.NgayDat,
-                //NgayCan = hd.NgayCan,
-                //NgayGiao = hd.NgayGiao,
-                HoTen = hd.HoTen,
-                DiaChi = hd.DiaChi,
-                CachThanhToan = hd.CachThanhToan,
-                CachVanChuyen = hd.CachVanChuyen,
-                PhiVanChuyen = (int)hd.PhiVanChuyen,
-                MaTrangThai = hd.MaTrangThai,
-                DienThoai = hd.DienThoai,
-                TrangThai = hd.MaTrangThaiNavigation.TenTrangThai,
-                ChiTietHds = db.ChiTietHds
-                    .Where(ct => ct.MaHd == hd.MaHd)
-                    .Select(ct => new ChiTietHoaDonMD
+            // Get current user's customer ID
+            var maKh = User.Identity.Name;
+
+            // Query to get all orders for the customer
+            var ordersQuery = db.HoaDons
+                .Where(hd => string.IsNullOrEmpty(maKh) || hd.MaKh == maKh) // Filter by customer ID
+                .Where(hd => new[] { 0, 1, 2 }.Contains(hd.MaTrangThai))   // Filter by allowed statuses
+                .OrderByDescending(hd => hd.NgayDat)                      // Order by the most recent date
+                .Select(hd => new DonHangVM
+                {
+                    MaHD = hd.MaHd,
+                    MaKH = hd.MaKh,
+                    NgayDat = hd.NgayDat,
+                    HoTen = hd.HoTen,
+                    DiaChi = hd.DiaChi,
+                    CachThanhToan = hd.CachThanhToan,
+                    CachVanChuyen = hd.CachVanChuyen,
+                    PhiVanChuyen = (int)hd.PhiVanChuyen,
+                    MaTrangThai = hd.MaTrangThai,
+                    DienThoai = hd.DienThoai,
+                    TrangThai = hd.MaTrangThaiNavigation.TenTrangThai,
+                    ChiTietHds = db.ChiTietHds
+                        .Where(ct => ct.MaHd == hd.MaHd)
+                        .Select(ct => new ChiTietHoaDonMD
+                        {
+                            MaCT = ct.MaCt,
+                            MaHD = ct.MaHd,
+                            MaHH = ct.MaHh,
+                            SoLuong = ct.SoLuong,
+                            DonGia = ct.DonGia,
+                            TenHangHoa = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).TenHh,
+                            MaGiamGia = (int)ct.MaGiamGia,
+                            HinhAnh = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).Hinh
+                        }).ToList()
+                });
+
+            // Get the most recent order
+            var mostRecentOrder = ordersQuery.Take(1).ToList();
+
+            // Paginate the results for other orders
+            var paginatedList = PaginatedList<DonHangVM>.CreateAsync(ordersQuery.Skip(1), page, pageSize);
+
+            // Prepare view data
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.CurrentPage = page;
+            ViewBag.PageSize = pageSize;
+
+            // Return both the most recent order and the paginated list of other orders
+            return View(new Tuple<DonHangVM, PaginatedList<DonHangVM>>(
+                mostRecentOrder.FirstOrDefault(), paginatedList));
+        }
+
+        [HttpGet]
+        public IActionResult GetOrderDetails(int maHD)
+        {
+            // Lấy thông tin hóa đơn và chi tiết liên quan từ database
+            var order = db.HoaDons
+                .Include(hd => hd.ChiTietHds) // Include bảng ChiTietHds
+                .ThenInclude(ct => ct.MaHhNavigation) // Include bảng HangHoa để lấy thông tin sản phẩm
+                .Include(hd => hd.MaTrangThaiNavigation) // Include bảng trạng thái đơn hàng
+                .Where(hd => hd.MaHd == maHD) // Lọc theo mã hóa đơn
+                .Select(hd => new DonHangVM
+                {
+                    MaHD = hd.MaHd,
+                    NgayDat = hd.NgayDat,
+                    HoTen = hd.HoTen,
+                    DiaChi = hd.DiaChi,
+                    CachThanhToan = hd.CachThanhToan,
+                    CachVanChuyen = hd.CachVanChuyen,
+                    PhiVanChuyen = (int)hd.PhiVanChuyen,
+                    MaTrangThai = hd.MaTrangThai,
+                    TrangThai = hd.MaTrangThaiNavigation.TenTrangThai,
+                    ChiTietHds = hd.ChiTietHds.Select(ct => new ChiTietHoaDonMD
                     {
                         MaCT = ct.MaCt,
-                        MaHD = ct.MaHd,
                         MaHH = ct.MaHh,
+                        TenHangHoa = ct.MaHhNavigation.TenHh, // Lấy thông tin từ HangHoa
                         SoLuong = ct.SoLuong,
                         DonGia = ct.DonGia,
-                        TenHangHoa = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).TenHh,
-                        MaGiamGia = (int)ct.MaGiamGia,
-                        HinhAnh = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).Hinh
+                        HinhAnh = ct.MaHhNavigation.Hinh, // Lấy hình ảnh từ HangHoa
+                        MaGiamGia = (int)ct.MaGiamGia
                     }).ToList()
-            }).ToList();
+                })
+                .FirstOrDefault();
 
-            // Trả về kết quả cho View
-            return View(result);
+            // Kiểm tra nếu không tìm thấy đơn hàng
+            if (order == null)
+            {
+                return NotFound(new { message = "Order not found." });
+            }
+
+            // Trả về dữ liệu JSON
+            return Json(order);
         }
+
+
+
+
         public async Task<IActionResult> ChiTietDonHang(int MaHD)
         {
             if (MaHD <= 0)
@@ -120,8 +179,16 @@ namespace TDProjectMVC.Controllers
             return View(result);
         }
 
-        public IActionResult AllDonHang()
+        public async Task<IActionResult> AllDonHang(int? page, int? pagesize)
         {
+            if (page == null)
+            {
+                page = 1;
+            }
+            if (pagesize == null)
+            {
+                pagesize = 5;
+            }
             var MaKh = User.Identity.Name;
             // Truy vấn hóa đơn từ database
             var hoaDons = db.HoaDons.AsQueryable();
@@ -132,13 +199,11 @@ namespace TDProjectMVC.Controllers
                 hoaDons = hoaDons.Where(hd => hd.MaKh == MaKh);
             }
             // Lấy chi tiết hóa đơn liên kết với các hóa đơn vừa truy vấn
-            var result = hoaDons.Select(hd => new CtDonHangVM
+            var result = hoaDons.Select(hd => new DonHangVM
             {
                 MaHD = hd.MaHd,
                 MaKH = hd.MaKh,
                 NgayDat = hd.NgayDat,
-                //NgayCan = hd.NgayCan,
-                //NgayGiao = hd.NgayGiao,
                 HoTen = hd.HoTen,
                 DiaChi = hd.DiaChi,
                 CachThanhToan = hd.CachThanhToan,
@@ -160,10 +225,15 @@ namespace TDProjectMVC.Controllers
                         MaGiamGia = (int)ct.MaGiamGia,
                         HinhAnh = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).Hinh
                     }).ToList()
-            }).ToList();
+            });
+            int totalItems = result.Count();
 
-            // Trả về kết quả cho View
-            return View(result);
+            var paginatedList = PaginatedList<DonHangVM>.CreateAsync(result.AsQueryable(), page ?? 1, pagesize ?? 5);
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.TotalItems = totalItems;
+            return View(paginatedList);
         }
         public IActionResult HuyDonHang([FromBody] HoaDonUpdateStatusModel model)
         {

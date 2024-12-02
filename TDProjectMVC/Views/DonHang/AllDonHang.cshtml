@@ -1,4 +1,5 @@
-﻿@model List<TDProjectMVC.ViewModels.DonHangVM>
+﻿@using TDProjectMVC.Helpers;
+@model PaginatedList<TDProjectMVC.ViewModels.DonHangVM>
 <div id="breadcrumb" class="section" style="padding:15px 0px">
     <div class="container" style="text-align:center;">
         <div class="row">
@@ -50,14 +51,14 @@
                                     </p>
                                     <p>X @ct.SoLuong</p>
                                 </td>
-                                <td style="padding:15px;">$ @ct.DonGia.ToString("0.00")</td>
+                                <td style="padding:15px;">$ @ct.DonGia.ToString("#,##0 VNĐ")</td>
                             </tr>
                             orderTotal += ct.ThanhTien;
                         }
                         <tr>
                             <td style="padding:15px;" colspan="1"></td>
                             <td class="text-end" style="text-align: right;padding:15px;"><strong>Order Total:</strong></td>
-                            <td style="padding:15px;" colspan="1"><strong>$ @orderTotal.ToString("0.00")</strong></td>
+                            <td style="padding:15px;" colspan="1"><strong>$ @orderTotal.ToString("#,##0 VNĐ")</strong></td>
                         </tr>
                     }
                 </tbody>
@@ -65,3 +66,44 @@
         </div>
     </div>
 </div>
+<div style="text-align:center; margin-top:20px;">
+    <ul class="pagination" style="display: inline-flex;">
+        @{
+            int pageIndex = Model.PageIndex;
+            int totalPages = Model.TotalPages;
+            int pageSizeValue = ViewBag.PageSize;
+            int startPage = ((pageIndex - 1) / 5) * 5 + 1;
+            int endPage = Math.Min(startPage + 4, totalPages);
+        }
+        @if (startPage > 1)
+        {
+            <li class="page_item">
+                <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
+            </li>
+        }
+        @if (pageIndex > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
+            </li>
+        }
+        @for (var i = startPage; i <= endPage; i++)
+        {
+            <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+            </li>
+        }
+        @if (pageIndex < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
+            </li>
+        }
+        @if (endPage < totalPages)
+        {
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
+            </li>
+        }
+    </ul>
+</div> 

@@ -1,5 +1,4 @@
-﻿@* @model IEnumerable<TDProjectMVC.ViewModels.HangHoaVM> *@
-@model PaginatedList<HangHoaVM>
+﻿@model PaginatedList<HangHoaVM>
 @using TDProjectMVC.ViewModels
 @using TDProjectMVC.Helpers;
 @{
@@ -7,74 +6,88 @@
     Layout = "_DanhSachHangHoa";
 }
 <!-- #region Danh Sach San Pham -->
-<div class="row">
-    @section BreadCum {
-        <div id="breadcrumb" class="section">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-12">
-                        <ul id="breadcrumb-tree" class="breadcrumb-tree">
-                            <li><a href="/">Home</a></li>
-                            <li><a href="/">Store</a></li>
-                            <li class="active"></li>
-                        </ul>
-                    </div>
+@section BreadCum {
+    <div id="breadcrumb" class="section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <ul id="breadcrumb-tree" class="breadcrumb-tree">
+                        <li><a href="/">Home</a></li>
+                        <li><a href="/">Store</a></li>
+                        <li class="active"></li>
+                    </ul>
                 </div>
             </div>
         </div>
-    }
-    @if (Model != null && Model.Any())
-    {
-        @await Html.PartialAsync("productItem", Model)
-    }
-    <div class="store-filter clearfix">
-        <span class="store-qty">Showing 20-100 products</span>
-        <ul class="store-pagination">
-            @{
-                int pageIndex = Model.PageIndex;
-                int totalPages = Model.TotalPages;
-                int pageSizeValue = ViewBag.PageSize;
-                int startPage = ((pageIndex - 1) / 5) * 5 + 1;
-                int endPage = Math.Min(startPage + 4, totalPages);
-            }
-
-            <ul class="store-pagination">
-                @if (startPage > 1)
-                {
-                    <li class="page_item">
-                        <a href="@Url.Action("Index", "Product", new { page = startPage - 5, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">&lt;&lt;</a>
-                    </li>
-                }
-                @if (pageIndex > 1)
-                {
-                    <li class="page_item">
-                        <a href="@Url.Action("Index", "Product", new { page = pageIndex - 1, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">&lt;</a>
-                    </li>
-                }
-
-
-                @for (var i = startPage; i <= endPage; i++)
-                {
-                    <li class="@(pageIndex == i ? "active" : "")">
-                        <a href="@Url.Action("Index", "Product", new { page = i, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">@i</a>
-                    </li>
-                }
-
-                @if (pageIndex < totalPages)
-                {
-                    <li class="page_item">
-                        <a href="@Url.Action("Index", "Product", new { page = pageIndex + 1, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">></a>
-                    </li>
-                }
-                @if (endPage < totalPages)
-                {
-                    <li class="page_item">
-                        <a href="@Url.Action("Index", "Product", new { page = endPage + 1, pagesize = pageSizeValue, loai = ViewBag.Loai, hang = ViewBag.hang })">>></a>
-                    </li>
-                }
-
-            </ul>
-
-        </ul>
     </div>
+}
+@if (Model != null && Model.Any())
+{
+    @await Html.PartialAsync("productItem", Model)
+}
+
+<div class="store-filter clearfix">
+    @{
+        int pageIndex = Model.PageIndex;
+        int totalPages = Model.TotalPages;
+        int pageSizeValue = ViewBag.PageSize;
+
+        // Retrieve filter parameters
+        var minPrice = ViewBag.MinPrice ?? Context.Request.Query["minPrice"].ToString();
+        var maxPrice = ViewBag.MaxPrice ?? Context.Request.Query["maxPrice"].ToString();
+        var sortOrder = ViewBag.CurrentSort ?? Context.Request.Query["sortOrder"].ToString();
+        var loai = ViewBag.Loai;
+        var hang = ViewBag.Hang;
+
+        // Calculate pagination range
+        int startPage = Math.Max(1, pageIndex - 2);
+        int endPage = Math.Min(totalPages, pageIndex + 2);
+    }
+
+    <ul class="store-pagination">
+        @* First Page *@
+        @if (pageIndex > 3)
+        {
+            <li class="page_item">
+                <a href="@Url.Action("Index", new { page = 1, pageSize = pageSizeValue, minPrice, maxPrice, sortOrder, loai, hang })">1</a>
+            </li>
+            @if (pageIndex > 4)
+            {
+                <li class="page_item disabled"><span>...</span></li>
+            }
+        }
+
+        @* Previous Pages *@
+        @for (int i = startPage; i < pageIndex; i++)
+        {
+            <li class="page_item">
+                <a href="@Url.Action("Index", new { page = i, pageSize = pageSizeValue, minPrice, maxPrice, sortOrder, loai, hang })">@i</a>
+            </li>
+        }
+
+        @* Current Page *@
+        <li class="page_item active">
+            <a href="#">@pageIndex</a>
+        </li>
+
+        @* Next Pages *@
+        @for (int i = pageIndex + 1; i <= endPage; i++)
+        {
+            <li class="page_item">
+                <a href="@Url.Action("Index", new { page = i, pageSize = pageSizeValue, minPrice, maxPrice, sortOrder, loai, hang })">@i</a>
+            </li>
+        }
+
+        @* Last Page *@
+        @if (pageIndex < totalPages - 2)
+        {
+            @if (pageIndex < totalPages - 3)
+            {
+                <li class="page_item disabled"><span>...</span></li>
+            }
+            <li class="page_item">
+                <a href="@Url.Action("Index", new { page = totalPages, pageSize = pageSizeValue, minPrice, maxPrice, sortOrder, loai, hang })">@totalPages</a>
+            </li>
+        }
+    </ul>
 </div>

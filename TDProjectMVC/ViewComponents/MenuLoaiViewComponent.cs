@@ -17,7 +17,7 @@ namespace TDProjectMVC.ViewComponents
                 MaLoai = lo.MaLoai,
                 TenLoai = lo.TenLoai,
                 SoLuong = lo.HangHoas.Count
-            }).OrderBy(p => p.TenLoai);
+            }).OrderByDescending(p => p.SoLuong);
             return View("Default", data);
         }
 

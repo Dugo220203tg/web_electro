@@ -2,13 +2,11 @@
 
 <div class="aside">
     <h3 class="aside-title">Mã loại</h3>
-    <div class="checkbox-filter">
-        @foreach (var item in Model)
+    <div class="checkbox-filter" id="loai-list">
+        @foreach (var item in Model.Take(5))
         {
             <div class="input-checkbox">
                 <a asp-controller="Product" asp-action="Index" asp-route-loai="@item.MaLoai" class="loaisp">
-                    @*                         <input type="checkbox" id="category-1">
-                *@
                     <label for="category-1" style="padding-left:unset">
                         @item.TenLoai
                         <small> (@item.SoLuong)</small>
@@ -16,5 +14,21 @@
                 </a>
             </div>
         }
+        <!-- Phần ẩn: các hãng còn lại -->
+        <div id="more-loais" style="display: none;">
+            @foreach (var item in Model.Skip(5))
+            {
+                <div class="input-checkbox" style="margin-top:10px;">
+                    <a asp-controller="Product" asp-action="Index" asp-route-loai="@item.MaLoai" class="loaisp">
+                        <label for="category-1" style="padding-left:unset">
+                            @item.TenLoai
+                            <small> (@item.SoLuong)</small>
+                        </label>
+                    </a>
+                </div>
+            }
+        </div>
+        <!-- Nút Show More / Show Less -->
+        <button id="toggle-loais" class="btn btn-link" onclick="toggleLoais()" style="margin-left: -15px;">Show More</button>
     </div>
 </div>
