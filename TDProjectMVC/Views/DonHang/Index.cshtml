@@ -1,88 +1,140 @@
-﻿@model List<TDProjectMVC.ViewModels.DonHangVM>
-<div id="breadcrumb" class="section" style="padding:15px 0px">
-    <div class="container" style="text-align:center;">
-        <div class="row">
-            <div class="col-md-12">
-                <ul id="breadcrumb-tree" class="breadcrumb-tree">
-                    <h2><a href="/">Đơn Hàng</a></h2>
-                </ul>
-            </div>
-        </div>
+﻿@using TDProjectMVC.Helpers;
+@using TDProjectMVC.ViewModels;
+
+@model Tuple<DonHangVM, PaginatedList<DonHangVM>>;
+
+<!-- Breadcrumb Section -->
+<div id="breadcrumb" class="section py-3">
+    <div class="container text-center">
+        <h2>
+            <a href="/DonHang/AllDonHang" class="text-decoration-none">
+                Lịch sử mua hàng
+            </a>
+        </h2>
     </div>
 </div>
+
+<!-- Main Container -->
 <div class="container-fluid py-5">
     <div class="container py-5">
-        <div class="table-responsive">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col">Products</th>
-                        <th scope="col">Name</th>
-                        <th scope="col">Total</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var donHang in Model)
+        <!-- Left Column: Most Recent Order -->
+        <div class="row">
+            <div class="col-md-6">
+                <div id="recent-order-section">
+                    @if (Model.Item1 != null)
                     {
-                        var orderTotal = 0.0;
-
-                        @foreach (var ct in donHang.ChiTietHds)
-                        {
-                            <tr style="background-color:aliceblue;">
-                                <td style="padding:15px;">
-                                    @{
-                                        string firstImageUrl = string.Empty;
-                                        if (!string.IsNullOrEmpty(ct.HinhAnh))
-                                        {
-                                            var imageUrls = ct.HinhAnh.Split(',');
-                                            firstImageUrl = imageUrls.FirstOrDefault();
-                                        }
-                                    }
-                                    @if (!string.IsNullOrEmpty(firstImageUrl))
+                        <h3>Đơn Hàng Gần Nhất</h3>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Products</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Total</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ct in Model.Item1.ChiTietHds)
                                     {
-                                        <img src="~/Hinh/Hinh/HangHoa/@ct.MaHH/@firstImageUrl" class="img-fluid me-5 rounded-circle" style="width: 80px; height: 80px;" alt="@ct.TenHangHoa">
+                                        <tr>
+                                            <td class="align-middle">
+                                                @if (!string.IsNullOrEmpty(ct.HinhAnh))
+                                                {
+                                                    var firstImageUrl = ct.HinhAnh.Split(',').FirstOrDefault();
+                                                    <img src="~/Hinh/Hinh/HangHoa/@ct.MaHH/@firstImageUrl"
+                                                         class="img-fluid rounded-circle"
+                                                         style="width: 80px; height: 80px;"
+                                                         alt="@ct.TenHangHoa">
+                                                }
+                                                else
+                                                {
+                                                    <span>No image available</span>
+                                                }
+                                            </td>
+                                            <td class="align-middle">
+                                                <p class="fw-bold mb-1">
+                                                    <a asp-action="Detail" asp-controller="Product" asp-route-id="@ct.MaHH" class="text-decoration-none">
+                                                        @ct.TenHangHoa
+                                                    </a>
+                                                </p>
+                                                <p class="mb-0">X @ct.SoLuong</p>
+                                            </td>
+                                            <td class="align-middle text-danger">$ @ct.DonGia.ToString("0.00")</td>
+                                        </tr>
                                     }
-                                    else
-                                    {
-                                        <span>No image available</span>
-                                    }
-                                </td>
-                                <td style="padding:15px;">
-                                    <p style="font-weight: bold;">
-                                        <a asp-action="Detail" asp-controller="Product" asp-route-id="@ct.MaHH">
-                                            @ct.TenHangHoa
-                                        </a>
-                                    </p>
-                                    <p>X @ct.SoLuong</p>
-                                </td>
-                                <td style="padding:15px;color:#D10024">$ @ct.DonGia.ToString("0.00")</td>
-                            </tr>
-                            orderTotal += ct.ThanhTien;
-                        }
-                        <tr>
-                            <td style="padding:15px;" colspan="1"></td>
-                            <td class="text-end" style="text-align: right;padding:15px;"><strong>Order Total:</strong></td>
-                            <td style="padding:15px; color:#D10024" colspan="1"><strong>$ @orderTotal.ToString("0.00")</strong></td>
-                        </tr>
-                        <tr>
-                            <td style="padding:15px;" colspan="1"></td>
-                            <td  colspan="1" style="text-align: right;padding:15px;">
-                                <a class="btn btn-danger" href="/DonHang/AllDonHang">
-                                    Lịch sử mua hàng
-                                </a>
-                                <a class="btn btn-danger" asp-action="ChiTietDonHang" asp-controller="DonHang" asp-route-MaHD="@donHang.MaHD">
-                                    Chi tiết đơn hàng
-                                </a>
-                            </td>
-                            <td style="padding:15px;" colspan="1" class="text-end">
-                                <button class="btn btn-danger" onclick="confirmCancelOrder(@donHang.MaHD, this)">
-                                    Hủy đơn hàng
-                                </button>
-                            </td>
-                        </tr>
+                                    <tr>
+                                        <td colspan="2" class="text-end fw-bold">Order Total:</td>
+                                        <td class="text-danger fw-bold">$ @Model.Item1.ChiTietHds.Sum(ct => ct.ThanhTien).ToString("0.00")</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="text-end">
+                                            <a class="btn btn-danger me-2" asp-action="ChiTietDonHang" asp-controller="DonHang" asp-route-MaHD="@Model.Item1.MaHD">
+                                                Chi tiết đơn hàng
+                                            </a>
+                                            <button class="btn btn-danger" onclick="confirmCancelOrder(@Model.Item1.MaHD, this)">
+                                                Hủy đơn hàng
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     }
-                </tbody>
-            </table>
+                </div>
+
+            </div>
+
+            <!-- Right Column: Order List -->
+            <div class="col-md-6">
+                <h3>Danh Sách Đơn Hàng</h3>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th scope="col">Order ID</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var order in Model.Item2)
+                            {
+                                <tr>
+                                    <td class="align-middle">@order.MaHD</td>
+                                    <td class="align-middle">@order.NgayDat.ToString("dd/MM/yyyy")</td>
+                                    <td class="align-middle">@order.TrangThai</td>
+                                    <td class="align-middle text-end">
+                                        <button class="btn btn-danger view-order" data-id="@order.MaHD">
+                                            View
+                                        </button>
+
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center">
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <a href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize })" class="btn btn-outline-secondary me-2">&laquo;</a>
+                        <a href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize })" class="btn btn-outline-secondary me-2">&lt;</a>
+                    }
+                    @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
+                    {
+                        <a href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize })"
+                           class="btn @(i == ViewBag.CurrentPage ? "btn-primary" : "btn-outline-secondary") me-2">@i</a>
+                    }
+                    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                    {
+                        <a href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize })" class="btn btn-outline-secondary me-2">&gt;</a>
+                        <a href="@Url.Action("Index", new { page = ViewBag.TotalPages, pageSize = ViewBag.PageSize })" class="btn btn-outline-secondary">&raquo;</a>
+                    }
+                </div>
+            </div>
         </div>
     </div>
 </div>

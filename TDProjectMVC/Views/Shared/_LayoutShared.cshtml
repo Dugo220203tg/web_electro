@@ -21,7 +21,7 @@
 
     <!-- Bootstrap -->
     <!-- Customized Bootstrap Stylesheet -->
-    <link type ="text/css" href="~/css/bootstrap.min.css" rel="stylesheet" />
+    <link type="text/css" href="~/css/bootstrap.min.css" rel="stylesheet" />
 
     <!-- Template Stylesheet -->
     <!-- Slick -->
@@ -42,11 +42,10 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-
     <!-- SWEET ALERT-->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.min.css" rel="stylesheet">
 
-    <link href="~/css/MyCss.css" rel="stylesheet"/>
+    <link href="~/css/MyCss.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
 
     @RenderSection("Styles", required: false)
@@ -209,39 +208,105 @@
         });
     </script>
 
-    <!-- jQuery Lọc giá sản hàng hóa -->
-    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
-    <script src="https://code.jquery.com/ui/1.14.0/jquery-ui.js"></script>
+    <!--Giới hạn hiển thị số lượng phần lọc theo loại và danh mục sản phẩm ở page _DanhSachHangHoa-->
     <script>
-        $(document).ready(function () {
+        function toggleBrands() {
+            var moreBrands = document.getElementById('more-brands');
+            var toggleButton = document.getElementById('toggle-brands');
 
-            // Khởi tạo slider và hiển thị giá trị ban đầu
-            $("#slider-range").slider({
-                range: true,
-                min: 0,
-                max: 10000000,
-                values: [0, 10000000],
-                slide: function (event, ui) {
-                    // Hiển thị giá trị hiện tại trên input
-                    $("#amount").val(ui.values[0] +" - "+ ui.values[1] + " VND");
-                }
+            if (moreBrands.style.display === 'none') {
+                moreBrands.style.display = 'block';
+                toggleButton.textContent = 'Show Less';
+            } else {
+                moreBrands.style.display = 'none';
+                toggleButton.textContent = 'Show More';
+            }
+
+        }
+        function toggleLoais() {
+            var toggleloaiButton = document.getElementById('toggle-loais');
+            var moreLoais = document.getElementById('more-loais');
+
+            if (moreLoais.style.display === 'none') {
+                moreLoais.style.display = 'block';
+                toggleloaiButton.textContent = 'Show Less';
+            } else {
+                moreLoais.style.display = 'none';
+                toggleloaiButton.textContent = 'Show More';
+            }
+        }
+    </script>
+    <!-- jQuery Lọc giá sản hàng hóa -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Initialize price slider
+            var priceSlider = document.getElementById("price-slider");
+            if (priceSlider) {
+                noUiSlider.create(priceSlider, {
+                    start: [0, 10000000],
+                    connect: true,
+                    range: {
+                        min: 0,
+                        max: 10000000,
+                    },
+                    step: 1000,
+                    format: {
+                        to: function (value) {
+                            return Math.round(value);
+                        },
+                        from: function (value) {
+                            return Number(value);
+                        },
+                    },
+                });
+                // Update price labels dynamically
+                var minPriceElem = document.getElementById("min-price");
+                var maxPriceElem = document.getElementById("max-price");
+                priceSlider.noUiSlider.on("update", function (values) {
+                    minPriceElem.textContent = `VND ${parseInt(values[0]).toLocaleString()}`;
+                    maxPriceElem.textContent = `VND ${parseInt(values[1]).toLocaleString()}`;
+                });
+            }
+            // Handle price filtering
+            document.getElementById("filterPriceBtn").addEventListener("click", function () {
+                const [minPrice, maxPrice] = priceSlider.noUiSlider.get();
+                const params = new URLSearchParams(window.location.search);
+                params.set("minPrice", minPrice);
+                params.set("maxPrice", maxPrice);
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.location.href = newUrl;
             });
+            // Handle sorting
+            document.querySelector(".sort-product").addEventListener("change", function (event) {
+                const selectedOption = event.target.value;
+                const params = new URLSearchParams(window.location.search);
 
-            // Hiển thị giá trị khởi tạo trên input
-            $("#amount").val($("#slider-range").slider("values", 0) +
-                " - " + $("#slider-range").slider("values", 1) + " VND");
+                // Clear existing sort parameter first
+                params.delete("sortOrder");
 
-            // Lắng nghe sự kiện click của nút filter
-            $("#filterPriceBtn").click(function () {
-                // Lấy giá trị min và max từ slider
-                var minPrice = $("#slider-range").slider("values", 0);
-                var maxPrice = $("#slider-range").slider("values", 1);
+                // Apply sorting based on selected option
+                switch (selectedOption) {
+                    case "0": // Price Descending
+                        params.set("sortOrder", "price_desc");
+                        break;
+                    case "1": // Price Ascending
+                        params.set("sortOrder", "price_asc");
+                        break;
+                    case "2": // Popularity
+                        params.set("sortOrder", "popularity");
+                        break;
+                    default:
+                        // Remove sort for default sorting
+                        params.delete("sortOrder");
+                }
 
-                // Chuyển hướng trang với query string chứa minPrice và maxPrice
-                window.location.href = `/Product/Index?minPrice=${minPrice}&maxPrice=${maxPrice}`;
+                const newUrl = `${window.location.pathname}?${params.toString()}`;
+                window.location.href = newUrl;
             });
         });
     </script>
+
+
     @RenderSection("Scripts", required: false)
     <script type="text/javascript">
         function confirmCancelOrder(orderId, btn) {
@@ -265,7 +330,7 @@
                                 Swal.fire({
                                     icon: 'success',
                                     title: 'Thành công',
-                                    text: response.message,  
+                                    text: response.message,
                                     showConfirmButton: false,
                                     timer: 2000
                                 }).then(() => {
@@ -275,7 +340,7 @@
                                 Swal.fire({
                                     icon: 'error',
                                     title: 'Lỗi',
-                                    text: response.message, 
+                                    text: response.message,
                                 });
                             }
                         },
@@ -417,5 +482,84 @@
             // Any initialization code here
         });
     </script>
+    <script>
+        $(document).ready(function () {
+            $(".view-order").click(function () {
+                const orderId = $(this).data("id"); // Get the order ID
+
+                // Make AJAX call to fetch order details
+                $.ajax({
+                    url: '/DonHang/GetOrderDetails', // Endpoint to fetch details
+                    method: 'GET',
+                    data: { maHD: orderId }, // Pass the order ID to the server
+                    success: function (order) {
+                        // Build the HTML for "Most Recent Order"
+                        let recentOrderHTML = `
+                                <h3>Đơn Hàng Gần Nhất</h3>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Products</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                            `;
+
+                        // Add each item to the order details table
+                        order.ChiTietHds.forEach(item => {
+                            recentOrderHTML += `
+                                    <tr>
+                                        <td>
+                                            <img src="/Hinh/Hinh/HangHoa/${item.MaHH}/${item.HinhAnh.split(',')[0]}"
+                                                 class="img-fluid rounded-circle"
+                                                 style="width: 80px; height: 80px;" alt="${item.TenHangHoa}">
+                                        </td>
+                                        <td>
+                                            <p class="fw-bold mb-1">
+                                                <a href="/Product/Detail/${item.MaHH}" class="text-decoration-none">${item.TenHangHoa}</a>
+                                            </p>
+                                            <p class="mb-0">X ${item.SoLuong}</p>
+                                        </td>
+                                        <td class="align-middle text-danger">$ ${item.DonGia.toFixed(2)}</td>
+                                    </tr>
+                                `;
+                        });
+
+                        // Add the order total
+                        const orderTotal = order.ChiTietHds.reduce((sum, item) => sum + (item.DonGia * item.SoLuong), 0);
+                        recentOrderHTML += `
+                                        <tr>
+                                            <td colspan="2" class="text-end fw-bold">Order Total:</td>
+                                            <td class="text-danger fw-bold">$ ${orderTotal.toFixed(2)}</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="3" class="text-end">
+                                                <a class="btn btn-danger me-2" href="/DonHang/ChiTietDonHang?MaHD=${order.MaHD}">
+                                                    Chi tiết đơn hàng
+                                                </a>
+                                                <button class="btn btn-danger" onclick="confirmCancelOrder(${order.MaHD}, this)">
+                                                    Hủy đơn hàng
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            `;
+
+                        // Replace the content of the "Most Recent Order" section
+                        $("#recent-order-section").html(recentOrderHTML);
+                    },
+                    error: function () {
+                        alert("Unable to fetch order details. Please try again.");
+                    }
+                });
+            });
+        });
+    </script>
+
 </body>
 </html>

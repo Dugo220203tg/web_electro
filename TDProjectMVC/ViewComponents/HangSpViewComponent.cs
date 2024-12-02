@@ -17,7 +17,7 @@ namespace TDProjectMVC.ViewComponents
 				MaNCC = lo.MaNcc,
 				TenCongTy = lo.TenCongTy,
 				SoLuong = lo.HangHoas.Count,
-			}).OrderBy(p => p.TenCongTy);
+			}).OrderByDescending(p => p.SoLuong);
 			return View("Index", data);
 		}
 	}
