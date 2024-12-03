@@ -187,6 +187,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.all.min.js"></script>
+    @RenderSection("Scripts", required: false)
+
     <script>
         $(function () {
             var message = '@Html.Raw(TempData["success"])'; // Ngăn mã hóa HTML
@@ -306,56 +308,58 @@
         });
     </script>
 
-
-    @RenderSection("Scripts", required: false)
-    <script type="text/javascript">
-        function confirmCancelOrder(orderId, btn) {
-            // Hiển thị thông báo xác nhận với SweetAlert2
-            Swal.fire({
-                title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Đồng ý',
-                cancelButtonText: 'Từ chối',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Gọi Ajax để hủy đơn hàng khi người dùng chọn "Đồng ý"
-                    $.ajax({
-                        url: '/DonHang/HuyDonHang',  // Đường dẫn đến Action HuyDonHang
-                        type: 'POST',
-                        contentType: 'application/json',
-                        data: JSON.stringify({ MaHD: orderId }),  // Gửi mã đơn hàng qua model
-                        success: function (response) {
-                            if (response.success) {  // Kiểm tra đúng thuộc tính success từ phản hồi
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: 'Thành công',
-                                    text: response.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                }).then(() => {
-                                    location.reload();  // Reload lại trang sau khi thành công
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: 'Lỗi',
-                                    text: response.message,
-                                });
-                            }
-                        },
-                        error: function (xhr, status, error) {
+    @*Huy Don Hang trang Don Hang*@
+   <script type="text/javascript">
+    function confirmCancelOrder(orderId, btn) {
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Từ chối',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Gọi Ajax để hủy đơn hàng khi người dùng chọn "Đồng ý"
+                $.ajax({
+                    url: '/DonHang/HuyDonHang',  // Đường dẫn đến Action HuyDonHang
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ MaHD: orderId }),  // Gửi mã đơn hàng qua model
+                    success: function (response) {
+                        if (response.success) {  // Kiểm tra đúng thuộc tính success từ phản hồi
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Thành công',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 2000
+                            }).then(() => {
+                                location.reload();  // Reload lại trang sau khi thành công
+                            });
+                        } else {
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Lỗi',
-                                text: 'Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại!',
+                                text: response.message || 'Đã xảy ra lỗi khi xử lý!',
                             });
                         }
-                    });
-                }
-            });
-        }
-    </script>
+                    },
+                    error: function (xhr, status, error) {
+                        let errorMessage = xhr.responseJSON && xhr.responseJSON.message 
+                            ? xhr.responseJSON.message 
+                            : 'Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại!';
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: errorMessage,
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+@*Danh Gia san pham trong trang Detail Product*@
     <script>
         $(document).ready(function () {
             $('#submitComment').click(function () {
@@ -482,84 +486,40 @@
             // Any initialization code here
         });
     </script>
+
+    @* Trang đơn hàng xu ly hien thi *@
     <script>
         $(document).ready(function () {
+        // Handle View button click
             $(".view-order").click(function () {
                 const orderId = $(this).data("id"); // Get the order ID
 
-                // Make AJAX call to fetch order details
-                $.ajax({
-                    url: '/DonHang/GetOrderDetails', // Endpoint to fetch details
-                    method: 'GET',
-                    data: { maHD: orderId }, // Pass the order ID to the server
-                    success: function (order) {
-                        // Build the HTML for "Most Recent Order"
-                        let recentOrderHTML = `
-                                <h3>Đơn Hàng Gần Nhất</h3>
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Products</th>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                            `;
+                // Hide all orders and remove 'active' class
+                $(".order-details").removeClass("active").addClass("d-none");
 
-                        // Add each item to the order details table
-                        order.ChiTietHds.forEach(item => {
-                            recentOrderHTML += `
-                                    <tr>
-                                        <td>
-                                            <img src="/Hinh/Hinh/HangHoa/${item.MaHH}/${item.HinhAnh.split(',')[0]}"
-                                                 class="img-fluid rounded-circle"
-                                                 style="width: 80px; height: 80px;" alt="${item.TenHangHoa}">
-                                        </td>
-                                        <td>
-                                            <p class="fw-bold mb-1">
-                                                <a href="/Product/Detail/${item.MaHH}" class="text-decoration-none">${item.TenHangHoa}</a>
-                                            </p>
-                                            <p class="mb-0">X ${item.SoLuong}</p>
-                                        </td>
-                                        <td class="align-middle text-danger">$ ${item.DonGia.toFixed(2)}</td>
-                                    </tr>
-                                `;
-                        });
-
-                        // Add the order total
-                        const orderTotal = order.ChiTietHds.reduce((sum, item) => sum + (item.DonGia * item.SoLuong), 0);
-                        recentOrderHTML += `
-                                        <tr>
-                                            <td colspan="2" class="text-end fw-bold">Order Total:</td>
-                                            <td class="text-danger fw-bold">$ ${orderTotal.toFixed(2)}</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" class="text-end">
-                                                <a class="btn btn-danger me-2" href="/DonHang/ChiTietDonHang?MaHD=${order.MaHD}">
-                                                    Chi tiết đơn hàng
-                                                </a>
-                                                <button class="btn btn-danger" onclick="confirmCancelOrder(${order.MaHD}, this)">
-                                                    Hủy đơn hàng
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                            `;
-
-                        // Replace the content of the "Most Recent Order" section
-                        $("#recent-order-section").html(recentOrderHTML);
-                    },
-                    error: function () {
-                        alert("Unable to fetch order details. Please try again.");
-                    }
-                });
+                // Show the clicked order
+                $(`.order-details[data-id="${orderId}"]`).removeClass("d-none").addClass("active");
             });
         });
     </script>
+    <script>
+        $(document).ready(function () {
+    // Handle View button click
+    $(".view-order").click(function () {
+        const orderId = $(this).data("id"); // Get the order ID
 
+        // Hide all orders and remove 'active' class
+        $(".order-details").removeClass("active").addClass("d-none");
+
+        // Show the clicked order
+        $(`.order-details[data-id="${orderId}"]`).removeClass("d-none").addClass("active");
+
+        // Highlight the selected row in the order list
+        $("tr").removeClass("selected"); // Remove highlight from all rows
+        $(this).closest("tr").addClass("selected"); // Add highlight to the clicked row
+    });
+});
+
+    </script>
 </body>
 </html>

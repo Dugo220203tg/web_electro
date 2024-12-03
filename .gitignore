@@ -5,3 +5,5 @@
 /TDProjectMVC.sln
 /TDProjectMVC.sln
 .vs/
+appsettings.Development.json
+appsettings.json

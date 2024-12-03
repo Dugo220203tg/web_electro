@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using TDProjectMVC.Models;
 using TDProjectMVC.Services.Mail;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 
 
 namespace TDProjectMVC.Controllers
@@ -17,12 +19,13 @@ namespace TDProjectMVC.Controllers
     public class KhachHangController : Controller
     {
         private readonly Hshop2023Context db;
-
         private readonly IMapper _mapper;
         private readonly IMailSender _mailSender;
 
-
-        public KhachHangController(IMailSender mailSender, Hshop2023Context context, IMapper mapper)
+        public KhachHangController(
+            IMailSender mailSender,
+            Hshop2023Context context,
+            IMapper mapper)
         {
             db = context;
             _mapper = mapper;
@@ -38,66 +41,60 @@ namespace TDProjectMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> DangKyAsync(RegisterVM model)
         {
-            // Nếu có lỗi trong ModelState thì trả về view cùng với thông báo lỗi
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
+            var errors = new List<string>();
+
+            var khachHangExists = await db.KhachHangs.AnyAsync(kh => kh.MaKh == model.MaKh);
+            if (khachHangExists)
+            {
+                errors.Add("Username đã được sử dụng.");
+            }
+
+            var emailExists = await db.KhachHangs.AnyAsync(kh => kh.Email == model.Email);
+            if (emailExists)
+            {
+                errors.Add("Email đã được sử dụng.");
+            }
+
+            if (errors.Any())
+            {
+                TempData["error"] = string.Join(" ", errors);
+                return View(model);
+            }
+
             try
             {
-                var khachHangExit = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == model.MaKh);
+                var khachHang = _mapper.Map<KhachHang>(model);
+                khachHang.RandomKey = MyUtil.GenerateRamdomKey();
+                khachHang.MatKhau = model.MatKhau.ToMd5Hash(khachHang.RandomKey);
+                khachHang.HieuLuc = false; // Account inactive until verification
+                khachHang.VaiTro = 0;
+                khachHang.NgayTao = DateTime.Now;
 
-                if (khachHangExit != null)
+                db.Add(khachHang);
+                await db.SaveChangesAsync();
+
+                if (!string.IsNullOrEmpty(model.Email))
                 {
-                    ModelState.AddModelError("loi", "Username đã được sử dụng");
-                    TempData["error"] = "Username đã được sử dụng";
+                    bool emailSent = await _mailSender.SendEmailAsync(model.Email, "Mã xác nhận của bạn", khachHang.RandomKey);
+                    TempData["success"] = emailSent
+                        ? "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận."
+                        : "Tài khoản được tạo, nhưng không thể gửi email xác nhận.";
                 }
-                var emailkhachHangExit = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.Email == model.Email);
 
-                if (emailkhachHangExit != null)
-                {
-                    ModelState.AddModelError("loi", "Email đã được sử dụng");
-                    TempData["error"] = "Email đã được sử dụng";
-                }
-                else
-                {
-                    var khachHang = _mapper.Map<KhachHang>(model);
-                    khachHang.RandomKey = MyUtil.GenerateRamdomKey();
-                    khachHang.MatKhau = model.MatKhau.ToMd5Hash(khachHang.RandomKey);
-                    khachHang.HieuLuc = false; // Account is inactive until email verification
-                    khachHang.VaiTro = 0;
-
-                    db.Add(khachHang);
-                    await db.SaveChangesAsync();
-
-                    if (!string.IsNullOrEmpty(model.Email))
-                    {
-                        var receiver = model.Email;
-                        var subject = "Mã xác nhận của bạn";
-                        var message = khachHang.RandomKey;
-
-                        bool emailSent = await _mailSender.SendEmailAsync(receiver, subject, message);
-                        if (!emailSent)
-                        {
-                            ModelState.AddModelError("", "Tài khoản đã được tạo, nhưng không thể gửi email xác nhận.");
-                        }
-                        else
-                        {
-                            TempData["success"] = "Đăng ký tài khoản thành công! Vui lòng kiểm tra email để xác nhận.";
-                            return RedirectToAction("NhapMaXacNhan", new { khachHangId = khachHang.MaKh });
-                        }
-                    }
-                }
+                return RedirectToAction("NhapMaXacNhan", new { khachHangId = khachHang.MaKh });
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("Loi", ex.Message);
-                TempData["error"] = ex.Message;
+                TempData["error"] = $"Đăng ký thất bại: {ex.Message}";
+                return View(model);
             }
-
-            return View(model);
         }
+
         [HttpGet]
         public IActionResult NhapMaXacNhan(string khachHangId, string type = "Register")
         {
@@ -242,44 +239,34 @@ namespace TDProjectMVC.Controllers
 
             try
             {
-                // Tìm khách hàng theo username hoặc email
-                var khachHang = await db.KhachHangs
-                    .SingleOrDefaultAsync(kh => kh.MaKh == model.UserName || kh.Email == model.UserName);
+                var khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh =>
+                    kh.MaKh == model.UserName || kh.Email == model.UserName);
 
-                // Kiểm tra tài khoản tồn tại
                 if (khachHang == null)
                 {
-                    ModelState.AddModelError("", "Thông tin đăng nhập không chính xác");
-                    TempData["error"] = "Thông tin đăng nhập không chính xác";
+                    AddLoginError("Thông tin đăng nhập không chính xác");
                     return View(model);
                 }
 
-                // Kiểm tra vai trò
                 if (khachHang.VaiTro == 1)
                 {
-                    ModelState.AddModelError("", "Tài khoản không có quyền truy cập");
-                    TempData["error"] = "Tài khoản không có quyền truy cập";
+                    AddLoginError("Tài khoản không có quyền truy cập");
                     return View(model);
                 }
 
-                // Kiểm tra tài khoản bị khóa
                 if (!khachHang.HieuLuc)
                 {
-                    ModelState.AddModelError("", "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.");
-                    TempData["error"] = "Tài khoản đã bị khóa. Vui lòng liên hệ Admin.";
+                    AddLoginError("Tài khoản đã bị khóa. Vui lòng liên hệ Admin.");
                     return View(model);
                 }
 
-                // Kiểm tra mật khẩu
-                var hashedPassword = model.Password.ToMd5Hash(khachHang.RandomKey);
-                if (khachHang.MatKhau != hashedPassword)
+                if (khachHang.MatKhau != model.Password.ToMd5Hash(khachHang.RandomKey))
                 {
-                    ModelState.AddModelError("", "Thông tin đăng nhập không chính xác");
-                    TempData["error"] = "Thông tin đăng nhập không chính xác";
+                    AddLoginError("Thông tin đăng nhập không chính xác");
                     return View(model);
                 }
 
-                // Tạo claims cho đăng nhập
+                // Sign in with claims
                 var claims = new List<Claim>
         {
             new Claim(ClaimTypes.NameIdentifier, khachHang.MaKh),
@@ -290,29 +277,89 @@ namespace TDProjectMVC.Controllers
         };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-                var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+                await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
 
-                // Đăng nhập
-                await HttpContext.SignInAsync(claimsPrincipal);
+                TempData["success"] = "Đăng nhập thành công!";
+                return !string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl)
+                    ? Redirect(ReturnUrl)
+                    : RedirectToAction("Index", "Home");
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = $"Có lỗi xảy ra: {ex.Message}";
+                return View(model);
+            }
+        }
 
-                // Chuyển hướng
-                if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
-                {
-                    TempData["success"] = "Đăng nhập thành công!";
-                    return Redirect(ReturnUrl);
-                }
+        // Helper to add login error
+        private void AddLoginError(string errorMessage)
+        {
+            ModelState.AddModelError("", errorMessage);
+            TempData["error"] = errorMessage;
+        }
+
+        #endregion
+        #region--- Dang Nhap Google ---
+        public async Task LoginByGoogle()
+        {
+            await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
+                  new AuthenticationProperties
+                  {
+                      RedirectUri = Url.Action("GoogleResponse")
+                  });
+        }
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+            if (!authenticateResult.Succeeded || authenticateResult.Principal == null)
+            {
+                TempData["error"] = "Google authentication failed. Please try again.";
+                return RedirectToAction("DangNhap");
+            }
+
+            var claims = authenticateResult.Principal.Claims.ToList();
+            var email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            if (string.IsNullOrEmpty(email))
+            {
+                TempData["error"] = "Email not found in Google account.";
+                return RedirectToAction("DangNhap");
+            }
+
+            var existingUser = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.Email == email);
+            if (existingUser != null)
+            {
+                TempData["success"] = "Login successful.";
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Ensure unique MaKh
+            var emailName = email.Split('@')[0];
+            var randomKey = MyUtil.GenerateRamdomKey();
+
+            var newUser = new KhachHang
+            {
+                MaKh = emailName,
+                HoTen = emailName,
+                Email = email,
+                NgayTao = DateTime.Now,
+                MatKhau = emailName.ToMd5Hash(randomKey)
+            };
+
+            try
+            {
+                await db.KhachHangs.AddAsync(newUser);
+                await db.SaveChangesAsync();
+                TempData["success"] = "Account created and logged in successfully.";
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Có lỗi xảy ra trong quá trình đăng nhập");
-                TempData["error"] = "Có lỗi xảy ra trong quá trình đăng nhập";
-                // Log error
-                return View(model);
+                TempData["error"] = $"Account registration failed: {ex.Message}";
+                return RedirectToAction("DangNhap");
             }
         }
-        #endregion
 
+        #endregion---
         #region ---DangXuat---
         [Authorize]
         public async Task<IActionResult> DangXuat()
@@ -331,11 +378,13 @@ namespace TDProjectMVC.Controllers
                 // Lấy mã khách hàng từ claim 'CustomerID'
                 // var customerId = User.Identity.Name;
                 var customerId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "CustomerID")?.Value;
+                var customerEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
                 if (customerId != null)
                 {
                     // Thực hiện truy vấn để lấy thông tin khách hàng từ cơ sở dữ liệu
-                    var khachHang = db.KhachHangs.FirstOrDefault(kh => kh.MaKh == customerId);
-
+                    var khachHang = db.KhachHangs.FirstOrDefault(kh =>
+                            (customerId != null && kh.MaKh == customerId) ||
+                            (customerEmail != null && kh.Email == customerEmail));
                     if (khachHang != null)
                     {
                         // Đã tìm thấy thông tin khách hàng, bạn có thể sử dụng nó để hiển thị trên trang web

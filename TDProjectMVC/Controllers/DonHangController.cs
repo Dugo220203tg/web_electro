@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Security.Claims;
@@ -18,6 +19,8 @@ namespace TDProjectMVC.Controllers
             db = context;
 
         }
+        [Authorize]
+        [HttpGet]
         public IActionResult Index(int page = 1, int pageSize = 10)
         {
             // Validate input parameters
@@ -75,7 +78,7 @@ namespace TDProjectMVC.Controllers
             return View(new Tuple<DonHangVM, PaginatedList<DonHangVM>>(
                 mostRecentOrder.FirstOrDefault(), paginatedList));
         }
-
+        [Authorize]
         [HttpGet]
         public IActionResult GetOrderDetails(int maHD)
         {
@@ -120,8 +123,8 @@ namespace TDProjectMVC.Controllers
         }
 
 
-
-
+        [Authorize]
+        [HttpGet]
         public async Task<IActionResult> ChiTietDonHang(int MaHD)
         {
             if (MaHD <= 0)
@@ -157,11 +160,10 @@ namespace TDProjectMVC.Controllers
                 DiaChi = hoaDon.DiaChi,
                 CachThanhToan = hoaDon.CachThanhToan,
                 CachVanChuyen = hoaDon.CachVanChuyen,
-                PhiVanChuyen = (float)hoaDon.PhiVanChuyen ,
+                PhiVanChuyen = (int)hoaDon.PhiVanChuyen, // Giá trị mặc định
                 MaTrangThai = hoaDon.MaTrangThai,
                 DienThoai = hoaDon.DienThoai,
                 TrangThai = hoaDon.MaTrangThaiNavigation?.TenTrangThai,
-                //MaNV = hoaDon.MaNV,
                 GhiChu = hoaDon.GhiChu,
                 ChiTietHds = hoaDon.ChiTietHds.Select(ct => new ChiTietHoaDonMD
                 {
@@ -178,18 +180,19 @@ namespace TDProjectMVC.Controllers
 
             return View(result);
         }
-
+        [Authorize]
+        [HttpGet]
         public async Task<IActionResult> AllDonHang(int? page, int? pagesize)
         {
-            if (page == null)
-            {
-                page = 1;
-            }
-            if (pagesize == null)
-            {
-                pagesize = 5;
-            }
+            page ??= 1;
+            pagesize ??= 5;
+
+            // Thiết lập giá trị mặc định cho ViewBag.PageSize
+            ViewBag.PageSize = pagesize;
+
+            // Lấy mã khách hàng từ User.Identity
             var MaKh = User.Identity.Name;
+
             // Truy vấn hóa đơn từ database
             var hoaDons = db.HoaDons.AsQueryable();
 
@@ -198,8 +201,9 @@ namespace TDProjectMVC.Controllers
             {
                 hoaDons = hoaDons.Where(hd => hd.MaKh == MaKh);
             }
+
             // Lấy chi tiết hóa đơn liên kết với các hóa đơn vừa truy vấn
-            var result = hoaDons.Select(hd => new DonHangVM
+            var result = await hoaDons.Select(hd => new DonHangVM
             {
                 MaHD = hd.MaHd,
                 MaKH = hd.MaKh,
@@ -208,7 +212,7 @@ namespace TDProjectMVC.Controllers
                 DiaChi = hd.DiaChi,
                 CachThanhToan = hd.CachThanhToan,
                 CachVanChuyen = hd.CachVanChuyen,
-                PhiVanChuyen = (int)hd.PhiVanChuyen,
+                PhiVanChuyen = (int)hd.PhiVanChuyen, // Xử lý null và chuyển kiểu
                 MaTrangThai = hd.MaTrangThai,
                 DienThoai = hd.DienThoai,
                 TrangThai = hd.MaTrangThaiNavigation.TenTrangThai,
@@ -222,30 +226,55 @@ namespace TDProjectMVC.Controllers
                         SoLuong = ct.SoLuong,
                         DonGia = ct.DonGia,
                         TenHangHoa = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).TenHh,
-                        MaGiamGia = (int)ct.MaGiamGia,
+                        MaGiamGia = Convert.ToInt32(ct.MaGiamGia), // Xử lý null và chuyển kiểu
                         HinhAnh = db.HangHoas.FirstOrDefault(hh => hh.MaHh == ct.MaHh).Hinh
                     }).ToList()
-            });
+            }).ToListAsync(); // Truy vấn bất đồng bộ
+
+            // Tính tổng số hóa đơn
             int totalItems = result.Count();
 
-            var paginatedList = PaginatedList<DonHangVM>.CreateAsync(result.AsQueryable(), page ?? 1, pagesize ?? 5);
+            // Tạo danh sách phân trang
+            var paginatedList = PaginatedList<DonHangVM>.CreateAsync(result.AsQueryable(), page.Value, pagesize.Value);
 
+            // Truyền dữ liệu ra View
             ViewBag.Page = page;
             ViewBag.TotalPages = paginatedList.TotalPages;
             ViewBag.TotalItems = totalItems;
             return View(paginatedList);
         }
-        public IActionResult HuyDonHang([FromBody] HoaDonUpdateStatusModel model)
+
+        [Authorize]
+        [HttpPost]
+        public JsonResult HuyDonHang([FromBody] DonHangVM model)
         {
-            var donhang = db.HoaDons.Find(model.MaHD);
-            if (donhang != null)
+            try
             {
-                donhang.MaTrangThai = 4;  // Cập nhật trạng thái thành hủy
+                // Kiểm tra dữ liệu
+                if (model == null || model.MaHD <= 0)
+                {
+                    return Json(new { success = false, message = "Dữ liệu không hợp lệ!" });
+                }
+
+                // Logic xử lý hủy đơn hàng
+                var hoaDon = db.HoaDons.FirstOrDefault(hd => hd.MaHd == model.MaHD);
+                if (hoaDon == null)
+                {
+                    return Json(new { success = false, message = "Không tìm thấy đơn hàng!" });
+                }
+
+                // Cập nhật trạng thái đơn hàng
+                hoaDon.MaTrangThai = 4; 
                 db.SaveChanges();
-                return Ok(new { success = true, message = "Hủy đơn hàng thành công!" });
+
+                return Json(new { success = true, message = "Hủy đơn hàng thành công!" });
             }
-            return BadRequest(new { success = false, message = "Không tìm thấy đơn hàng." });
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
+            }
         }
+
 
     }
 }

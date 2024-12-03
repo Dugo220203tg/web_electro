@@ -11,7 +11,7 @@ namespace TDProjectMVC.ViewModels
         public int SoLuong { get; set; }
         public double DonGia { get; set; }
         public string? TenHangHoa { get; set; }
-        public int? MaGiamGia { get; set; }
+        public int MaGiamGia { get; set; }
         public string? HinhAnh { get; set; }
         public double ThanhTien => SoLuong * DonGia * (1 - (double)MaGiamGia / 100);
 
@@ -49,7 +49,7 @@ namespace TDProjectMVC.ViewModels
         public string CachThanhToan { get; set; }
 
         public string? CachVanChuyen { get; set; }
-        public float? PhiVanChuyen { get; set; }
+        public int PhiVanChuyen { get; set; }
 
         [Required(ErrorMessage = "Mã trạng thái là bắt buộc")]
         public int MaTrangThai { get; set; }
@@ -90,7 +90,7 @@ namespace TDProjectMVC.ViewModels
         public string CachThanhToan { get; set; }
 
         public string? CachVanChuyen { get; set; }
-        public float? PhiVanChuyen { get; set; }
+        public int PhiVanChuyen { get; set; }
 
         [Required(ErrorMessage = "Mã trạng thái là bắt buộc")]
         public int MaTrangThai { get; set; }

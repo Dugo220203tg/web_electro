@@ -33,6 +33,8 @@ public partial class HoaDon
 
     public string? DienThoai { get; set; }
 
+    public int? PayId { get; set; }
+
     public virtual ICollection<ChiTietHd> ChiTietHds { get; set; } = new List<ChiTietHd>();
 
     public virtual KhachHang MaKhNavigation { get; set; } = null!;

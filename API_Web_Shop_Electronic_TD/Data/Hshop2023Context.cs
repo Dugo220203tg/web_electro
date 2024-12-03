@@ -41,6 +41,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
 
+    public virtual DbSet<PayHistory> PayHistories { get; set; }
+
     public virtual DbSet<PhanCong> PhanCongs { get; set; }
 
     public virtual DbSet<PhanQuyen> PhanQuyens { get; set; }
@@ -327,6 +329,7 @@ public partial class Hshop2023Context : DbContext
                 .HasDefaultValue("Photo.gif");
             entity.Property(e => e.HoTen).HasMaxLength(50);
             entity.Property(e => e.MatKhau).HasMaxLength(50);
+            entity.Property(e => e.NgayTao).HasColumnType("datetime");
             entity.Property(e => e.RandomKey)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -377,6 +380,23 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.HoTen).HasMaxLength(50);
             entity.Property(e => e.MatKhau).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<PayHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Table__3214EC07BA1E86B4");
+
+            entity.ToTable("PayHistory");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CouponCode)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.FullName).HasMaxLength(50);
+            entity.Property(e => e.OrderId).HasMaxLength(50);
+            entity.Property(e => e.OrderInfo).HasMaxLength(50);
+            entity.Property(e => e.PayMethod).HasMaxLength(50);
         });
 
         modelBuilder.Entity<PhanCong>(entity =>
