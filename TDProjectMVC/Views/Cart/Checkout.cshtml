@@ -42,7 +42,12 @@
 						</div>
 						<input type="submit" name="payment" class="primary-btn order-submit text-xl-center" value="Đặt hàng (COD)">
 						<input type="submit" name="payment" class="primary-btn order-submit text-xl-center" value="Thanh toán VNPay">
-
+						<a asp-action="CreatePaymentMomo" asp-controller="CheckOut">
+							<input type="hidden" name="amount" value="@Model.Sum(p => p.ThanhTien)." />
+							<input type="hidden" name="orderInfo" value="Thanh toán Momo cho đơn hàng" />
+							<input type="hidden" name="orderId" value="@Guid.NewGuid().ToString()" />
+							<button class="btn btn-danger" type="submit">Pay with MOMO</button>
+						</a>
 					</form>
 				<!-- /Order notes -->
 				<!-- /Billing Details -->

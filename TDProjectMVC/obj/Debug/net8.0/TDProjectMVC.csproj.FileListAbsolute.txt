@@ -254,3 +254,4 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\refint\TDPro
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC.pdb
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC.genruntimeconfig.cache
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\ref\TDProjectMVC.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll

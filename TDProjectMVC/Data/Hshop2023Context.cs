@@ -41,6 +41,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
 
+    public virtual DbSet<PayHistory> PayHistories { get; set; }
+
     public virtual DbSet<PhanCong> PhanCongs { get; set; }
 
     public virtual DbSet<PhanQuyen> PhanQuyens { get; set; }
@@ -54,6 +56,7 @@ public partial class Hshop2023Context : DbContext
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=DESKTOP-4AS3J3K;Initial Catalog=Hshop2023;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -326,6 +329,7 @@ public partial class Hshop2023Context : DbContext
                 .HasDefaultValue("Photo.gif");
             entity.Property(e => e.HoTen).HasMaxLength(50);
             entity.Property(e => e.MatKhau).HasMaxLength(50);
+            entity.Property(e => e.NgayTao).HasColumnType("datetime");
             entity.Property(e => e.RandomKey)
                 .HasMaxLength(50)
                 .IsUnicode(false);
@@ -376,6 +380,23 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.Email).HasMaxLength(50);
             entity.Property(e => e.HoTen).HasMaxLength(50);
             entity.Property(e => e.MatKhau).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<PayHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Table__3214EC07BA1E86B4");
+
+            entity.ToTable("PayHistory");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CouponCode)
+                .HasMaxLength(10)
+                .IsFixedLength();
+            entity.Property(e => e.CreateDate).HasColumnType("datetime");
+            entity.Property(e => e.FullName).HasMaxLength(50);
+            entity.Property(e => e.OrderId).HasMaxLength(50);
+            entity.Property(e => e.OrderInfo).HasMaxLength(50);
+            entity.Property(e => e.PayMethod).HasMaxLength(50);
         });
 
         modelBuilder.Entity<PhanCong>(entity =>

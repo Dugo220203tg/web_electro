@@ -34,6 +34,6 @@ namespace TDProjectMVC.ViewModels
 		public string Email { get; set; }
 
 		public string? Hinh { get; set; }
-        
+        public DateTime Ngaytao { get; set; }
     }
 }

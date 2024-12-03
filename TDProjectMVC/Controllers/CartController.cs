@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TDProjectMVC.Data;
 using TDProjectMVC.Helpers;
+using TDProjectMVC.Models;
 using TDProjectMVC.Services;
 using TDProjectMVC.Services.Mail;
+using TDProjectMVC.Services.Momo;
 using TDProjectMVC.ViewModels;
 
 namespace TDProjectMVC.Controllers
@@ -14,12 +16,13 @@ namespace TDProjectMVC.Controllers
         private readonly Hshop2023Context db;
         private readonly IVnPayService _vnPayservice;
         private readonly IMailSender _mailSender;
-
-        public CartController(IMailSender mailSender, Hshop2023Context context, IVnPayService vnPayservice)
+        private readonly IMomoService _momoService;
+        public CartController(IMailSender mailSender, Hshop2023Context context, IVnPayService vnPayservice, IMomoService momoService)
         {
             db = context;
             _vnPayservice = vnPayservice;
             _mailSender = mailSender;
+            _momoService = momoService;
 
         }
         public List<CartItem> Cart => HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
@@ -352,6 +355,18 @@ namespace TDProjectMVC.Controllers
                 TempData["Message"] = $"Lỗi khi lưu đơn hàng: {ex.Message}";
                 return RedirectToAction("PaymentFail");
             }
+        }
+        [HttpPost]
+        public async Task<IActionResult> CreatePaymentMomo(OrderInfo model)
+        {
+                var response = await _momoService.CreatePaymentAsync(model);
+                return Redirect(response.PayUrl);
+        }
+        [HttpGet]
+        public IActionResult PaymentCallBack()
+        {
+            var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+            return View(response);
         }
     }
 }

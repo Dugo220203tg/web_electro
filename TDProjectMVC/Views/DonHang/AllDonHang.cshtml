@@ -64,46 +64,60 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </div>  
 </div>
 <div style="text-align:center; margin-top:20px;">
     <ul class="pagination" style="display: inline-flex;">
         @{
-            int pageIndex = Model.PageIndex;
-            int totalPages = Model.TotalPages;
-            int pageSizeValue = ViewBag.PageSize;
+            // Kiểm tra giá trị từ ViewBag
+            int pageSizeValue = ViewBag.PageSize != null ? (int)ViewBag.PageSize : 5;
+
+            // Lấy giá trị phân trang từ model
+            int pageIndex = Model.PageIndex > 0 ? Model.PageIndex : 1; // Đảm bảo PageIndex không âm
+            int totalPages = Model.TotalPages > 0 ? Model.TotalPages : 1; // Đảm bảo TotalPages không âm
             int startPage = ((pageIndex - 1) / 5) * 5 + 1;
             int endPage = Math.Min(startPage + 4, totalPages);
         }
+
+        @* Nút << để quay lại nhóm trang trước *@
         @if (startPage > 1)
         {
-            <li class="page_item">
-                <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
+            <li class="page-item">
+                <a class="page-link" href="@Url.Action("AllDonHang", new { page = startPage - 5, pagesize = pageSizeValue })">&lt;&lt;</a>
             </li>
         }
+
+        @* Nút < để quay lại trang trước *@
         @if (pageIndex > 1)
         {
             <li class="page-item">
-                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
+                <a class="page-link" href="@Url.Action("AllDonHang", new { page = pageIndex - 1, pagesize = pageSizeValue })">&lt;</a>
             </li>
         }
+
+        @* Các trang trong nhóm hiện tại *@
         @for (var i = startPage; i <= endPage; i++)
         {
-            <li class="page-item @(Model.PageIndex == i ? "active" : "")">
-                <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+            <li class="page-item @(pageIndex == i ? "active" : "")">
+                <a class="page-link" href="@Url.Action("AllDonHang", new { page = i, pagesize = pageSizeValue })">@i</a>
             </li>
         }
+
+        @* Nút > để chuyển đến trang kế tiếp *@
         @if (pageIndex < totalPages)
         {
             <li class="page-item">
-                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
+                <a class="page-link" href="@Url.Action("AllDonHang", new { page = pageIndex + 1, pagesize = pageSizeValue })">&gt;</a>
             </li>
         }
+
+        @* Nút >> để chuyển đến nhóm trang kế tiếp *@
         @if (endPage < totalPages)
         {
             <li class="page-item">
-                <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
+                <a class="page-link" href="@Url.Action("AllDonHang", new { page = endPage + 1, pagesize = pageSizeValue })">&gt;&gt;</a>
             </li>
         }
     </ul>
+
 </div> 

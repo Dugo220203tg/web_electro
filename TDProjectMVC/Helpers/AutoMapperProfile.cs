@@ -9,9 +9,11 @@ namespace TDProjectMVC.Helpers
 	{
 		public AutoMapperProfile()
 		{
-			CreateMap<RegisterVM, KhachHang>();
-			//.ForMember(kh => kh.HoTen, option => option.MapFrom(RegisterVM => RegisterVM.HoTen))
-			//.ReverseMap();
-		}
+			CreateMap<RegisterVM, KhachHang>()
+            .ForMember(dest => dest.MaKh, opt => opt.MapFrom(src => src.MaKh))
+            .ForMember(dest => dest.Email, opt => opt.MapFrom(src => src.Email))
+            .ForMember(dest => dest.HoTen, opt => opt.MapFrom(src => src.HoTen));
+            //.ReverseMap();
+        }
 	}
 }
