@@ -104,6 +104,85 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CouponController",
+    "Method": "Delete",
+    "RelativePath": "api/Coupon/Delete/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CouponController",
+    "Method": "GetAll",
+    "RelativePath": "api/Coupon/GetAll",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CouponController",
+    "Method": "GetById",
+    "RelativePath": "api/Coupon/GetById/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CouponController",
+    "Method": "Post",
+    "RelativePath": "api/Coupon/Post",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CouponsMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CouponController",
+    "Method": "Update",
+    "RelativePath": "api/Coupon/Update/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CouponsMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.DanhGiaSpController",
     "Method": "Delete",
     "RelativePath": "api/DanhGiaSp/Delete/{MaDg}",

@@ -21,6 +21,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<ChuDe> ChuDes { get; set; }
 
+    public virtual DbSet<Coupon> Coupons { get; set; }
+
     public virtual DbSet<DanhGiaSp> DanhGiaSps { get; set; }
 
     public virtual DbSet<DanhMucSp> DanhMucSps { get; set; }
@@ -136,6 +138,22 @@ public partial class Hshop2023Context : DbContext
                 .HasForeignKey(d => d.MaNv)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_ChuDe_NhanVien");
+        });
+
+        modelBuilder.Entity<Coupon>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Coupon__3214EC07BEA0DBAE");
+
+            entity.ToTable("Coupon");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.DateEnd).HasColumnType("datetime");
+            entity.Property(e => e.DateStart).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(50);
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(18, 0)")
+                .HasColumnName("price");
         });
 
         modelBuilder.Entity<DanhGiaSp>(entity =>
