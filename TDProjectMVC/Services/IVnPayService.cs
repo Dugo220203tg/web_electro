@@ -2,9 +2,9 @@
 
 namespace TDProjectMVC.Services
 {
-	public interface IVnPayService
-	{
-		string CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model);
-		VnPaymentResponseModel PaymentExecute(IQueryCollection collections);
-	}
+    public interface IVnPayService
+    {
+        string CreatePaymentUrl(PaymentInformationModel model, HttpContext context);
+        PaymentResponseModel PaymentExecute(IQueryCollection collections);
+    }
 }

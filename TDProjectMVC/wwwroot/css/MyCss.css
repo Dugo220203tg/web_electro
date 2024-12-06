@@ -207,4 +207,18 @@
     font-size: 12px;
     color: #999;
 }
+/*========================Index Don Hang=======================*/
+.view-orderleft {
+    display: flex;
+    position: absolute;
+    width: 120%;
+    height: auto;
+    right: 10px;
+}
+
+.view-orderright {
+    position: absolute;
+    width: 105%;
+    margin-left: 165px;
+}
 /*===========================================================*/

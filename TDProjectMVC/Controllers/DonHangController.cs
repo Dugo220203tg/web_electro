@@ -28,7 +28,7 @@ namespace TDProjectMVC.Controllers
             pageSize = Math.Max(1, pageSize);
 
             // Get current user's customer ID
-            var maKh = User.Identity.Name;
+            var maKh = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Query to get all orders for the customer
             var ordersQuery = db.HoaDons
@@ -191,7 +191,7 @@ namespace TDProjectMVC.Controllers
             ViewBag.PageSize = pagesize;
 
             // Lấy mã khách hàng từ User.Identity
-            var MaKh = User.Identity.Name;
+            var MaKh = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
             // Truy vấn hóa đơn từ database
             var hoaDons = db.HoaDons.AsQueryable();

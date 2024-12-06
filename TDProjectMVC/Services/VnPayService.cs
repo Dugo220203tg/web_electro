@@ -1,80 +1,128 @@
 ﻿using TDProjectMVC.Helpers;
 using TDProjectMVC.ViewModels;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace TDProjectMVC.Services
 {
-	public class VnPayService : IVnPayService
-	{
-        private readonly IConfiguration _config;
+    public class VnPayService : IVnPayService
+    {
+        private readonly IConfiguration _configuration;
+        private readonly ILogger<VnPayService> _logger;
 
-        public VnPayService(IConfiguration config)
+        public VnPayService(IConfiguration config, ILogger<VnPayService> logger)
         {
-            _config = config;
+            _configuration = config ?? throw new ArgumentNullException(nameof(config));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public string CreatePaymentUrl(HttpContext context, VnPaymentRequestModel model)
+        public string CreatePaymentUrl(PaymentInformationModel model, HttpContext context)
         {
-            var tick = DateTime.Now.Ticks.ToString();
+            ArgumentNullException.ThrowIfNull(model, nameof(model));
+            ArgumentNullException.ThrowIfNull(context, nameof(context));
 
-            var vnpay = new VnPayLibrary();
-            vnpay.AddRequestData("vnp_Version", _config["VnPay:Version"]);
-            vnpay.AddRequestData("vnp_Command", _config["VnPay:Command"]);
-            vnpay.AddRequestData("vnp_TmnCode", _config["VnPay:TmnCode"]);
-            vnpay.AddRequestData("vnp_Amount", (model.Amount * 100).ToString()); //Số tiền thanh toán. Số tiền không mang các ký tự phân tách thập phân, phần nghìn, ký tự tiền tệ. Để gửi số tiền thanh toán là 100,000 VND (một trăm nghìn VNĐ) thì merchant cần nhân thêm 100 lần (khử phần thập phân), sau đó gửi sang VNPAY là: 10000000
+            if (model.Amount <= 0)
+                throw new ArgumentException("Amount must be greater than zero");
 
-            vnpay.AddRequestData("vnp_CreateDate", model.CreatedDate.ToString("yyyyMMddHHmmss"));
-            vnpay.AddRequestData("vnp_CurrCode", _config["VnPay:CurrCode"]);
-            vnpay.AddRequestData("vnp_IpAddr", Utils.GetIpAddress(context));
-            vnpay.AddRequestData("vnp_Locale", _config["VnPay:Locale"]);
+            var pay = new VnPayLibrary();
+            pay.AddRequestData("vnp_Version", _configuration["Vnpay:Version"]);
+            pay.AddRequestData("vnp_Command", _configuration["Vnpay:Command"]);
+            pay.AddRequestData("vnp_TmnCode", _configuration["Vnpay:TmnCode"]);
+            pay.AddRequestData("vnp_Amount", ((int)(model.Amount)).ToString());
+            pay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
+            pay.AddRequestData("vnp_CurrCode", "VND");
+            pay.AddRequestData("vnp_IpAddr", context.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1");
+            pay.AddRequestData("vnp_Locale", "vn");
+            pay.AddRequestData("vnp_OrderInfo", $"{model.FullName} - {model.Description}");
+            pay.AddRequestData("vnp_OrderType", model.OrderType ?? "other");
+            pay.AddRequestData("vnp_ReturnUrl", _configuration["PaymentCallBack:ReturnUrl"]);
+            pay.AddRequestData("vnp_TxnRef", DateTime.Now.Ticks.ToString());
 
-            vnpay.AddRequestData("vnp_OrderInfo", "Thanh toán cho đơn hàng:" + model.OrderId);
-            vnpay.AddRequestData("vnp_OrderType", "other"); //default value: other
-            vnpay.AddRequestData("vnp_ReturnUrl", _config["VnPay:PaymentBackReturnUrl"]);
+            var paymentUrl = pay.CreateRequestUrl(_configuration["Vnpay:BaseUrl"], _configuration["Vnpay:HashSecret"]);
 
-            vnpay.AddRequestData("vnp_TxnRef", tick); // Mã tham chiếu của giao dịch tại hệ thống của merchant. Mã này là duy nhất dùng để phân biệt các đơn hàng gửi sang VNPAY. Không được trùng lặp trong ngày
-
-            var paymentUrl = vnpay.CreateRequestUrl(_config["VnPay:BaseUrl"], _config["VnPay:HashSecret"]);
-
+            _logger.LogInformation("Payment URL: " + paymentUrl);
             return paymentUrl;
         }
 
-        public VnPaymentResponseModel PaymentExecute(IQueryCollection collections)
+        public PaymentResponseModel PaymentExecute(IQueryCollection collections)
         {
-            var vnpay = new VnPayLibrary();
-            foreach (var (key, value) in collections)
+            ArgumentNullException.ThrowIfNull(collections, nameof(collections));
+
+            try
+            {
+                var pay = new VnPayLibrary();
+                var hashSecret = _configuration["Vnpay:HashSecret"]
+                    ?? throw new InvalidOperationException("VnPay Hash Secret not configured");
+
+                var response = GetFullResponseData(collections, hashSecret);
+                return response;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error executing payment");
+                throw;
+            }
+        }
+
+        public PaymentResponseModel GetFullResponseData(IQueryCollection collection, string hashSecret)
+        {
+            ArgumentNullException.ThrowIfNull(collection, nameof(collection));
+            ArgumentNullException.ThrowIfNull(hashSecret, nameof(hashSecret));
+
+            var vnPay = new VnPayLibrary();
+
+            // Filter and add only VnPay-related parameters
+            foreach (var (key, value) in collection)
             {
                 if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
                 {
-                    vnpay.AddResponseData(key, value.ToString());
+                    vnPay.AddResponseData(key, value);
                 }
             }
 
-            var vnp_orderId = Convert.ToInt64(vnpay.GetResponseData("vnp_TxnRef"));
-            var vnp_TransactionId = Convert.ToInt64(vnpay.GetResponseData("vnp_TransactionNo"));
-            var vnp_SecureHash = collections.FirstOrDefault(p => p.Key == "vnp_SecureHash").Value;
-            var vnp_ResponseCode = vnpay.GetResponseData("vnp_ResponseCode");
-            var vnp_OrderInfo = vnpay.GetResponseData("vnp_OrderInfo");
-
-            bool checkSignature = vnpay.ValidateSignature(vnp_SecureHash, _config["VnPay:HashSecret"]);
-            if (!checkSignature)
+            try
             {
-                return new VnPaymentResponseModel
+                var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
+                var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
+                var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
+                var vnpSecureHash = collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value;
+
+                // Sửa ValidateSignature
+                var checkSignature = vnPay.ValidateSignature(vnpSecureHash, hashSecret);
+                if (!checkSignature)
                 {
-                    Success = false
+                    _logger.LogWarning("Invalid payment signature");
+                    return new PaymentResponseModel { Success = false };
+                }
+
+                return new PaymentResponseModel
+                {
+                    Success = true,
+                    PaymentMethod = "VnPay",
+                    OrderDescription = vnPay.GetResponseData("vnp_OrderInfo"),
+                    OrderId = orderId.ToString(),
+                    PaymentId = vnPayTranId.ToString(),
+                    TransactionId = vnPayTranId.ToString(),
+                    Token = vnpSecureHash,
+                    VnPayResponseCode = vnpResponseCode
                 };
             }
-
-            return new VnPaymentResponseModel
+            catch (Exception ex)
             {
-                Success = true,
-                PaymentMethod = "VnPay",
-                OrderDescription = vnp_OrderInfo,
-                OrderId = vnp_orderId.ToString(),
-                TransactionId = vnp_TransactionId.ToString(),
-                Token = vnp_SecureHash,
-                VnPayResponseCode = vnp_ResponseCode
-            };
+                _logger.LogError(ex, "Error processing payment response");
+                return new PaymentResponseModel { Success = false };
+            }
         }
 
+        private string ComputeHmacSha256(string message, string secretKey)
+        {
+            var keyBytes = Encoding.UTF8.GetBytes(secretKey);
+            var messageBytes = Encoding.UTF8.GetBytes(message);
+
+            using var hmac = new HMACSHA256(keyBytes);
+            var hashBytes = hmac.ComputeHash(messageBytes);
+            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+        }
     }
 }

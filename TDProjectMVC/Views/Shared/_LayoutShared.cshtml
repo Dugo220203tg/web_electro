@@ -1,4 +1,5 @@
-﻿@using TDProjectMVC.Helpers
+﻿@using System.Security.Claims
+@using TDProjectMVC.Helpers
 @using TDProjectMVC.ViewModels
 @{
     string ADDRESS = "52 Triều Khúc, Thanh Xuân, Hà Nội";
@@ -194,13 +195,13 @@
             var message = '@Html.Raw(TempData["success"])'; // Ngăn mã hóa HTML
             var errorMessage = '@Html.Raw(TempData["Error"])';
 
-            if (message) { // Kiểm tra nếu có thông báo thành công
+            if (message) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Thông báo',
                     text: message
                 });
-            } else if (errorMessage) { // Kiểm tra nếu có thông báo lỗi
+            } else if (errorMessage) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Lỗi',
@@ -308,58 +309,58 @@
         });
     </script>
 
-    @*Huy Don Hang trang Don Hang*@
-   <script type="text/javascript">
-    function confirmCancelOrder(orderId, btn) {
-        Swal.fire({
-            title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Đồng ý',
-            cancelButtonText: 'Từ chối',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                // Gọi Ajax để hủy đơn hàng khi người dùng chọn "Đồng ý"
-                $.ajax({
-                    url: '/DonHang/HuyDonHang',  // Đường dẫn đến Action HuyDonHang
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ MaHD: orderId }),  // Gửi mã đơn hàng qua model
-                    success: function (response) {
-                        if (response.success) {  // Kiểm tra đúng thuộc tính success từ phản hồi
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Thành công',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 2000
-                            }).then(() => {
-                                location.reload();  // Reload lại trang sau khi thành công
-                            });
-                        } else {
+    <!--Huy Don Hang trang Don Hang -->
+    <script type="text/javascript">
+        function confirmCancelOrder(orderId, btn) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn hủy đơn hàng?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Từ chối',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Gọi Ajax để hủy đơn hàng khi người dùng chọn "Đồng ý"
+                    $.ajax({
+                        url: '/DonHang/HuyDonHang',  // Đường dẫn đến Action HuyDonHang
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ MaHD: orderId }),  // Gửi mã đơn hàng qua model
+                        success: function (response) {
+                            if (response.success) {  // Kiểm tra đúng thuộc tính success từ phản hồi
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Thành công',
+                                    text: response.message,
+                                    showConfirmButton: false,
+                                    timer: 2000
+                                }).then(() => {
+                                    location.reload();  // Reload lại trang sau khi thành công
+                                });
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Lỗi',
+                                    text: response.message || 'Đã xảy ra lỗi khi xử lý!',
+                                });
+                            }
+                        },
+                        error: function (xhr, status, error) {
+                            let errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                                ? xhr.responseJSON.message
+                                : 'Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại!';
                             Swal.fire({
                                 icon: 'error',
                                 title: 'Lỗi',
-                                text: response.message || 'Đã xảy ra lỗi khi xử lý!',
+                                text: errorMessage,
                             });
                         }
-                    },
-                    error: function (xhr, status, error) {
-                        let errorMessage = xhr.responseJSON && xhr.responseJSON.message 
-                            ? xhr.responseJSON.message 
-                            : 'Đã xảy ra lỗi khi hủy đơn hàng. Vui lòng thử lại!';
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Lỗi',
-                            text: errorMessage,
-                        });
-                    }
-                });
-            }
-        });
-    }
-</script>
-@*Danh Gia san pham trong trang Detail Product*@
+                    });
+                }
+            });
+        }
+    </script>
+    @*Danh Gia san pham trong trang Detail Product*@
     <script>
         $(document).ready(function () {
             $('#submitComment').click(function () {
@@ -490,35 +491,93 @@
     @* Trang đơn hàng xu ly hien thi *@
     <script>
         $(document).ready(function () {
-        // Handle View button click
+            // Handle View button click
             $(".view-order").click(function () {
                 const orderId = $(this).data("id"); // Get the order ID
 
                 // Hide all orders and remove 'active' class
-                $(".order-details").removeClass("active").addClass("d-none");
+                $(".order-details-nb").removeClass("active").addClass("d-none");
 
                 // Show the clicked order
-                $(`.order-details[data-id="${orderId}"]`).removeClass("d-none").addClass("active");
+                $(`.order-details-nb[data-id="${orderId}"]`).removeClass("d-none").addClass("active");
             });
         });
     </script>
     <script>
         $(document).ready(function () {
-    // Handle View button click
-    $(".view-order").click(function () {
-        const orderId = $(this).data("id"); // Get the order ID
+            // Handle View button click
+            $(".view-order").click(function () {
+                const orderId = $(this).data("id"); // Get the order ID
 
-        // Hide all orders and remove 'active' class
-        $(".order-details").removeClass("active").addClass("d-none");
+                // Hide all orders and remove 'active' class
+                $(".order-details-nb").removeClass("active").addClass("d-none");
 
-        // Show the clicked order
-        $(`.order-details[data-id="${orderId}"]`).removeClass("d-none").addClass("active");
+                // Show the clicked order
+                $(`.order-details-nb[data-id="${orderId}"]`).removeClass("d-none").addClass("active");
 
-        // Highlight the selected row in the order list
-        $("tr").removeClass("selected"); // Remove highlight from all rows
-        $(this).closest("tr").addClass("selected"); // Add highlight to the clicked row
-    });
-});
+                // Highlight the selected row in the order list
+                $("tr").removeClass("selected"); // Remove highlight from all rows
+                $(this).closest("tr").addClass("selected"); // Add highlight to the clicked row
+            });
+        });
+    </script>
+
+    <!--Check giong khac hang trong checkout-->
+    <script>
+        $(document).ready(function () {
+            $("#GiongKhachHang").change(function () {
+                if ($(this).prop("checked")) {
+                    $(this).val(true);
+                    $(".delivery-info").addClass("d-none");
+                } else {
+                    $(this).val(false);
+                    $(".delivery-info").removeClass("d-none");
+                }
+            });
+        });
+    </script>
+    <!-- Xóa sản phẩm trong cart -->
+    <script>
+        function RemoveCart(productId, buttonElement) {
+            $.ajax({
+                url: '/Cart/RemoveCart', // Replace with the actual controller name
+                type: 'POST',
+                data: { id: productId },
+                success: function (response) {
+                    if (response.success) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Xóa thành công",
+                            text: "Đã xóa sản phẩm khỏi danh sách",
+                            showConfirmButton: false,
+                            timer: 1000,
+                        }).then(() => {
+                            // Remove the closest product widget
+                            $(buttonElement).closest(".product-widget").remove();
+                            // Update the cart display
+                            updateCartDisplay();
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Lỗi",
+                            text: response.message,
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = "Đã xảy ra lỗi khi xóa sản phẩm khỏi danh sách";
+                    if (xhr.status === 409) {
+                        errorMessage = "Sản phẩm đã bị xóa hoặc thay đổi trước đó.";
+                    }
+                    Swal.fire({
+                        icon: "error",
+                        title: "Lỗi",
+                        text: errorMessage,
+                    });
+                },
+            });
+        }
 
     </script>
 </body>

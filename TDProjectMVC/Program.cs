@@ -22,6 +22,10 @@ public class Program // Đã thay đổi từ mặc định thành công khai
             options.UseSqlServer(builder.Configuration.GetConnectionString("HShop"));
         });
         builder.Services.AddTransient<IMailSender, MailSender>();
+        builder.Services.AddHttpClient();
+        builder.Services.AddScoped<IMomoService, MomoService>();
+        builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MoMoAPI"));
+
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddSession(options =>
@@ -30,8 +34,10 @@ public class Program // Đã thay đổi từ mặc định thành công khai
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });
-        builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MoMoAPI"));
-       // builder.Services.AddScoped<IMomoService, MomoService>();
+        builder.Services.AddLogging(configure => {
+            configure.AddConsole();
+            configure.AddDebug();
+        });
         builder.Services.AddAutoMapper(typeof(AutoMapperProfile));
         builder.Services.AddAuthentication(options =>
         {
@@ -40,22 +46,19 @@ public class Program // Đã thay đổi từ mặc định thành công khai
             options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Ensure this is set
         })
- .AddCookie(options =>
- {
-     options.LoginPath = "/Khachhang/DangNhap";
-     options.AccessDeniedPath = "/AccessDenied";
- })
- .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
- {
-     options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
-     options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
- });
+        .AddCookie(options =>
+        {
+            options.LoginPath = "/Khachhang/DangNhap";
+            options.AccessDeniedPath = "/AccessDenied";
+        })
+        .AddGoogle(GoogleDefaults.AuthenticationScheme, options =>
+        {
+            options.ClientId = builder.Configuration.GetSection("GoogleKeys:ClientId").Value;
+            options.ClientSecret = builder.Configuration.GetSection("GoogleKeys:ClientSecret").Value;
+        });
 
         builder.Services.AddSingleton<IVnPayService, VnPayService>();
-
-
-        builder.Services.AddSingleton<IVnPayService, VnPayService>();
-
+        builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("Vnpay"));
 
         //builder.Services.AddSingleton(x => new PaypalClient(
         //      builder.Configuration["PaypalOptions:AppId"],

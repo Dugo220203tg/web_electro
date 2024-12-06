@@ -16,7 +16,7 @@ namespace TDProjectMVC.ViewComponents
         {
             // Lấy ID của người dùng hiện tại, bạn cần thay đổi dòng này tùy theo cách bạn lấy thông tin người dùng đã đăng nhập trong ứng dụng của mình
             //var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var userID = @User.Identity.Name;
+            var userID = HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
             var data = db.YeuThiches
                             .Where(yt => yt.MaKh == userID)
                             .Select(lo => new WishListVM

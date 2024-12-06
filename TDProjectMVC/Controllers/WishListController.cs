@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using TDProjectMVC.Data;
 using TDProjectMVC.ViewModels;
 
@@ -19,8 +20,7 @@ namespace TDProjectMVC.Controllers
         public async Task<IActionResult> Index()
         {
             // Lấy mã khách hàng từ danh tính người dùng đã đăng nhập
-            var MaKh = User.Identity.Name;
-
+            var MaKh = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             // Truy vấn danh sách yêu thích từ database
             var YeuThichs = db.YeuThiches.AsQueryable()
                                          .Where(p => p.MaKh == MaKh);
@@ -45,7 +45,7 @@ namespace TDProjectMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> AddToWishList(int MaHH)
         {
-            var userId = User.Identity.Name; // Assuming the user is authenticated
+            var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             var existingItem = await db.YeuThiches.FirstOrDefaultAsync(y => y.MaHh == MaHH && y.MaKh == userId);
 
             if (existingItem != null)
@@ -98,7 +98,7 @@ namespace TDProjectMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> GetWishListCount()
         {
-            var userId = User.Identity.Name;
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var count = await db.YeuThiches.CountAsync(p => p.MaKh == userId);
             return Json(new { count });
         }
