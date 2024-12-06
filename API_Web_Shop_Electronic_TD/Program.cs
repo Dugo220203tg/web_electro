@@ -34,6 +34,7 @@ builder.Services.AddScoped<ITrangThaiHd, TrangThaiHdRepository>();
 builder.Services.AddScoped<IDanhMuc, DanhMucRepository>();
 builder.Services.AddScoped<IDanhGiaSp, DanhGiaSpRepository>();
 builder.Services.AddScoped<ICtHoaDon, ChiTietHoaDonRepository>();
+builder.Services.AddScoped<ICoupon, CouponRepository>();
 
 builder.Services.AddHttpClient();
 

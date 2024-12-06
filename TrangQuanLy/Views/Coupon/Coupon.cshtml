@@ -1,0 +1,43 @@
+﻿@model IEnumerable<TrangQuanLy.Models.CouponVM>
+
+<body>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td><input class="form-check-input" type="checkbox"></td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.id)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.quantity)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.DateStart)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.DateEnd)
+            </td>
+            <td style="color: white;">
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td style="display:flex;align-items: center; color:white">
+                <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.id })">
+                    <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                </form>
+                <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
+                    <input type="hidden" name="id" value="@item.id" />
+                    <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+                </form>
+            </td>
+        </tr>
+    }
+</body>
