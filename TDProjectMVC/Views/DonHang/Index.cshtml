@@ -21,12 +21,13 @@
         <div class="row">
             <!-- Left Column: Most Recent Order -->
             <div class="col-md-6">
-                <div class="order-container">
+                <h3>Thông tin</h3>
+                <div class="order-container view-orderleft">
                     @foreach (var order in Model.Item2)
                     {
-                        <div class="order-details @(order.MaHD == Model.Item1?.MaHD ? "active" : "d-none")" data-id="@order.MaHD">
+                        <div class="order-details-nb @(order.MaHD == Model.Item1?.MaHD ? "active" : "d-none")" data-id="@order.MaHD">
                             <div class="table-responsive">
-                                <table class="table table-bordered">
+                                <table class="table ">
                                     <thead>
                                         <tr>
                                             <th scope="col">Products</th>
@@ -87,8 +88,8 @@
             <!-- Right Column: Order List -->
             <div class="col-md-6">
                 <h3>Danh Sách Đơn Hàng</h3>
-                <div class="table-responsive">
-                    <table class="table table-bordered">
+                <div class="table-responsive view-orderright">
+                    <table class="table">
                         <thead>
                             <tr>
                                 <th scope="col">Order ID</th>
@@ -119,11 +120,11 @@
     </div>
 </div>
 <style>
-    .order-details {
+    .order-details-nb {
         display: none;
     }
 
-        .order-details.active {
+        .order-details-nb.active {
             display: block;
         }
 

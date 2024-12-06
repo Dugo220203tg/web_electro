@@ -29,5 +29,6 @@ namespace TDProjectMVC.ViewModels
         [Required(ErrorMessage = "Vui lòng xác nhận mật khẩu")]
         [Compare("newpassword", ErrorMessage = "Mật khẩu xác nhận không khớp")]
         public string Passwordcheck { get; set; }
+        public string Code { get; set; }
     }
 }

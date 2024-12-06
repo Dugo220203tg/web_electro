@@ -4,7 +4,7 @@
     {
         public string FullName { get; set; }
         public string OrderInfomation{ get; set; }
-        public string Amount { get; set; }
-        public string OrderID { get; set; }
+        public double Amount { get; set; }
+        public string OrderId { get; set; }
     }
 }

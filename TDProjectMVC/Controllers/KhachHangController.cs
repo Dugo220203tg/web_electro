@@ -117,7 +117,8 @@ namespace TDProjectMVC.Controllers
 
             if (khachHang.RandomKey != model.ConfirmationCode)
             {
-                ModelState.AddModelError("", "Mã xác nhận không hợp lệ.");
+                ModelState.AddModelError("Mã xác nhận không chính xác", "Vui lòng kiểm tra lại Email của bạn");
+                TempData["error"] = "Mã code không chính xác";
                 return View(model);
             }
 
@@ -133,7 +134,6 @@ namespace TDProjectMVC.Controllers
                         return RedirectToAction("DangNhap");
 
                     case "ResetPassword":
-                        // Xử lý xác nhận reset password
                         khachHang.HieuLuc = true; // Đảm bảo tài khoản được kích hoạt
                         khachHang.RandomKey = null; // Xóa mã xác nhận sau khi đã sử dụng
                         await db.SaveChangesAsync();
@@ -163,10 +163,10 @@ namespace TDProjectMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPassword model)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
 
             try
             {
@@ -206,7 +206,6 @@ namespace TDProjectMVC.Controllers
                     TempData["error"] = "Không thể gửi email xác nhận";
                     return View(model);
                 }
-
                 // Lưu thay đổi vào database
                 await db.SaveChangesAsync();
 
@@ -222,7 +221,7 @@ namespace TDProjectMVC.Controllers
         }
 
         #endregion
-        #region ---DangNhap---
+        #region ---LOGIN---
         [HttpGet]
         public IActionResult DangNhap(string? ReturnUrl)
         {
@@ -232,10 +231,10 @@ namespace TDProjectMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> DangNhap(LoginVM model, string? ReturnUrl)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(model);
+            //}
 
             try
             {
@@ -268,13 +267,13 @@ namespace TDProjectMVC.Controllers
 
                 // Sign in with claims
                 var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, khachHang.MaKh),
-            new Claim(ClaimTypes.Email, khachHang.Email),
-            new Claim(ClaimTypes.Name, khachHang.HoTen),
-            new Claim(ClaimTypes.Role, "Customer"),
-            new Claim("CustomerID", khachHang.MaKh)
-        };
+                {
+                    new Claim(ClaimTypes.NameIdentifier, khachHang.MaKh),
+                    new Claim(ClaimTypes.Email, khachHang.Email),
+                    new Claim(ClaimTypes.Name, khachHang.HoTen),
+                    new Claim(ClaimTypes.Role, "Customer"),
+                    new Claim("CustomerID", khachHang.MaKh)
+                };
 
                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                 await HttpContext.SignInAsync(new ClaimsPrincipal(claimsIdentity));
@@ -299,7 +298,7 @@ namespace TDProjectMVC.Controllers
         }
 
         #endregion
-        #region--- Dang Nhap Google ---
+        #region--- Login--- By ---Google ---
         public async Task LoginByGoogle()
         {
             await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme,
@@ -368,15 +367,12 @@ namespace TDProjectMVC.Controllers
             return Redirect("/");
         }
         #endregion
-
         #region ---Xem Thông Tin --- Cập nhật thông tin --- Bình luận sản phẩm ---
         [Authorize]
         public IActionResult Profile()
         {
             if (HttpContext.User.Identity.IsAuthenticated)
             {
-                // Lấy mã khách hàng từ claim 'CustomerID'
-                // var customerId = User.Identity.Name;
                 var customerId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "CustomerID")?.Value;
                 var customerEmail = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
                 if (customerId != null)
@@ -387,13 +383,11 @@ namespace TDProjectMVC.Controllers
                             (customerEmail != null && kh.Email == customerEmail));
                     if (khachHang != null)
                     {
-                        // Đã tìm thấy thông tin khách hàng, bạn có thể sử dụng nó để hiển thị trên trang web
                         ViewBag.CustomerName = khachHang.HoTen;
                         ViewBag.CustomerDienThoai = khachHang.DienThoai;
                         ViewBag.CustomerEmail = khachHang.Email;
                         ViewBag.CustomerAddress = khachHang.DiaChi;
 
-                        // Return the Profile view (not a redirect to Profile to avoid looping)
                         return View();
                     }
                 }
@@ -409,7 +403,7 @@ namespace TDProjectMVC.Controllers
 
         [Authorize]
         [HttpPost]
-        public IActionResult UpdateProfile(string customerName, string customerEmail, string customerAddress)
+        public IActionResult UpdateProfile(string customerName, string customerEmail, string customerAddress, string customerPhone)
         {
             // Lấy mã khách hàng từ claim 'CustomerID'
             var customerId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == "CustomerID")?.Value;
@@ -425,7 +419,7 @@ namespace TDProjectMVC.Controllers
                     khachHang.HoTen = customerName;
                     khachHang.Email = customerEmail;
                     khachHang.DiaChi = customerAddress;
-
+                    khachHang.DienThoai = customerPhone;
                     // Lưu thay đổi vào cơ sở dữ liệu
                     db.SaveChanges();
 
@@ -456,7 +450,7 @@ namespace TDProjectMVC.Controllers
 
             try
             {
-                var userId = User.Identity.Name; // Assuming the user is authenticated and Name is used as the user ID
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // Assuming the user is authenticated and Name is used as the user ID
 
                 if (userId == null)
                 {
