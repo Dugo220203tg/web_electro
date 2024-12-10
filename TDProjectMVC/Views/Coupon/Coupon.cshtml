@@ -1,0 +1,42 @@
+﻿@model IEnumerable<TDProjectMVC.ViewModels.CouponVM>
+<table class="coupon-table">
+    @foreach (var item in Model)
+    {
+        <tr class="coupon-row">
+            <td>
+                <div class="coupon-card">
+                    <div class="header-coupon">
+                        <div class="coupon-header">
+                            <img src="~/Hinh/logo.png" alt="Logo" class="coupon-logo" />
+                        </div>
+                        <div class="coupon-body">
+                            <span class="coupon-brand">@Html.DisplayFor(modelItem => item.Name)</span>
+                            <h3 class="coupon-discount">@Html.DisplayFor(modelItem => item.price)% Coupon</h3>
+                            <p class="coupon-validity">Valid till @Html.DisplayFor(modelItem => item.DateEnd)</p>
+                        </div>
+                    </div>
+                    <div class="coupon-footer">
+                        <input type="text" class="coupon-code" value="@Html.DisplayFor(modelItem => item.Description)" readonly />
+                        <button class="copy-button" onclick="copyToClipboard('@Html.DisplayFor(modelItem => item.Description)')">COPY</button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    }
+</table>
+
+<script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function () {
+            Swal.fire({
+                icon: "success",
+                title: "Copy thành công",
+                text: "Hãy dán vào giỏ hàng của bạn để sử dụng!",
+                showConfirmButton: false,
+                timer: 1000,
+            });
+        }, function (err) {
+            console.error('Could not copy text: ', err);
+        });
+    }
+</script>

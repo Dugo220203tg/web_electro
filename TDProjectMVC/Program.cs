@@ -30,7 +30,7 @@ public class Program // Đã thay đổi từ mặc định thành công khai
         builder.Services.AddHttpContextAccessor();
         builder.Services.AddSession(options =>
         {
-            options.IdleTimeout = TimeSpan.FromSeconds(120);
+            options.IdleTimeout = TimeSpan.FromDays(30);
             options.Cookie.HttpOnly = true;
             options.Cookie.IsEssential = true;
         });

@@ -1,17 +1,19 @@
-﻿
-@model IEnumerable<TrangQuanLy.Models.HangHoaVM>
+﻿@using TrangQuanLy.Helpers;
+@model PaginatedList<TrangQuanLy.Models.HangHoaVM>
 @{
     ViewData["Title"] = "Index";
     Layout = "_Footer-Header";
 }
+<!-- Table Start -->
 <div class="container-fluid pt-4 px-4">
     <div class="row g-4">
         <div class="col-12">
             <div class="bg-secondary rounded h-100 p-4">
                 <div class="navbar ">
-                    <h3 class="mb-4" style="margin-bottom:0px;">Sản Phẩm</h3>
+                    <h3 class="mb-4" style="margin-bottom:0px;">Sản phẩm hàng hóa</h3>
+
                     <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
-                        <form class="d-none d-md-flex ms-4" asp-action="Search" asp-controller="HangHoa" method="get">
+                        <form class="ms-4" asp-action="Search" asp-controller="HangHoa" method="get">
                             <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
                             <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
                         </form>
@@ -21,45 +23,82 @@
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table text-start align-middle mb-0" style="border-color:#0dcaf0;">
                         <thead>
-                            <tr>
-                                <th style="color: white;">
-                                    Mã sản phẩm
+                            <tr class="text-white">
+                                <th scope="col">
+                                    SKU
                                 </th>
-                                <th style="width:220px; word-wrap: break-word;color: white;">
-                                    Tên
+                                <th scope="col">
+                                    Sản phẩm
                                 </th>
-                                <th style="color: white">
-                                    Hình ảnh
+                                <th scope="col">
+                                    Danh mục
                                 </th>
-                                <th style="color: white">
-                                    Danh mục sản phẩm
+                                <th scope="col">
+                                    Số lượng
                                 </th>
-                                <th style="color: white">
-                                    Ngày sản xuất
-                                </th>
-                                <th style="color: white">
-                                    Nhà cung cấp
-                                </th>
-                                <th style="color: white">
+                                <th scope="col">
                                     Đơn giá
                                 </th>
-                                <th style="color: white">
+                                <th scope="col">
+                                    Trạng thái
+                                </th>
+                                <th scope="col">
                                     Chức năng
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
-                            {
-                                @await Html.PartialAsync("SanPham", Model)
-                            }
-                        </tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @await Html.PartialAsync("SanPham", Model)
+                        }
                     </table>
                 </div>
                 <!-- Pagination Controls -->
+                <div style="text-align:center; margin-top:20px;">
+                    <ul class="pagination" style="display: inline-flex;">
+                        @{
+                            int pageIndex = Model.PageIndex;
+                            int totalPages = Model.TotalPages;
+                            int pageSizeValue = ViewBag.PageSize;
+                            int startPage = ((pageIndex - 1) / 5) * 5 + 1;
+                            int endPage = Math.Min(startPage + 4, totalPages);
+                        }
+                        @if (startPage > 1)
+                        {
+                            <li class="page_item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
+                            </li>
+                        }
+                        @if (pageIndex > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
+                            </li>
+                        }
+                        @for (var i = startPage; i <= endPage; i++)
+                        {
+                            <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+                            </li>
+                        }
+                        @if (pageIndex < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
+                            </li>
+                        }
+                        @if (endPage < totalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
+                            </li>
+                        }
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
 </div>
+

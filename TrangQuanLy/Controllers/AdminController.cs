@@ -143,6 +143,7 @@ namespace TrangQuanLy.Controllers
 
 
         #endregion
+        #region --- QUAN LY TAI KHOAN ---
         [HttpGet]
         public IActionResult Index(int? page, int? pagesize)
         {
@@ -289,4 +290,5 @@ namespace TrangQuanLy.Controllers
             }
         }
     }
+    #endregion ---
 }

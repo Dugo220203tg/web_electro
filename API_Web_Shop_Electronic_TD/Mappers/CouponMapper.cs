@@ -12,25 +12,24 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 			{
 				id = model.Id,
 				Name = model.Name,
-				price = model.Price,
+				price = (decimal)model.Price,
 				DateStart = (DateTime)model.DateStart,
 				DateEnd = (DateTime)model.DateEnd,
 				Description = model.Description,
-				Quantility = model.Quantility,
-				Status = model.Status,
+				Quantity = (int)model.Quantity,
+				Status = (int)model.Status,
 			};
 		}
 		public static Coupon ToCouponDTO(this CouponsMD model)
 		{
 			return new Coupon
 			{
-				Id = model.id,
 				Name = model.Name,
 				Price = model.price,
 				DateStart = model.DateStart,
 				DateEnd = model.DateEnd,
 				Description = model.Description,
-				Quantility = model.Quantility,
+				Quantity = model.Quantity,
 				Status = model.Status,
 			};
 		}

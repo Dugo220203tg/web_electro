@@ -50,8 +50,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cG9uXENvdXBvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/td/source/repos/TDProjectMVC/TrangQuanLy/Views/Coupon/Create.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cG9uXENyZWF0ZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/td/source/repos/TDProjectMVC/TrangQuanLy/Views/Coupon/Edit.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cG9uXEVkaXQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/td/source/repos/TDProjectMVC/TrangQuanLy/Views/Coupon/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cG9uXEluZGV4LmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/td/source/repos/TDProjectMVC/TrangQuanLy/Views/Coupon/Search.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cG9uXFNlYXJjaC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/td/source/repos/TDProjectMVC/TrangQuanLy/Views/DanhGiaSp/DanhGiaSp.cshtml]

@@ -1,13 +1,10 @@
 ﻿@model IEnumerable<TrangQuanLy.Models.CouponVM>
 
-<body>
+<tbody>
     @foreach (var item in Model)
     {
         <tr>
             <td><input class="form-check-input" type="checkbox"></td>
-            <td style="color: white;">
-                @Html.DisplayFor(modelItem => item.id)
-            </td>
             <td style="color: white;">
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
@@ -40,4 +37,4 @@
             </td>
         </tr>
     }
-</body>
+</tbody>

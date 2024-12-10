@@ -1,62 +1,48 @@
 ﻿@model IEnumerable<TrangQuanLy.Models.HangHoaVM>
-<style>
-    .image-product img{
-        mix-blend-mode: brightness(0) invert(1);
-    }
-</style>
-@foreach (var item in Model)
-{
-    <tr>
 
-        <td class="product-name image-product" style="width:220px; word-wrap: break-word; color: white;-webkit-line-clamp: 1;display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;">
-            @{
-                string firstImageUrl = string.Empty;
-                if (!string.IsNullOrEmpty(item.Hinh))
-                {
-                    var imageUrls = item.Hinh.Split(',');
-                    firstImageUrl = imageUrls.FirstOrDefault();
+<tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>@Html.DisplayFor(modelItem => item.MaHH)</td>
+            <td class="product-nam-admin image-product">
+                @{
+                    string firstImageUrl = string.Empty;
+                    if (!string.IsNullOrEmpty(item.Hinh))
+                    {
+                        var imageUrls = item.Hinh.Split(',');
+                        firstImageUrl = imageUrls.FirstOrDefault();
+                    }
                 }
-            }
-
-            @if (!string.IsNullOrEmpty(firstImageUrl))
-            {
-                <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@firstImageUrl" alt="@item.TenHH" style="width:80px;height:80px">
-            }
-            else
-            {
-                <img src="~/Hinh/default.jpg" alt="Default Image" style="width:80px;height:80px">
-            }
-            @Html.DisplayFor(modelItem => item.TenHH)
-            @Html.DisplayFor(modelItem => item.MaLoai)
-        </td>
-        <td >
-            @Html.DisplayFor(modelItem => item.MaHH)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SoLuong)
-        </td>
-        <td >
-            @Html.DisplayFor(modelItem => item.MaLoai)
-        </td>
-        <td >
-            @Html.DisplayFor(modelItem => item.MaNCC)
-        </td>
-        <td >
-            @item.DonGia.ToString("#,##0 VNĐ")
-        </td>
-        <td style="">
-            <div style="display: inline-grid; grid-template-columns: auto auto auto;">
-                <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaHH })">
-                    <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
-                </form>
-                |
-                <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
-                    <input type="hidden" name="MaHH" value="@item.MaHH" />
-                    <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
-                </form>
-            </div>
-        </td>
-    </tr>
-}
+                @if (!string.IsNullOrEmpty(firstImageUrl))
+                {
+                    <img src="~/Hinh/Hinh/HangHoa/@item.MaHH/@firstImageUrl" alt="@item.TenHH" class="product-image">
+                }
+                else
+                {
+                    <img src="~/Hinh/default.jpg" alt="Default Image" class="product-image">
+                }
+                <div class="product-details">
+                    <div class="product-name">@Html.DisplayFor(modelItem => item.TenHH)</div>
+                    <div class="product-category">@Html.DisplayFor(modelItem => item.TenLoai)</div>
+                </div>
+            </td>
+            <td>@Html.DisplayFor(modelItem => item.TenDanhMuc)</td>
+            <td>@Html.DisplayFor(modelItem => item.SoLuong)</td>
+            <td>@item.DonGia.ToString("#,##0 VNĐ")</td>
+            <td>@Html.DisplayFor(modelItem => item.TrangThai)</td>
+            <td style="text-align: left;">
+                <div style="display: inline-grid; grid-template-columns: auto auto auto;">
+                    <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaHH })">
+                        <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                    </form>
+                    |
+                    <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
+                        <input type="hidden" name="MaHH" value="@item.MaHH" />
+                        <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+                    </form>
+                </div>
+            </td>
+        </tr>
+    }
+</tbody>

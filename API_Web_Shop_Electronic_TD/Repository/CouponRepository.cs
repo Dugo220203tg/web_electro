@@ -23,7 +23,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			{
 				throw new ArgumentException("Chưa nhập đủ thông tin: Giá coupon không được để trống");
 			}
-			if (coupon.Quantility == null)
+			if (coupon.Quantity == null)
 			{
 				throw new ArgumentException("Chưa nhập đủ thông tin: số lương coupon không được để trống");
 			}
@@ -71,7 +71,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			{
 				throw new ArgumentException("Chưa nhập đủ thông tin: Giá coupon không được để trống");
 			}
-			if (coupon.Quantility == null)
+			if (coupon.Quantity == null)
 			{
 				throw new ArgumentException("Chưa nhập đủ thông tin: số lương coupon không được để trống");
 			}
@@ -89,12 +89,13 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			}
 
 			// Cập nhật thông tin của HangHoaModel từ dữ liệu được gửi từ client
-			Model.Name = coupon.Name;
+			Model.Name = coupon.Name;	
 			Model.Status = coupon.Status;
+			Model.Description = coupon.Description;
 			Model.Price = coupon.price;
 			Model.DateStart = coupon?.DateStart;
 			Model.DateEnd = coupon?.DateEnd;
-			Model.Quantility = coupon.Quantility;
+			Model.Quantity = coupon.Quantity;
 
 			// Lưu thay đổi vào cơ sở dữ liệu
 			await _context.SaveChangesAsync();

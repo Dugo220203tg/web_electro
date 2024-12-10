@@ -29,7 +29,7 @@ namespace TDProjectMVC.ViewComponents
 
             var danhGiaVM = new DanhGiaVM
             {
-                TrungBinhSao = trungBinhSao,
+                TrungBinhSao = (int)trungBinhSao,
                 MotSao = motSao,
                 HaiSao = haiSao,
                 BaSao = baSao,

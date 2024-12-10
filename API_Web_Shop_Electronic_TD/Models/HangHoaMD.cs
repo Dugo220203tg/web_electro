@@ -16,7 +16,7 @@
 		public int? SoLuong { get; set; }
 		public string TenNCC { get; set; }
 		public string TenLoai { get; set; }
-		public string TenHangHoa { get; set; }
+		public string TenDanhMuc { get; set; }
 
 
 	}
