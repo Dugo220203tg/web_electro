@@ -180,17 +180,17 @@ namespace TDProjectMVC.Controllers
             ViewBag.Discount = discount;
             ViewBag.Total = total;
 
-            return View(Cart); // Pass the Cart property as the model
+            return View(Cart);
         }
 
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Checkout(CheckOutVM model, string paymentMethod)
         {
-            if (!ModelState.IsValid)
-            {
-                return View(Cart);
-            }
+            //if (!ModelState.IsValid)
+            //{
+            //    return View(Cart);
+            //}
 
             var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (string.IsNullOrEmpty(customerId))
@@ -211,16 +211,16 @@ namespace TDProjectMVC.Controllers
             ViewBag.Discount = discount;
             ViewBag.Total = total;
 
-            //KhachHang khachHang = null;
-            //if (model.GiongKhachHang)
-            //{
-            //    khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == customerId);
-            //    if (khachHang == null)
-            //    {
-            //        ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng");
-            //        return View(Cart);
-            //    }
-            //}
+            KhachHang khachHang = null;
+            if (model.GiongKhachHang)
+            {
+                khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == customerId);
+                if (khachHang == null)
+                {
+                    ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng");
+                    return View(Cart);
+                }
+            }
 
             var hoadon = new HoaDon
             {
@@ -255,7 +255,7 @@ namespace TDProjectMVC.Controllers
                         var momoModel = new OrderInfoModel
                         {
                             FullName = model.HoTen,
-                            Amount = total*100,
+                            Amount = total,
                             OrderId = Guid.NewGuid().ToString(),
                             OrderInfo = "Thanh toán MOMO"
                         };
