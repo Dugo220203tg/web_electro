@@ -149,42 +149,75 @@ namespace TrangQuanLy.Controllers
                 return View(model); // Return the model to keep form data
             }
         }
-        //[Authorize]
-        //[HttpGet]
-        //public IActionResult Edit(int id)
-        //{
-        //    try
-        //    {
-        //        HangHoaVM hanghoa = new HangHoaVM();
-        //        HttpResponseMessage respone = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + id).Result;
-        //        if (respone.IsSuccessStatusCode)
-        //        {
-        //            string data = respone.Content.ReadAsStringAsync().Result;
-        //            hanghoa = JsonConvert.DeserializeObject<HangHoaVM>(data);
-        //        }
-        //        return View(hanghoa);
-
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        TempData["error"] = ex.Message;
-        //        return View();
-        //    }
-        //}
         [Authorize]
-        [HttpPost]
-        public IActionResult Edit(AllHangHoaVM model, int MaHH)
+        [HttpGet]
+        [ActionName("Edit")]
+        public IActionResult Edit_Get(int id)
         {
             try
             {
+                HangHoaVM hanghoa = new HangHoaVM();
+                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + id).Result;
+                if (response.IsSuccessStatusCode)
+                {
+                    string data = response.Content.ReadAsStringAsync().Result;
+                    hanghoa = JsonConvert.DeserializeObject<HangHoaVM>(data);
+                }
+                return View(hanghoa);
+            }
+            catch (Exception ex)
+            {
+                TempData["error"] = ex.Message;
+                return View();
+            }
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ActionName("Edit")]
+        public IActionResult Edit_Post(AllHangHoaVM model, int MaHH)
+        {
+            try
+            {
+                if (model == null)
+                {
+                    TempData["error"] = "Dữ liệu không hợp lệ!";
+                    return View();
+                }
+
+                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + MaHH).Result;
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    TempData["error"] = "Không tìm thấy sản phẩm!";
+                    return RedirectToAction("Index");
+                }
+
+                var existingProduct = JsonConvert.DeserializeObject<AllHangHoaVM>(response.Content.ReadAsStringAsync().Result);
+
+                if (existingProduct == null)
+                {
+                    TempData["error"] = "Sản phẩm không hợp lệ!";
+                    return RedirectToAction("Index");
+                }
+
+                if (string.IsNullOrEmpty(model.Hinh))
+                {
+                    model.Hinh = existingProduct.Hinh;
+                }
+
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content).Result;
+
+                response = _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content).Result;
+
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Cập nhật thành công!";
                     return RedirectToAction("Index");
                 }
+
+                TempData["error"] = "Cập nhật không thành công!";
                 return View();
             }
             catch (Exception ex)
@@ -193,6 +226,7 @@ namespace TrangQuanLy.Controllers
                 return View();
             }
         }
+
         [Authorize]
         [HttpPost, ActionName("Delete")]
         public IActionResult DeleteConfirm(int MaHH)

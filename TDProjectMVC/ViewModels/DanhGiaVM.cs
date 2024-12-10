@@ -14,7 +14,7 @@ namespace TDProjectMVC.ViewModels
         public int MaHH { get; set; }
         public string NoiDung { get; set; }
         public DateTime Ngay { get; set; }
-        public double TrungBinhSao { get; set; }
+        public int TrungBinhSao { get; set; }
         public double MotSao { get; set; }
         public double HaiSao { get; set; }
         public double BaSao { get; set; }

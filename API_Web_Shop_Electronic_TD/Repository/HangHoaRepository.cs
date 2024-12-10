@@ -18,8 +18,9 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		public async Task<List<HangHoa>> GetAllAsync()
 		{
 			return await db.HangHoas
-				.Include(hh => hh.MaNccNavigation)  // Bao gồm nhà cung cấp (NhaCungCap)
-				.Include(hh => hh.MaLoaiNavigation) // Bao gồm loại sản phẩm (LoaiSanPham)
+				.Include(hh => hh.MaNccNavigation)  
+				.Include(hh => hh.MaLoaiNavigation) 
+					.ThenInclude(ml => ml.DanhMuc)
 				.ToListAsync();
 		}
 
@@ -52,10 +53,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			if (model.DonGia <= 0)
 			{
 				throw new ArgumentException("Đơn giá không hợp lệ ");
-			}
-			if (model.SoLanXem <= 0)
-			{
-				throw new ArgumentException("Số lần xem không hợp lệ ");
 			}
 			if (model.SoLuong <= 0)
 			{
@@ -96,10 +93,15 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		}
 
 
-		public async Task<HangHoa?> GetByIdAsync(int Mahh)
+		public async Task<HangHoa> GetByIdAsync(int id)
 		{
-			return await db.HangHoas.FindAsync(Mahh);
+			return await db.HangHoas
+				.Include(h => h.MaLoaiNavigation) 
+					.ThenInclude(l => l.DanhMuc)      
+				.Include(h => h.MaNccNavigation) 
+				.FirstOrDefaultAsync(h => h.MaHh == id);
 		}
+
 		public async Task<HangHoa?> UpdateAsync(int Mahh, UpdateHangHoaMD Model)
 		{
 			if (string.IsNullOrEmpty(Model.TenHH))
@@ -130,10 +132,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			{
 				throw new ArgumentException("Đơn giá không hợp lệ ");
 			}
-			if (Model.SoLanXem <= 0)
-			{
-				throw new ArgumentException("Số lần xem không hợp lệ ");
-			}
 			if (Model.SoLuong <= 0)
 			{
 				throw new ArgumentException("Số Lượng xem không hợp lệ ");
@@ -153,8 +151,11 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				throw new ArgumentException($"Mã Nhà cung cấp {Model.MaNCC} không tồn tại trong hệ thống");
 			}
 			// Lấy đối tượng HangHoa từ cơ sở dữ liệu
-			var HangHoaModel = await db.HangHoas.FirstOrDefaultAsync(x => x.MaHh == Mahh);
-
+			var HangHoaModel = await db.HangHoas
+				.Include(h => h.MaLoaiNavigation)
+				.ThenInclude(l => l.DanhMuc)
+				.Include(h => h.MaNccNavigation)
+				.FirstOrDefaultAsync(x => x.MaHh == Mahh);
 			// Kiểm tra xem HangHoaModel có null không
 			if (HangHoaModel == null)
 			{

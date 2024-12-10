@@ -75,7 +75,7 @@
                                 </div>
                             </td>
                             <td>
-                                <p class="mb-0 mt-4">$ @item.ThanhTien</p>
+                                <p class="mb-0 mt-4">@item.ThanhTien.ToString("#,##0 VNĐ")</p>
                             </td>
                             <td>
                                 <button onclick="RemoveCart(@item.MaHH, this)">
@@ -91,8 +91,8 @@
         <div class="row center-page">
             <div class="col-md-7">
                 <div class="mt-5" style="display: flex; margin-top: 360px;">
-                    <input type="text" class="input" placeholder="Coupon Code" style="width: 340px; margin-right: 20px;">
-                    <a class="primary-btn order-submit" style="border-radius: 0px;">Add</a>
+                    <input id="couponCodeInput" type="text" class="input" placeholder="Coupon Code" style="width: 340px; margin-right: 20px;">
+                    <button class="primary-btn order-submit" style="border-radius: 0px;" onclick="applyCoupon()">Add</button>
                 </div>
             </div>
             <div class="col-md-5 order-details" style="margin-top:115px" ; margin-left=-5px>
@@ -105,15 +105,15 @@
                             <strong>Subtotal</strong>
                         </div>
                         <div>
-                            <div>$ @Model.Sum(p => p.ThanhTien)</div>
+                            <div>@Model.Sum(p => p.ThanhTien).ToString("#,##0 VNĐ")</div>
                         </div>
                     </div>
                     <div class="order-col">
                         <div>
-                            <strong>Shipping</strong>
+                            <strong>Coupon</strong>
                         </div>
                         <div>
-                            <div>Free</div>
+                            <div id="cart-discount">0</div>
                         </div>
                     </div>
                     <div class="order-col">
@@ -121,7 +121,7 @@
                             <strong>TOTAL</strong>
                         </div>
                         <div>
-                            <div>$@Model.Sum(p => p.ThanhTien)</div>
+                            <div id="cart-total">@Model.Sum(p => p.ThanhTien).ToString("#,##0 VNĐ")</div>
                         </div>
                     </div>
                 </div>
@@ -132,3 +132,41 @@
         </div>
     </div>
 </div>
+<script>
+    function applyCoupon() {
+        const couponCode = document.getElementById('couponCodeInput').value.trim();
+        if (!couponCode) {
+            alert("Please enter a coupon code.");
+            return;
+        }
+        fetch('/Cart/ApplyCoupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ Description: couponCode })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const subtotal = @Model.Sum(p => p.ThanhTien);
+                    const discount = data.discount / 100;
+                    const total = subtotal * (1 - discount);
+                    const formatter = new Intl.NumberFormat('vi-VN', {
+                        style: 'currency',
+                        currency: 'VND',
+                        minimumFractionDigits: 0
+                    });
+                    const formattedTotal = formatter.format(total);
+                    const formattedDiscount = (data.discount).toFixed(0) + "%";
+                    alert(`Discount applied! New total: ${formattedTotal}`);
+                    document.getElementById('cart-discount').textContent = formattedDiscount;
+                    document.getElementById('cart-total').textContent = formattedTotal;
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+

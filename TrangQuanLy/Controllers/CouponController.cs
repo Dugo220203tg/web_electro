@@ -29,16 +29,16 @@ namespace TrangQuanLy.Controllers
                 pagesize = 5;
             }
             ViewBag.PageSize = pagesize;
-            List<CouponVM> CData = new List<CouponVM>();
+            List<CouponVM> Coupon = new List<CouponVM>();
             HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/Coupon/GetAll").Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
-                CData = JsonConvert.DeserializeObject<List<CouponVM>>(data);
+                Coupon = JsonConvert.DeserializeObject<List<CouponVM>>(data);
             }
-            int totalItems = CData.Count();
-            var paginatedList = PaginatedList<CouponVM>.CreateAsync(CData.AsQueryable(), page ?? 1, pagesize ?? 5);
+            int totalItems = Coupon.Count();
+            var paginatedList = PaginatedList<CouponVM>.CreateAsync(Coupon.AsQueryable(), page ?? 1, pagesize ?? 5);
             ViewBag.Page = page;
             ViewBag.TotalPages = paginatedList.TotalPages;
 
@@ -51,13 +51,13 @@ namespace TrangQuanLy.Controllers
             List<CouponVM> searchResult = new List<CouponVM>();
 
             // Send a request to the API to get all HangHoa entities
-            List<CouponVM> CData = new List<CouponVM>();
+            List<CouponVM> Coupon = new List<CouponVM>();
             HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/Coupon/GetAll").Result;
 
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                CData = JsonConvert.DeserializeObject<List<CouponVM>>(data);
+                Coupon = JsonConvert.DeserializeObject<List<CouponVM>>(data);
             }
             else
             {
@@ -65,13 +65,13 @@ namespace TrangQuanLy.Controllers
             }
             if (query != null)
             {
-                searchResult = CData.Where(h => MyUtil.RemoveDiacritics(h.Name)
+                searchResult = Coupon.Where(h => MyUtil.RemoveDiacritics(h.Name)
                     .IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0).ToList();
                 return View(searchResult);
             }
             if (query == null)
             {
-                return View(CData);
+                return View(Coupon);
             }
             return View();
         }
@@ -87,7 +87,7 @@ namespace TrangQuanLy.Controllers
             {
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PostAsync(_client.BaseAddress + "/CData/Post", content).Result;
+                HttpResponseMessage response = _client.PostAsync(_client.BaseAddress + "/Coupon/Post", content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -108,14 +108,14 @@ namespace TrangQuanLy.Controllers
         {
             try
             {
-                CouponVM CData = new CouponVM();
+                CouponVM Coupon = new CouponVM();
                 HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/Coupon/GetById/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     string data = response.Content.ReadAsStringAsync().Result;
-                    CData = JsonConvert.DeserializeObject<CouponVM>(data);
+                    Coupon = JsonConvert.DeserializeObject<CouponVM>(data);
                 }
-                return View(CData);
+                return View(Coupon);
 
             }
             catch (Exception ex)
@@ -126,13 +126,13 @@ namespace TrangQuanLy.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(CouponVM model, int Maloai)
+        public IActionResult Edit(CouponVM model, int id)
         {
             try
             {
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PutAsync(_client.BaseAddress + "/Coupon/Update/" + Maloai, content).Result;
+                HttpResponseMessage response = _client.PutAsync(_client.BaseAddress + "/Coupon/Update/" + id, content).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Cập nhật thành công!";
@@ -150,17 +150,17 @@ namespace TrangQuanLy.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm(int Maloai)
+        public IActionResult DeleteConfirm(int id)
         {
             try
             {
-                HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/Coupon/Delete/" + Maloai).Result;
+                HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/Coupon/Delete/" + id).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Xóa thành công!";
                     return RedirectToAction("Index");
                 }
-                return View("Index", "CData");
+                return View("Index");
             }
             catch (Exception ex)
             {

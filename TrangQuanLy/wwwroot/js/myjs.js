@@ -260,17 +260,27 @@ const ImageHandler = {
     removeImageInput: function (button) {
         const group = button.closest('.image-input-group');
         if (group) {
+            const img = group.querySelector('.preview-image');
+            if (img && img.getAttribute('data-existing') === 'true') {
+                const existingImages = document.getElementById('hinhInput').value.split(',');
+                const updatedImages = existingImages.filter(name => name !== img.src.split('/').pop());
+                document.getElementById('hinhInput').value = updatedImages.join(',');
+            }
             group.remove();
             this.updateExistingImageNames();
         }
     },
 
     updateExistingImageNames: function () {
-        const imageNames = Array.from(document.querySelectorAll('.image-name'))
+        const oldImageNames = Array.from(document.querySelectorAll('.image-preview-item img'))
+            .map(img => img.src.split('/').pop()); // Lấy tên file từ URL
+        const newImageNames = Array.from(document.querySelectorAll('.image-name'))
             .map(el => el.textContent);
+        const combinedImageNames = [...oldImageNames, ...newImageNames];
+
         const hinhInput = document.getElementById('hinhInput');
         if (hinhInput) {
-            hinhInput.value = imageNames.join(',');
+            hinhInput.value = combinedImageNames.join(',');
         }
     },
 

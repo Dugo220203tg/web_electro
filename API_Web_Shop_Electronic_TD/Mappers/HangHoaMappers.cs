@@ -7,14 +7,14 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 	{
 		public static HangHoaMD ToHangHoaDo(this HangHoa Model)
 		{
-
 			if (Model == null)
 			{
-				// Handle the case where Model is null
-				return null; // Or throw an exception, depending on your requirements
+				return null; // Hoặc ném lỗi nếu cần
 			}
-			String TenLoai = Model.MaLoaiNavigation != null ? Model.MaLoaiNavigation.TenLoai : null;
-			String TenNCC = Model.MaNccNavigation != null ? Model.MaNccNavigation.TenCongTy : null;
+
+			string TenLoai = Model.MaLoaiNavigation != null ? Model.MaLoaiNavigation.TenLoai : null;
+			string TenNCC = Model.MaNccNavigation != null ? Model.MaNccNavigation.TenCongTy : null;
+			string TenDanhMuc = Model.MaLoaiNavigation?.DanhMuc != null ? Model.MaLoaiNavigation.DanhMuc.TenDanhMuc : null;
 
 			return new HangHoaMD
 			{
@@ -31,9 +31,11 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				SoLanXem = (double)Model.SoLanXem,
 				SoLuong = Model.SoLuong.HasValue ? (int)Model.SoLuong.Value : 0,
 				TenLoai = TenLoai,
-				TenNCC = TenNCC
+				TenNCC = TenNCC,
+				TenDanhMuc = TenDanhMuc
 			};
 		}
+
 
 		public static AllHangHoaMD ToAllHangHoaDo(this HangHoa Model)
 		{

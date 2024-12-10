@@ -13,48 +13,46 @@
                     <h3 class="mb-4" style="margin-bottom:0px;">Sản phẩm hàng hóa</h3>
 
                     <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
-                        <form class="d-none d-md-flex ms-4" asp-action="Search" asp-controller="HangHoa" method="get">
+                        <form class="ms-4" asp-action="Search" asp-controller="HangHoa" method="get">
                             <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
                             <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
                         </form>
-                    </div> 
+                    </div>
                     <div style="margin-right:9px">
                         <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm sản phẩm</a>
                     </div>
                 </div>
                 <div class="table-responsive">
-                    <table class="table" id="myTable">
+                    <table class="table text-start align-middle mb-0" style="border-color:#0dcaf0;">
                         <thead>
-                            <tr>
-                                <th style="width:220px; word-wrap: break-word;color: white;">
-                                    Sản phẩm
-                                </th>
-                                <th style="color: white">
+                            <tr class="text-white">
+                                <th scope="col">
                                     SKU
                                 </th>
-                                <th style="color: white">
+                                <th scope="col">
+                                    Sản phẩm
+                                </th>
+                                <th scope="col">
                                     Danh mục
                                 </th>
-                                <th style="color: white">
+                                <th scope="col">
                                     Số lượng
                                 </th>
-                                <th style="color: white">
+                                <th scope="col">
                                     Đơn giá
-                                </th >
-                                <th style="color: white">
+                                </th>
+                                <th scope="col">
                                     Trạng thái
                                 </th>
-                                <th style="color: white">
+                                <th scope="col">
                                     Chức năng
                                 </th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @if (Model != null && Model.Any())
-                            {
-                                @await Html.PartialAsync("SanPham", Model)
-                            }
-                        </tbody>
+                        @if (Model != null && Model.Any())
+                        {
+                            @await Html.PartialAsync("SanPham", Model)
+                        }
                     </table>
                 </div>
                 <!-- Pagination Controls -->

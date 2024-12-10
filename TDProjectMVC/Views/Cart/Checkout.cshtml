@@ -52,23 +52,39 @@
                             <div><strong>TOTAL</strong></div>
                         </div>
                         <div class="order-products">
-                            @foreach (var item in Model)
+                            @foreach (var item in Model) // Model is now the Cart
                             {
-                                    <div class="order-col">
-                                        <div>@item.SoLuong @item.TenHH</div>
-                                        <div>@item.DonGia.ToString("#,##0 VNĐ")</div>
-                                    </div>
+                                <div class="order-col">
+                                    <div>@item.SoLuong x @item.TenHH</div>
+                                    <div>@item.DonGia.ToString("#,##0 VNĐ")</div>
+                                </div>
                             }
                         </div>
                         <div class="order-col">
-                            <div>Shiping</div>
+                            <div>Shipping</div>
                             <div><strong>FREE</strong></div>
                         </div>
-                        <div class="order-col">
-                            <div><strong>TOTAL</strong></div>
-                            <div><strong class="order-total">@Model.Sum(p => p.ThanhTien).ToString("#,##0.00 VNĐ")</strong></div>
-                        </div>
+                        @if (ViewBag.Discount != null && ViewBag.Total != null)
+                        {
+                            <div class="order-col">
+                                <div>Coupon Discount</div>
+                                <div>
+                                    <strong>
+                                        - @((Model.Sum(p => p.SoLuong * p.DonGia) * ((double)ViewBag.Discount / 100)).ToString("#,##0 VNĐ"))
+                                    </strong>
+                                </div>
+                            </div>
+                            <div class="order-col">
+                                <div><strong>TOTAL</strong></div>
+                                <div><strong class="order-total">@ViewBag.Total.ToString("#,##0 VNĐ")</strong></div>
+                            </div>
+                        }
+                        else
+                        {
+                            <p>Error: Unable to calculate order totals.</p>
+                        }
                     </div>
+
                     <div class="payment-method">
                         <div class="input-radio">
                             <input type="radio" name="paymentMethod" id="payment-1" value="COD">

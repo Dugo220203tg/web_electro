@@ -104,28 +104,55 @@ namespace TDProjectMVC.Controllers
             }
         }
 
+        [HttpPost]
+        public IActionResult ApplyCoupon([FromBody] CouponVM model)
+        {
+            if (model == null || string.IsNullOrEmpty(model.Description))
+            {
+                return Json(new { success = false, message = "No coupon code provided." });
+            }
+
+            var coupon = db.Coupons.FirstOrDefault(c => c.Description.Equals(model.Description));
+            if (coupon == null)
+            {
+                return Json(new { success = false, message = "Invalid coupon code." });
+            }
+
+            if (coupon.DateEnd < DateTime.Now)
+            {
+                return Json(new { success = false, message = "Expired coupon code." });
+            }
+
+            // Calculate discount and total
+            decimal discount = (decimal)coupon.Price;
+            HttpContext.Session.SetString("CouponCode", model.Description);
+            HttpContext.Session.SetString("CouponDiscount", discount.ToString());
+            return Json(new { success = true, discount });
+        }
+
+
         public IActionResult IncreaseQuantity(int id)
         {
             var gioHang = Cart;
             var item = gioHang.SingleOrDefault(p => p.MaHH == id);
             if (item != null)
             {
-                item.SoLuong++; // Increment quantity
+                item.SoLuong++; 
                 HttpContext.Session.Set(MySetting.CART_KEY, gioHang); // Update session
             }
-            return RedirectToAction("Index"); // Redirect back to the cart page
+            return RedirectToAction("Index"); 
         }
 
         public IActionResult MinusQuantity(int id)
         {
             var gioHang = Cart;
             var item = gioHang.SingleOrDefault(p => p.MaHH == id);
-            if (item != null && item.SoLuong > 1) // Ensure quantity does not drop below 1
+            if (item != null && item.SoLuong > 1) 
             {
-                item.SoLuong--; // Decrement quantity
+                item.SoLuong--;
                 HttpContext.Session.Set(MySetting.CART_KEY, gioHang); // Update session
             }
-            return RedirectToAction("Index"); // Redirect back to the cart page
+            return RedirectToAction("Index");
         }
 
 
@@ -135,13 +162,27 @@ namespace TDProjectMVC.Controllers
         [HttpGet]
         public IActionResult Checkout()
         {
-            if (Cart.Count == 0)
+            if (Cart == null || !Cart.Any())
             {
                 return Redirect("/");
             }
 
-            return View(Cart);
+            string couponCode = HttpContext.Session.GetString("CouponCode");
+            decimal discount = 0;
+            if (!string.IsNullOrEmpty(couponCode))
+            {
+                discount = decimal.Parse(HttpContext.Session.GetString("CouponDiscount"));
+            }
+
+            decimal subtotal = (decimal)Cart.Sum(p => p.SoLuong * p.DonGia);
+            decimal total = subtotal * (100 - discount) / 100;
+
+            ViewBag.Discount = discount;
+            ViewBag.Total = total;
+
+            return View(Cart); // Pass the Cart property as the model
         }
+
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> Checkout(CheckOutVM model, string paymentMethod)
@@ -157,29 +198,43 @@ namespace TDProjectMVC.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            KhachHang khachHang = null;
-            if (model.GiongKhachHang)
+            string couponCode = HttpContext.Session.GetString("CouponCode");
+            decimal discount = 0;
+            if (!string.IsNullOrEmpty(couponCode))
             {
-                khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == customerId);
-                if (khachHang == null)
-                {
-                    ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng");
-                    return View(Cart);
-                }
+                discount = decimal.Parse(HttpContext.Session.GetString("CouponDiscount"));
             }
+
+            decimal subtotal = (decimal)Cart.Sum(p => p.SoLuong * p.DonGia);
+            decimal total = subtotal * (100 - discount) / 100;
+
+            ViewBag.Discount = discount;
+            ViewBag.Total = total;
+
+            //KhachHang khachHang = null;
+            //if (model.GiongKhachHang)
+            //{
+            //    khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == customerId);
+            //    if (khachHang == null)
+            //    {
+            //        ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng");
+            //        return View(Cart);
+            //    }
+            //}
 
             var hoadon = new HoaDon
             {
                 MaKh = customerId,
-                HoTen = model.HoTen ?? khachHang?.HoTen ?? "N/A",
-                DiaChi = model.DiaChi ?? khachHang?.DiaChi ?? "N/A",
-                DienThoai = model.DienThoai ?? khachHang?.DienThoai ?? "N/A",
+                HoTen = model.HoTen,
+                DiaChi = model.DiaChi,
+                DienThoai = model.DienThoai,
                 NgayDat = DateTime.Now,
                 CachThanhToan = paymentMethod,
                 CachVanChuyen = "GRAB",
                 MaTrangThai = 0,
-                GhiChu = model.GhiChu ?? "N/A"
+                GhiChu = model.GhiChu,
             };
+
             try
             {
                 switch (paymentMethod.ToUpperInvariant())
@@ -188,8 +243,7 @@ namespace TDProjectMVC.Controllers
                         var paymentModel = new PaymentInformationModel
                         {
                             FullName = model.HoTen,
-                            Amount = Cart.Sum(p => p.ThanhTien)*100,
-
+                            Amount = (double)total*100,
                             Description = "Thanh toán qua VNPAY",
                             OrderType = "other" // Cập nhật loại đơn hàng tùy thuộc vào cấu hình của bạn
 
@@ -201,22 +255,18 @@ namespace TDProjectMVC.Controllers
                         var momoModel = new OrderInfoModel
                         {
                             FullName = model.HoTen,
-                            Amount = (decimal)Cart.Sum(p => p.ThanhTien),
+                            Amount = total*100,
                             OrderId = Guid.NewGuid().ToString(),
                             OrderInfo = "Thanh toán MOMO"
                         };
                         return await CreatePaymentMomo(momoModel);
-
-                    case "COD":
                     default:
                         return await ProcessOrder(hoadon, model.Email);
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"VNPayCallBack Error: {ex.Message}");
-                Console.WriteLine($"VNPayCallBack StackTrace: {ex.StackTrace}");
-                _logger.LogError($"VNPayCallBack encountered an error: {ex}");
+                _logger.LogError($"Checkout Error: {ex}");
                 TempData["Message"] = "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.";
                 return RedirectToAction("PaymentFail");
             }
@@ -423,7 +473,8 @@ namespace TDProjectMVC.Controllers
 
                     // Clear cart
                     HttpContext.Session.Remove(MySetting.CART_KEY);
-
+                    HttpContext.Session.Remove("CouponCode");
+                    HttpContext.Session.Remove("CouponDiscount");
                     return true;
                 }
                 catch
@@ -497,6 +548,8 @@ namespace TDProjectMVC.Controllers
 
                         // Clear the cart
                         HttpContext.Session.Set<List<CartItem>>(MySetting.CART_KEY, new List<CartItem>());
+                        HttpContext.Session.Remove("CouponCode");
+                        HttpContext.Session.Remove("CouponDiscount");
                         TempData["Message"] = "Thanh toán VNPay thành công!";
                         return View("Success");
                     }

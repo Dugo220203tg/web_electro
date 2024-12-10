@@ -1,45 +1,19 @@
-﻿@using TrangQuanLy.Helpers;
-@model PaginatedList<TrangQuanLy.Models.DanhGiaSpMD>
-@{
-    ViewData["Title"] = "Index";
-    Layout = "_Footer-Header";
-
-}
+﻿@using TDProjectMVC.Helpers;
+@model PaginatedList<TDProjectMVC.ViewModels.CouponVM>
 <div class="container-fluid pt-4 px-4">
     <div class="bg-secondary text-center rounded p-4">
-        <div class="d-flex align-items-center justify-content-between mb-4 text-primary">
-            <h3 class="mb-4" style="margin-bottom:0px;">Đánh giá chất lượng</h3>
-            <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
-                <form class="ms-4" asp-action="Search" asp-controller="DanhGiaSp" method="get">
-                    <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
-                    <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
-                </form>
+        <div id="breadcrumb" class="section py-3" style="margin-bottom:0px">
+            <div class="container text-center">
+                <h2>
+                    <span class="text-decoration-none">
+                        Mã giảm giá
+                    </span>>
+                </h2>
             </div>
-            @* <div style="margin-right:9px">
-                <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm loại sản phẩm</a>
-            </div> *@
         </div>
         <div class="table-responsive">
             <table class="table text-start align-middle table-bordered table-hover mb-0" style="border-color:#0dcaf0;">
-                <thead>
-                    <tr class="text-white">
-                        <th scope="col"><input class="form-check-input" type="checkbox"></th>
-                        <th scope="col">Mã khách hàng</th>
-                        <th scope="col">Tên hàng hóa</th>
-                        <th scope="col">Hình ảnh</th>
-                        <th scope="col">Sao</th>
-                        <th scope="col">Nội dung</th>
-                        <th scope="col">Trạng thái</th>
-                        <th scope="col">Chức năng</th>
-
-                    </tr>
-                </thead>
-                <tbody>
-                    @if (Model != null && Model.Any())
-                    {
-                        @await Html.PartialAsync("DanhGiaSp", Model)
-                    }
-                </tbody>
+                @await Html.PartialAsync("Coupon", Model)
             </table>
         </div>
         <!-- Pagination Controls -->

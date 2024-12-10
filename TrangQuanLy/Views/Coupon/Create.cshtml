@@ -1,0 +1,54 @@
+﻿@model TrangQuanLy.Models.CouponVM
+@{
+    ViewData["Title"] = "Create";
+    Layout = "_Footer-Header";
+}
+<body style="height:max-content">
+    <div class="" style="display:flex; align-items:center; justify-content:center">
+        <div class="bg-secondary rounded h-100 p-4" style="margin-top:30px; position: relative;">
+            <h5 class="mb-4">Thêm mã giảm giá</h5>
+            <a class="close-button" href="/Coupon/Index">X</a>
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="mb-3">
+                    <label asp-for="Name" class="control-label">Tên</label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Description" class="control-label">Mô tả</label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="quantity" class="control-label">Số lượng</label>
+                    <input asp-for="quantity" class="form-control" />
+                    <span asp-validation-for="quantity" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="price" class="control-label">Giảm giá</label>
+                    <input asp-for="price" class="form-control" />
+                    <span asp-validation-for="price" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="DateStart" class="control-label">Ngày bắt đầu</label>
+                    <input asp-for="DateStart" class="form-control" />
+                    <span asp-validation-for="DateStart" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="DateEnd" class="control-label">Ngày kết thúc</label>
+                    <input asp-for="DateEnd" class="form-control" />
+                    <span asp-validation-for="DateEnd" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label asp-for="Status" class="control-label">Trạng thái</label>
+                    <input asp-for="Status" class="form-control" />
+                    <span asp-validation-for="Status" class="text-danger"></span>
+                </div>
+                <div class="mb-3" style="display:grid; place-items:center">
+                    <input type="submit" value="Create" class="btn btn-primary" />
+                </div>
+            </form>
+        </div>
+    </div>
+</body>

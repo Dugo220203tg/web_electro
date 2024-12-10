@@ -21,6 +21,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<ChuDe> ChuDes { get; set; }
 
+    public virtual DbSet<Coupon> Coupons { get; set; }
+
     public virtual DbSet<DanhGiaSp> DanhGiaSps { get; set; }
 
     public virtual DbSet<DanhMucSp> DanhMucSps { get; set; }
@@ -53,10 +55,11 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<TrangWeb> TrangWebs { get; set; }
 
+    public virtual DbSet<UserCoupon> UserCoupons { get; set; }
+
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseSqlServer("Data Source=DESKTOP-4AS3J3K;Initial Catalog=Hshop2023;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -136,6 +139,18 @@ public partial class Hshop2023Context : DbContext
                 .HasForeignKey(d => d.MaNv)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("FK_ChuDe_NhanVien");
+        });
+
+        modelBuilder.Entity<Coupon>(entity =>
+        {
+            entity.ToTable("Coupon");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.DateEnd).HasColumnType("datetime");
+            entity.Property(e => e.DateStart).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(50);
+            entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.Price).HasColumnType("decimal(18, 0)");
         });
 
         modelBuilder.Entity<DanhGiaSp>(entity =>
@@ -493,6 +508,15 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.Url)
                 .HasMaxLength(250)
                 .HasColumnName("URL");
+        });
+
+        modelBuilder.Entity<UserCoupon>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("User_Coupons");
+
+            entity.Property(e => e.UserId).HasMaxLength(20);
         });
 
         modelBuilder.Entity<YeuThich>(entity =>

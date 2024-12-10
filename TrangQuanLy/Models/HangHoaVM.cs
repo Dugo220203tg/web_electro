@@ -27,7 +27,7 @@ namespace TrangQuanLy.Models
                 return SoLuong == 0 ? "Hết hàng" : "Còn hàng";
             }
         }
-
+        public string TenDanhMuc { get; set; }
 
     }
     public class AllHangHoaVM

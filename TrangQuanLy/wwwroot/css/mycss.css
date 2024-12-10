@@ -156,9 +156,9 @@
     font-weight: bold;
     text-decoration: none;
 }
-    .close-button:hover {
+/*    .close-button:hover {
         background-color: #c01212;
-    }
+    }*/
 .submit-button {
     
 }
@@ -254,13 +254,12 @@ form {
     width: 120px;
     height: 120px;
     object-fit: cover;
-    margin: 0 auto 1rem;
     border-radius: 4px;
 }
 
 .product-name {
     font-size: 1.25rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: -1px;
 }
 
 .product-price {
@@ -276,4 +275,44 @@ form {
 .product-sold {
     font-size: 0.875rem;
     color: white;
+}
+.image-product {
+    display: flex;
+    align-items: center;
+}
+
+    .image-product img {
+        width: 80px;
+        height: 80px;
+        border: 2px solid black;
+        object-fit: cover;
+        margin-right: 10px;
+    }
+
+.product-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+}
+
+.product-name-admin {
+    display:flex;
+    font-size: 16px;
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-category {
+    font-size: 14px;
+    color: lightgray;
+}
+
+td:last-child {
+    text-align: left;
+}
+.ms-4{
+    display:contents;
 }

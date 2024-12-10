@@ -12,5 +12,8 @@
 		public string? GhiChu { get; set;}
 		public string? CachThanhToan { get; set;}
 		public string? chitiethoadon {  get; set; }
-	}
+        public IEnumerable<CartItem> CartItems { get; set; }
+        public decimal Discount { get; set; }
+        public decimal Total { get; set; }
+    }
 }
