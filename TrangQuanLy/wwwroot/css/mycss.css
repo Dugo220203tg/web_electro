@@ -42,12 +42,6 @@
     padding: 20px;
 }
 
-.product-name {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    -webkit-line-clamp: 1;
-}
 /* Form layout */
 .form-content {
     display: flex;
@@ -255,11 +249,6 @@ form {
     height: 120px;
     object-fit: cover;
     border-radius: 4px;
-}
-
-.product-name {
-    font-size: 1.25rem;
-    margin-bottom: -1px;
 }
 
 .product-price {

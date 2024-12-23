@@ -17,6 +17,7 @@
 		public string TenNCC { get; set; }
 		public string TenLoai { get; set; }
 		public string TenDanhMuc { get; set; }
+		public int MaDanhMuc { get; set; }
 
 
 	}

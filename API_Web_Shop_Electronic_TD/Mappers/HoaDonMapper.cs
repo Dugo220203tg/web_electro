@@ -20,36 +20,34 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				MaTrangThai = model.MaTrangThai,
 				CachVanChuyen = model.CachVanChuyen,
 				PhiVanChuyen = (float?)model.PhiVanChuyen,
-				NgayCan = model.NgayCan ?? DateTime.MinValue, // Gán giá trị mặc định nếu null
-				NgayGiao = model.NgayGiao ?? DateTime.MinValue // Gán giá trị mặc định nếu null
+				NgayCan = model.NgayCan ?? DateTime.MinValue, 
+				NgayGiao = model.NgayGiao ?? DateTime.MinValue 
 			};
 
-			// Kiểm tra nếu MaTrangThaiNavigation không null thì gán TrangThai
 			if (model.MaTrangThaiNavigation != null)
 			{
 				hoaDonMD.TrangThai = model.MaTrangThaiNavigation.TenTrangThai;
 			}
 
-			// Kiểm tra nếu ChiTietHds không null để tránh NullReferenceException
 			if (model.ChiTietHds != null)
 			{
 				hoaDonMD.ChiTietHds = model.ChiTietHds
-					.Where(ct => ct != null) // Đảm bảo rằng ct không phải null
+					.Where(ct => ct != null) 
 					.Select(ct => new ChiTietHoaDonMD
 					{
 						MaCT = ct.MaCt,
 						MaHD = ct.MaHd,
 						MaHH = ct.MaHh,
-						SoLuong = ct.SoLuong, // SoLuong đã có giá trị không cần kiểm tra null
-						DonGia = ct.DonGia,   // DonGia đã có giá trị không cần kiểm tra null
-						MaGiamGia = (int)ct.MaGiamGia, // Nếu MaGiamGia là null thì gán 0
-						TenHangHoa = ct.MaHhNavigation?.TenHh ?? "", // Kiểm tra null cho MaHhNavigation và TenHh
-						HinhAnh = ct.MaHhNavigation?.Hinh ?? "" // Kiểm tra null cho Hinh
+						SoLuong = ct.SoLuong, 
+						DonGia = ct.DonGia,  
+						MaGiamGia = (int)ct.MaGiamGia, 
+						TenHangHoa = ct.MaHhNavigation?.TenHh ?? "", 
+						HinhAnh = ct.MaHhNavigation?.Hinh ?? "" 
 					}).ToList();
 			}
 			else
 			{
-				hoaDonMD.ChiTietHds = new List<ChiTietHoaDonMD>(); // Đảm bảo rằng danh sách không null
+				hoaDonMD.ChiTietHds = new List<ChiTietHoaDonMD>(); 
 			}
 
 			return hoaDonMD;
@@ -77,7 +75,6 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				MaNv = model.MaNV,
 			};
 
-			// Chuyển danh sách chi tiết hóa đơn
 			hoaDon.ChiTietHds = model.ChiTietHds
 				.Select(ct => new ChiTietHd
 				{

@@ -384,6 +384,22 @@
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "GetByDanhMuc",
+    "RelativePath": "api/HangHoa/GetByDanhMuc/{maDanhMuc}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "maDanhMuc",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
     "Method": "GetById",
     "RelativePath": "api/HangHoa/GetById/{MaHH}",
     "HttpMethod": "GET",
@@ -627,6 +643,22 @@
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "ChangePassword",
+    "RelativePath": "api/KhachHangs/ChangePassword",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "changePasswordDto",
+        "Type": "API_Web_Shop_Electronic_TD.Models.ChangePasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
     "Method": "Delete",
     "RelativePath": "api/KhachHangs/Delete/{MaKh}",
     "HttpMethod": "DELETE",
@@ -639,6 +671,32 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "ForgotPassword",
+    "RelativePath": "api/KhachHangs/ForgotPassword/forgot-password",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "forgotPasswordDto",
+        "Type": "API_Web_Shop_Electronic_TD.Models.ForgotPasswordDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "GetAccountDetail",
+    "RelativePath": "api/KhachHangs/GetAccountDetail",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -670,7 +728,7 @@
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
     "Method": "Login",
-    "RelativePath": "api/KhachHangs/Login/login",
+    "RelativePath": "api/KhachHangs/Login",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -694,6 +752,54 @@
       {
         "Name": "model",
         "Type": "API_Web_Shop_Electronic_TD.Models.AdminDkMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "RefreshToken",
+    "RelativePath": "api/KhachHangs/RefreshToken",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tokenDto",
+        "Type": "API_Web_Shop_Electronic_TD.Models.RefreshTokenDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "RegisterAccount",
+    "RelativePath": "api/KhachHangs/RegisterAccount",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.RegisterMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
+    "Method": "ResetPassword",
+    "RelativePath": "api/KhachHangs/ResetPassword",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "resetPasswordDto",
+        "Type": "API_Web_Shop_Electronic_TD.Models.ResetPasswordDto",
         "IsRequired": true
       }
     ],
@@ -845,6 +951,48 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.RoleController",
+    "Method": "CreateRole",
+    "RelativePath": "api/Role/CreateRole",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "createRole",
+        "Type": "API_Web_Shop_Electronic_TD.Models.RoleMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.RoleController",
+    "Method": "deleteRole",
+    "RelativePath": "api/Role/deleteRole/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.RoleController",
+    "Method": "GetRoles",
+    "RelativePath": "api/Role/GetRoles",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

@@ -54,7 +54,7 @@
             <div class="bg-secondary text-center rounded p-4">
                 <div class="d-flex align-items-center justify-content-between mb-4">
                     <h6 class="mb-0">Worldwide Sales</h6>
-                    <a href="">Show All</a>
+                    <a href="/Home/ShowAll">Show All</a>
                 </div>
                 <canvas id="worldwide-sales" style="display: block; box-sizing: border-box; height: 360px !important; width: 721px !important;" width="721" height="360"></canvas>
             </div>
@@ -118,10 +118,10 @@
         <div class="bg-secondary text-center rounded p-4">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h6 class="mb-0">Recent Salse</h6>
-                <a href="">Show All</a>
+                <a href="/Home/showall">Show All</a>
             </div>
             <div class="table-responsive">
-                <table class="table text-start align-middle table-bordered table-hover mb-0" id="">
+                <table class="table text-start align-middle mb-0 table-hover" id="">
                     <thead>
                         <tr class="text-white">
                             <th>Mã hóa đơn</th>
@@ -130,7 +130,6 @@
                             <th>Số điện thoại</th>
                             <th>Địa chỉ</th>
                             <th>Ngày đặt hàng</th>
-                            <th>Ghi chú</th>
                             <th>Mã trạng thái</th>
                             <th>Chức năng</th>
                         </tr>
@@ -187,73 +186,75 @@
             </div>
         </div>
     </div>
-    @section Scripts {
-        <script type="module">
-            import { initializeSalesChart } from './js/myjs.js';
+</div>
 
-            const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
-            const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
-            const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
-            const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
+@section Scripts {
+    <script type="module">
+        import { initializeSalesChart } from './js/myjs.js';
 
-            initializeSalesChart(labels, salesData1, salesData8, salesData11);
-        </script>
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const items = document.querySelectorAll('.testimonial-item');
-                const dots = document.querySelectorAll('.owl-dot');
-                let currentIndex = 0;
-                const autoPlayDelay = 5000; // 5 seconds
-                let autoPlayInterval;
+        const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
+        const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
+        const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
+        const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
 
-                function showItem(index) {
-                    // Remove all classes first
-                    items.forEach(item => {
-                        item.classList.remove('active', 'prev', 'next');
-                    });
-                    dots.forEach(dot => dot.classList.remove('active'));
+        initializeSalesChart(labels, salesData1, salesData8, salesData11);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const items = document.querySelectorAll('.testimonial-item');
+            const dots = document.querySelectorAll('.owl-dot');
+            let currentIndex = 0;
+            const autoPlayDelay = 5000; // 5 seconds
+            let autoPlayInterval;
 
-                    // Add appropriate classes
-                    items[currentIndex].classList.remove('active');
-                    items[currentIndex].classList.add('prev');
-
-                    currentIndex = index;
-
-                    items[currentIndex].classList.add('active');
-                    dots[currentIndex].classList.add('active');
-
-                    // Reset autoplay timer
-                    resetAutoPlay();
-                }
-
-                function nextItem() {
-                    const nextIndex = (currentIndex + 1) % items.length;
-                    showItem(nextIndex);
-                }
-
-                function resetAutoPlay() {
-                    clearInterval(autoPlayInterval);
-                    autoPlayInterval = setInterval(nextItem, autoPlayDelay);
-                }
-
-                // Add click event to each dot
-                dots.forEach(dot => {
-                    dot.addEventListener('click', function () {
-                        const index = parseInt(this.getAttribute('data-index'));
-                        showItem(index);
-                    });
+            function showItem(index) {
+                // Remove all classes first
+                items.forEach(item => {
+                    item.classList.remove('active', 'prev', 'next');
                 });
+                dots.forEach(dot => dot.classList.remove('active'));
 
-                // Start autoplay
+                // Add appropriate classes
+                items[currentIndex].classList.remove('active');
+                items[currentIndex].classList.add('prev');
+
+                currentIndex = index;
+
+                items[currentIndex].classList.add('active');
+                dots[currentIndex].classList.add('active');
+
+                // Reset autoplay timer
                 resetAutoPlay();
+            }
 
-                // Pause autoplay on hover
-                const carousel = document.querySelector('.owl-carousel');
-                carousel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
-                carousel.addEventListener('mouseleave', resetAutoPlay);
+            function nextItem() {
+                const nextIndex = (currentIndex + 1) % items.length;
+                showItem(nextIndex);
+            }
+
+            function resetAutoPlay() {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = setInterval(nextItem, autoPlayDelay);
+            }
+
+            // Add click event to each dot
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showItem(index);
+                });
             });
-        </script>
+
+            // Start autoplay
+            resetAutoPlay();
+
+            // Pause autoplay on hover
+            const carousel = document.querySelector('.owl-carousel');
+            carousel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+            carousel.addEventListener('mouseleave', resetAutoPlay);
+        });
+    </script>
 
 
-    }
+}
 

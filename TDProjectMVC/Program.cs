@@ -9,19 +9,18 @@ using TDProjectMVC.Services;
 using TDProjectMVC.Services.Mail;
 using TDProjectMVC.Services.Momo;
 
-public class Program // Đã thay đổi từ mặc định thành công khai
+public class Program 
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        // Add services to the container.
         builder.Services.AddControllersWithViews();
         builder.Services.AddDbContext<Hshop2023Context>(options =>
         {
             options.UseSqlServer(builder.Configuration.GetConnectionString("HShop"));
         });
-        builder.Services.AddTransient<IMailSender, MailSender>();
+        builder.Services.AddTransient<IMailSender, MailSender>();   
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<IMomoService, MomoService>();
         builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MoMoAPI"));
@@ -44,7 +43,7 @@ public class Program // Đã thay đổi từ mặc định thành công khai
             // Set default schemes
             options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme; // Ensure this is set
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         })
         .AddCookie(options =>
         {

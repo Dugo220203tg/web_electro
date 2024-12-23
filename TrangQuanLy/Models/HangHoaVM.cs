@@ -28,7 +28,7 @@ namespace TrangQuanLy.Models
             }
         }
         public string TenDanhMuc { get; set; }
-
+        public int maDanhMuc { get; set; }
     }
     public class AllHangHoaVM
     {

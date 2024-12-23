@@ -21,31 +21,61 @@ namespace TrangQuanLy.Controllers
         }
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Index(int? page, int? pagesize)
+        public async Task<IActionResult> Index(int? page, int? pagesize, int? categoryId, string sortOrder)
         {
-            if (page == null)
-            {
-                page = 1;
-            }
-            if (pagesize == null)
-            {
-                pagesize = 9;
-            }
+            if (page == null) page = 1;
+            if (pagesize == null) pagesize = 7;
+
             ViewBag.PageSize = pagesize;
+            ViewBag.CurrentSort = sortOrder;
 
-            List<HangHoaVM> Hanghoa = new List<HangHoaVM>();
-            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/HangHoa/GetAll");
+            // Sort parameters for view
+            ViewBag.PriceSortParm = string.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
+            ViewBag.QuantitySortParm = sortOrder == "quantity" ? "quantity_desc" : "quantity";
+            ViewBag.CategoryId = categoryId;
 
+            // Get categories for dropdown
+            List<DanhMucViewModel> categories = new List<DanhMucViewModel>();
+            HttpResponseMessage catResponse = await _client.GetAsync(_client.BaseAddress + "/DanhMuc/GetAll");
+            if (catResponse.IsSuccessStatusCode)
+            {
+                string catData = await catResponse.Content.ReadAsStringAsync();
+                categories = JsonConvert.DeserializeObject<List<DanhMucViewModel>>(catData);
+            }
+            ViewBag.Categories = categories;
+
+            // Get products
+            List<HangHoaVM> hangHoa = new List<HangHoaVM>();
+            string endpoint = categoryId.HasValue
+                ? $"/HangHoa/GetByDanhMuc/{categoryId}"
+                : "/HangHoa/GetAll";
+
+            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + endpoint);
             if (response.IsSuccessStatusCode)
             {
                 string data = await response.Content.ReadAsStringAsync();
-                Hanghoa = JsonConvert.DeserializeObject<List<HangHoaVM>>(data);
+                hangHoa = JsonConvert.DeserializeObject<List<HangHoaVM>>(data);
             }
 
-            int totalItems = Hanghoa.Count();
+            // Apply sorting
+            switch (sortOrder)
+            {
+                case "price_desc":
+                    hangHoa = hangHoa.OrderByDescending(h => h.DonGia).ToList();
+                    break;
+                case "quantity":
+                    hangHoa = hangHoa.OrderBy(h => h.SoLuong).ToList();
+                    break;
+                case "quantity_desc":
+                    hangHoa = hangHoa.OrderByDescending(h => h.SoLuong).ToList();
+                    break;
+                default: // Default sort by price ascending
+                    hangHoa = hangHoa.OrderBy(h => h.DonGia).ToList();
+                    break;
+            }
 
-            // Creating PaginatedList
-            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(Hanghoa.AsQueryable(), page ?? 1, pagesize ?? 9);
+            int totalItems = hangHoa.Count();
+            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(hangHoa.AsQueryable(), page ?? 1, pagesize ?? 9);
 
             ViewBag.Page = page;
             ViewBag.TotalPages = paginatedList.TotalPages;
@@ -54,55 +84,84 @@ namespace TrangQuanLy.Controllers
         }
         [HttpGet]
         [Authorize]
-
-        public async Task<IActionResult> Search(string? query, int? page, int? pagesize)
+        public async Task<IActionResult> Search(string? query, int? page, int? pagesize, int? categoryId, string sortOrder)
         {
-            if (page == null)
-            {
-                page = 1;
-            }
-            if (pagesize == null)
-            {
-                pagesize = 9;
-            }
-            // Initialize HangHoaVM list to store search results
-            List<HangHoaVM> searchResult = new List<HangHoaVM>();
+            if (page == null) page = 1;
+            if (pagesize == null) pagesize = 7;
 
-            // Send a request to the API to get all HangHoa entities
+            ViewBag.PageSize = pagesize;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.Query = query;
+
+            // Sort parameters for view
+            ViewBag.PriceSortParm = string.IsNullOrEmpty(sortOrder) ? "price_desc" : "";
+            ViewBag.QuantitySortParm = sortOrder == "quantity" ? "quantity_desc" : "quantity";
+            ViewBag.CategoryId = categoryId;
+
+            // Get categories for dropdown
+            List<DanhMucViewModel> categories = new List<DanhMucViewModel>();
+            HttpResponseMessage catResponse = await _client.GetAsync(_client.BaseAddress + "/DanhMuc/GetAll");
+            if (catResponse.IsSuccessStatusCode)
+            {
+                string catData = await catResponse.Content.ReadAsStringAsync();
+                categories = JsonConvert.DeserializeObject<List<DanhMucViewModel>>(catData);
+            }
+            ViewBag.Categories = categories;
+
+            // Get products and apply search
+            List<HangHoaVM> hangHoa = new List<HangHoaVM>();
             HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/HangHoa/GetAll");
 
             if (response.IsSuccessStatusCode)
             {
-                string data = response.Content.ReadAsStringAsync().Result;
-                List<HangHoaVM> Hanghoa = JsonConvert.DeserializeObject<List<HangHoaVM>>(data);
+                string data = await response.Content.ReadAsStringAsync();
+                hangHoa = JsonConvert.DeserializeObject<List<HangHoaVM>>(data);
 
+                // Apply search filter
                 if (!string.IsNullOrEmpty(query))
                 {
-                    searchResult = Hanghoa.Where(h =>
-                    MyUtil.RemoveDiacritics(h.TenHH).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                MyUtil.RemoveDiacritics(h.TenLoai).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                MyUtil.RemoveDiacritics(h.Hinh).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
-                                MyUtil.RemoveDiacritics(h.MoTa).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0
-                            ).ToList();
+                    hangHoa = hangHoa.Where(h =>
+                        MyUtil.RemoveDiacritics(h.TenHH).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.TenLoai).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.Hinh).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.MoTa).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0
+                    ).ToList();
                 }
-                else
+
+                if (categoryId.HasValue)
                 {
-                    searchResult = Hanghoa;
+                    hangHoa = hangHoa.Where(h => h.maDanhMuc == categoryId.Value).ToList();
+                }
+
+                // Apply sorting
+                switch (sortOrder)
+                {
+                    case "price_desc":
+                        hangHoa = hangHoa.OrderByDescending(h => h.DonGia).ToList();
+                        break;
+                    case "quantity":
+                        hangHoa = hangHoa.OrderBy(h => h.SoLuong).ToList();
+                        break;
+                    case "quantity_desc":
+                        hangHoa = hangHoa.OrderByDescending(h => h.SoLuong).ToList();
+                        break;
+                    default: // Default sort by price ascending
+                        hangHoa = hangHoa.OrderBy(h => h.DonGia).ToList();
+                        break;
                 }
             }
             else
             {
                 return View("Error");
             }
-            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(searchResult.AsQueryable(), page.Value, pagesize.Value);
-            // Pass the current page and page size as ViewBag for rendering pagination controls in the view
+
+            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(hangHoa.AsQueryable(), page.Value, pagesize.Value);
             ViewBag.Page = page;
             ViewBag.TotalPages = paginatedList.TotalPages;
-            ViewBag.PageSize = pagesize;
-            ViewBag.Query = query;  // Truyền từ khóa tìm kiếm để giữ nguyên khi phân trang
 
             return View(paginatedList);
         }
+
         [Authorize]
         [HttpGet]
         public IActionResult Create()

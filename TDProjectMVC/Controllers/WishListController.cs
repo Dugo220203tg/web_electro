@@ -19,13 +19,10 @@ namespace TDProjectMVC.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            // Lấy mã khách hàng từ danh tính người dùng đã đăng nhập
-            var MaKh = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            // Truy vấn danh sách yêu thích từ database
+           var MaKh = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+           
             var YeuThichs = db.YeuThiches.AsQueryable()
                                          .Where(p => p.MaKh == MaKh);
-
-            // Truy xuất danh sách yêu thích và ánh xạ dữ liệu sang ViewModel
             var result = await YeuThichs
                 .Select(p => new WishListVM
                 {
@@ -41,7 +38,7 @@ namespace TDProjectMVC.Controllers
             return Json(result);
         }
 
-        [Authorize]
+        //[Authorize]
         [HttpPost]
         public async Task<IActionResult> AddToWishList(int MaHH)
         {

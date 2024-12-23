@@ -1,10 +1,9 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
-using API_Web_Shop_Electronic_TD.Repository;
 using API_Web_Shop_Electronic_TD.Mappers;
 using Microsoft.AspNetCore.Mvc;
-using API_Web_Shop_Electronic_TD.DTOs;
 using API_Web_Shop_Electronic_TD.Models;
+using ErrorResponse = API_Web_Shop_Electronic_TD.DTOs.ErrorResponse;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
 {

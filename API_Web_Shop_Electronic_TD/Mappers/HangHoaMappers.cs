@@ -15,6 +15,7 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 			string TenLoai = Model.MaLoaiNavigation != null ? Model.MaLoaiNavigation.TenLoai : null;
 			string TenNCC = Model.MaNccNavigation != null ? Model.MaNccNavigation.TenCongTy : null;
 			string TenDanhMuc = Model.MaLoaiNavigation?.DanhMuc != null ? Model.MaLoaiNavigation.DanhMuc.TenDanhMuc : null;
+			int MaDanhMuc = Model.MaLoaiNavigation?.DanhMuc != null ? Model.MaLoaiNavigation.DanhMuc.MaDanhMuc : 0;
 
 			return new HangHoaMD
 			{
@@ -32,7 +33,8 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				SoLuong = Model.SoLuong.HasValue ? (int)Model.SoLuong.Value : 0,
 				TenLoai = TenLoai,
 				TenNCC = TenNCC,
-				TenDanhMuc = TenDanhMuc
+				TenDanhMuc = TenDanhMuc,
+				MaDanhMuc = MaDanhMuc
 			};
 		}
 

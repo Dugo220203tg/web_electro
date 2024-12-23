@@ -4,10 +4,12 @@ using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Mappers;
 using API_Web_Shop_Electronic_TD.Models;
 using API_Web_Shop_Electronic_TD.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using ErrorResponse = API_Web_Shop_Electronic_TD.DTOs.ErrorResponse;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
 {
@@ -49,6 +51,25 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 
 			return Ok(hangHoa.ToHangHoaDo());
+		}
+		[HttpGet("{maDanhMuc}")]
+		public async Task<IActionResult> GetByDanhMuc([FromRoute] int maDanhMuc)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var hangHoa = await hangHoaRepository.GetByDanhMuc(maDanhMuc);
+
+			if (hangHoa == null)
+			{
+				return NotFound(new ErrorResponse
+				{
+					Message = "Không tìm thấy dữ liệu",
+					Errors = new List<string> { "Không tìm thấy thông tin với mã đã cho" }
+				});
+			}
+			var model = hangHoa.Select(s => s.ToHangHoaDo()).ToList();
+			return Ok(model);
 		}
 		[HttpPost]
 		public async Task<IActionResult> Post(CreateHangHoaMD model)

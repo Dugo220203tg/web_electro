@@ -10,6 +10,7 @@ namespace API_Web_Shop_Electronic_TD.Interfaces
 		Task<HangHoa> CreateAsync(CreateHangHoaMD model);
 		Task<HangHoa?> UpdateAsync(int Mahh, UpdateHangHoaMD model);
 		Task<HangHoa?> DeleteAsync(int Mahh);
+		Task<List<HangHoa?>> GetByDanhMuc(int maDanhMuc);
 	}
 	public interface IDanhGiaSp
 	{
