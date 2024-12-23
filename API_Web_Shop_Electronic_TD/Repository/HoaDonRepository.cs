@@ -37,7 +37,8 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			return await db.HoaDons
 				.Include(h => h.MaTrangThaiNavigation)
 				.Include(h => h.ChiTietHds)
-				.ThenInclude(ct => ct.MaHhNavigation) // Include navigation property
+				.ThenInclude(ct => ct.MaHhNavigation)
+				.OrderByDescending(hd => hd.NgayDat)
 				.ToListAsync();
 		}
 

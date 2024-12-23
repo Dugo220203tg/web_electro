@@ -5,7 +5,7 @@
     {
         <tr>
             <td>@Html.DisplayFor(modelItem => item.MaHH)</td>
-            <td class="product-nam-admin image-product">
+            <td class="product-nam-admin">
                 @{
                     string firstImageUrl = string.Empty;
                     if (!string.IsNullOrEmpty(item.Hinh))
@@ -23,7 +23,7 @@
                     <img src="~/Hinh/default.jpg" alt="Default Image" class="product-image">
                 }
                 <div class="product-details">
-                    <div class="product-name">@Html.DisplayFor(modelItem => item.TenHH)</div>
+                    <div class="product-name" title="@item.TenHH">@Html.DisplayFor(modelItem => item.TenHH)</div>
                     <div class="product-category">@Html.DisplayFor(modelItem => item.TenLoai)</div>
                 </div>
             </td>
@@ -46,3 +46,35 @@
         </tr>
     }
 </tbody>
+<style>
+    .product-nam-admin {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .product-image {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+    }
+
+    .product-details {
+        min-width: 0; /* Important for text-overflow to work */
+    }
+
+    .product-name {
+        max-width: 400px; /* Adjust this value based on your needs */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .product-category {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+</style>

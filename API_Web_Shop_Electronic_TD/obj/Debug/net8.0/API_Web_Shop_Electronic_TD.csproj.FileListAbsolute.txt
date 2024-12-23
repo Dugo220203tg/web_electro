@@ -254,3 +254,6 @@ C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\obj\Debug\net8.
 C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\obj\Debug\net8.0\API_Web_Shop_Electronic_TD.pdb
 C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\obj\Debug\net8.0\API_Web_Shop_Electronic_TD.genruntimeconfig.cache
 C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\obj\Debug\net8.0\ref\API_Web_Shop_Electronic_TD.dll
+C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\RestSharp.ErrorHandlerExtensions.dll
+C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\RestSharp.dll

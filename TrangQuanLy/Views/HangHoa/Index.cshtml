@@ -9,7 +9,7 @@
     <div class="row g-4">
         <div class="col-12">
             <div class="bg-secondary rounded h-100 p-4">
-                <div class="navbar ">
+                <div class="navbar">
                     <h3 class="mb-4" style="margin-bottom:0px;">Sản phẩm hàng hóa</h3>
 
                     <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
@@ -22,31 +22,51 @@
                         <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm sản phẩm</a>
                     </div>
                 </div>
+
+                <!-- Filter and Sort Controls -->
+                <div class="mb-3 d-flex align-items-center">
+                    <div class="me-3">
+                        <label class="text-white me-2">Danh mục:</label>
+                        <select class="form-select bg-dark text-white" id="categoryFilter"
+                                onchange="window.location.href='@Url.Action("Index")?categoryId=' + this.value +
+            '&sortOrder=@ViewBag.CurrentSort&pagesize=@ViewBag.PageSize'">
+                            <option value="">Tất cả danh mục</option>
+                            @foreach (var category in ViewBag.Categories)
+                            {
+                                if (ViewBag.CategoryId == category.MaDanhMuc)
+                                {
+                                    <option value="@category.MaDanhMuc" selected>@category.TenDanhMuc</option>
+                                }
+                                else
+                                {
+                                    <option value="@category.MaDanhMuc">@category.TenDanhMuc</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+
                 <div class="table-responsive">
-                    <table class="table text-start align-middle mb-0" style="border-color:#0dcaf0;">
+                    <table class="table text-start align-middle mb-0 table-hover">
                         <thead>
                             <tr class="text-white">
+                                <th scope="col">SKU</th>
+                                <th scope="col">Sản phẩm</th>
+                                <th scope="col">Danh mục</th>
                                 <th scope="col">
-                                    SKU
+                                    <a href="@Url.Action("Index", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.QuantitySortParm, pagesize = ViewBag.PageSize })"
+                                       class="text-white">
+                                        Số lượng @(ViewBag.CurrentSort == "quantity_desc" ? "↓" : "↑")
+                                    </a>
                                 </th>
                                 <th scope="col">
-                                    Sản phẩm
+                                    <a href="@Url.Action("Index", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.PriceSortParm, pagesize = ViewBag.PageSize })"
+                                       class="text-white">
+                                        Giá @(ViewBag.CurrentSort == "price_desc" ? "↓" : "↑")
+                                    </a>
                                 </th>
-                                <th scope="col">
-                                    Danh mục
-                                </th>
-                                <th scope="col">
-                                    Số lượng
-                                </th>
-                                <th scope="col">
-                                    Đơn giá
-                                </th>
-                                <th scope="col">
-                                    Trạng thái
-                                </th>
-                                <th scope="col">
-                                    Chức năng
-                                </th>
+                                <th scope="col">Trạng thái</th>
+                                <th scope="col">Chức năng</th>
                             </tr>
                         </thead>
                         @if (Model != null && Model.Any())
@@ -55,6 +75,7 @@
                         }
                     </table>
                 </div>
+
                 <!-- Pagination Controls -->
                 <div style="text-align:center; margin-top:20px;">
                     <ul class="pagination" style="display: inline-flex;">
@@ -68,31 +89,31 @@
                         @if (startPage > 1)
                         {
                             <li class="page_item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue})">&lt;&lt;</a>
+                                <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">&lt;&lt;</a>
                             </li>
                         }
                         @if (pageIndex > 1)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize })">&lt;</a>
+                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">&lt;</a>
                             </li>
                         }
                         @for (var i = startPage; i <= endPage; i++)
                         {
                             <li class="page-item @(Model.PageIndex == i ? "active" : "")">
-                                <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize })">@i</a>
+                                <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">@i</a>
                             </li>
                         }
                         @if (pageIndex < totalPages)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize })">></a>
+                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">></a>
                             </li>
                         }
                         @if (endPage < totalPages)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize })">>></a>
+                                <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">>></a>
                             </li>
                         }
                     </ul>
@@ -101,4 +122,3 @@
         </div>
     </div>
 </div>
-

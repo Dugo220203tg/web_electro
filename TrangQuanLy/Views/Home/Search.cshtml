@@ -1,0 +1,114 @@
+﻿@model PaginatedList<HoaDonViewModel>
+@using TrangQuanLy.Helpers;
+@{
+    ViewData["Title"] = "Show All";
+    Layout = "_Footer-Header";
+}
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+        <div class="d-flex align-items-center justify-content-between mb-4">
+            <h4 class="mb-0">Danh sách đơn hàng</h4>
+            <!-- Filter and Sort Controls -->
+            <div class="d-flex align-items-center">
+                <label class="text-white me-2">Trạng thái:</label>
+                <select class="form-select bg-dark text-white" id="statusFilter"
+                        onchange="window.location.href='@Url.Action("ShowAll")?maTrangThai=' + this.value +
+            '&sortOrder=@ViewBag.CurrentSort&pagesize=@ViewBag.PageSize'">
+                    <option value="">Tất cả trạng thái</option>
+                    @foreach (var status in ViewBag.TrangThaiHoaDon)
+                    {
+                        if (ViewBag.MaTrangThai == status.MaTrangThai)
+                        {
+                            <option value="@status.MaTrangThai" selected>@status.TenTrangThai</option>
+                        }
+                        else
+                        {
+                            <option value="@status.MaTrangThai">@status.TenTrangThai</option>
+                        }
+                    }
+                </select>
+            </div>
+            <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
+                <form class="ms-4" asp-action="Search" asp-controller="Home" method="get">
+                    <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query" value="@ViewBag.CurrentQuery">
+                    <input type="hidden" name="maTrangThai" value="@ViewBag.MaTrangThai" />
+                    <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort" />
+                    <input type="hidden" name="pagesize" value="@ViewBag.PageSize" />
+                    <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
+                </form>
+            </div>
+           
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table text-start align-middle mb-0 table-hover">
+            <thead>
+                <tr class="text-white">
+                    <th>SKU</th>
+                    <th>Mã Khách Hàng</th>
+                    <th>Họ Tên</th>
+                    <th>Số điện thoại</th>
+                    <th>Địa chỉ</th>
+                    <th>
+                        <a href="@Url.Action("ShowAll", new { maTrangThai = ViewBag.MaTrangThai, sortOrder = ViewBag.DateSortParm, pagesize = ViewBag.PageSize })"
+                           class="text-white">
+                            Ngày đặt @(ViewBag.CurrentSort == "date_desc" ? "↑" : "↓")
+                        </a>
+                    </th>
+                    <th>Trạng thái</th>
+                    <th>Chức năng</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    @await Html.PartialAsync("HoaDon", Model)
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Pagination Controls -->
+    <div style="text-align:center; margin-top:20px;">
+        <ul class="pagination" style="display: inline-flex;">
+            @{
+                int pageIndex = Model.PageIndex;
+                int totalPages = Model.TotalPages;
+                int pageSizeValue = ViewBag.PageSize;
+                int startPage = ((pageIndex - 1) / 5) * 5 + 1;
+                int endPage = Math.Min(startPage + 4, totalPages);
+            }
+            @if (startPage > 1)
+            {
+                <li class="page_item">
+                    <a class="page-link" href="@Url.Action("ShowAll", new { page = startPage - 5, pagesize = pageSizeValue, maTrangThai = ViewBag.MaTrangThai, sortOrder = ViewBag.CurrentSort })">&lt;&lt;</a>
+                </li>
+            }
+            @if (pageIndex > 1)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("ShowAll", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize, maTrangThai = ViewBag.MaTrangThai, sortOrder = ViewBag.CurrentSort })">&lt;</a>
+                </li>
+            }
+            @for (var i = startPage; i <= endPage; i++)
+            {
+                <li class="page-item @(Model.PageIndex == i ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("ShowAll", new { page = i, pagesize = ViewBag.PageSize, maTrangThai = ViewBag.MaTrangThai, sortOrder = ViewBag.CurrentSort })">@i</a>
+                </li>
+            }
+            @if (pageIndex < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("ShowAll", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize, maTrangThai = ViewBag.MaTrangThai, sortOrder = ViewBag.CurrentSort })">></a>
+                </li>
+            }
+            @if (endPage < totalPages)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("ShowAll", new { page = endPage + 1, pagesize = ViewBag.PageSize, maTrangThai = ViewBag.MaTrangThai, sortOrder = ViewBag.CurrentSort })">>></a>
+                </li>
+            }
+        </ul>
+    </div>
+</div>

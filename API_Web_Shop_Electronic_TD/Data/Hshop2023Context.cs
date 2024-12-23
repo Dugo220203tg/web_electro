@@ -51,9 +51,13 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<PhongBan> PhongBans { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<TrangThai> TrangThais { get; set; }
 
     public virtual DbSet<TrangWeb> TrangWebs { get; set; }
+
+    public virtual DbSet<UserCoupon> UserCoupons { get; set; }
 
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
 
@@ -341,11 +345,10 @@ public partial class Hshop2023Context : DbContext
                 .HasMaxLength(50)
                 .HasDefaultValue("Photo.gif");
             entity.Property(e => e.HoTen).HasMaxLength(50);
-            entity.Property(e => e.MatKhau).HasMaxLength(50);
+            entity.Property(e => e.MatKhau).HasMaxLength(256);
             entity.Property(e => e.NgayTao).HasColumnType("datetime");
-            entity.Property(e => e.RandomKey)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.RandomKey).HasMaxLength(512);
+            entity.Property(e => e.RefreshTokenExpiryTime).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Loai>(entity =>
@@ -485,6 +488,14 @@ public partial class Hshop2023Context : DbContext
                 .HasColumnName("TenPB");
         });
 
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.ToTable("Role");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.RoleName).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<TrangThai>(entity =>
         {
             entity.HasKey(e => e.MaTrangThai);
@@ -506,6 +517,15 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.Url)
                 .HasMaxLength(250)
                 .HasColumnName("URL");
+        });
+
+        modelBuilder.Entity<UserCoupon>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("User_Coupons");
+
+            entity.Property(e => e.UserId).HasMaxLength(20);
         });
 
         modelBuilder.Entity<YeuThich>(entity =>

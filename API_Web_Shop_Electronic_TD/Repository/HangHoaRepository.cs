@@ -102,6 +102,17 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				.FirstOrDefaultAsync(h => h.MaHh == id);
 		}
 
+		public async Task<List<HangHoa>> GetByDanhMuc(int maDanhMuc)
+		{
+			return await db.HangHoas
+				.Include(h => h.MaLoaiNavigation)
+				.ThenInclude(l => l.DanhMuc)
+				.Include(h => h.MaNccNavigation)
+				.Where(h => h.MaLoaiNavigation.DanhMucId == maDanhMuc)
+				.ToListAsync();
+		}
+
+
 		public async Task<HangHoa?> UpdateAsync(int Mahh, UpdateHangHoaMD Model)
 		{
 			if (string.IsNullOrEmpty(Model.TenHH))

@@ -18,12 +18,12 @@ namespace TrangQuanLy.ViewComponents
 
         public IViewComponentResult Invoke(int maTrangThai)
         {
-            List<TrangThaiHd> TrangThai = new List<TrangThaiHd>();
+            List<TrangThaiHoaDonVM> TrangThai = new List<TrangThaiHoaDonVM>();
             HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/TrangThaiHd/GetAll").Result;
             if (response.IsSuccessStatusCode)
             {
                 string data = response.Content.ReadAsStringAsync().Result;
-                TrangThai = JsonConvert.DeserializeObject<List<TrangThaiHd>>(data).OrderBy(p => p.TenTrangThai).ToList();
+                TrangThai = JsonConvert.DeserializeObject<List<TrangThaiHoaDonVM>>(data).OrderBy(p => p.TenTrangThai).ToList();
             }
 
             // Pass maTrangThai to the view to determine the selected item

@@ -59,17 +59,17 @@
                                 <div class="input-group quantity mt-4" style="width: 120px;">
                                     <div class="input-group-btn">
                                         <a asp-action="MinusQuantity" asp-controller="Cart" asp-route-id="@item.MaHH">
-                                            <button class="btn btn-sm btn-minus rounded-circle bg-light border" style="border-radius: 50%;">
+                                            <div class="btn btn-sm btn-minus rounded-circle bg-light border" style="border-radius: 50%;">
                                                 <i class="fa fa-minus"></i>
-                                            </button>
+                                            </div>
                                         </a>
                                     </div>
                                     <input type="text" class="form-control form-control-sm text-center border-0" style="border:none;" value="@item.SoLuong">
                                     <div class="input-group-btn">
                                         <a asp-action="IncreaseQuantity" asp-controller="Cart" asp-route-id="@item.MaHH">
-                                            <button class="btn btn-sm btn-plus rounded-circle bg-light border" style="border-radius: 50%;">
+                                            <div class="btn btn-sm btn-plus rounded-circle bg-light border" style="border-radius: 50%;">
                                                 <i class="fa fa-plus"></i>
-                                            </button>
+                                            </div>
                                         </a>
                                     </div>
                                 </div>

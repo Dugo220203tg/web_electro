@@ -76,7 +76,7 @@ namespace TrangQuanLy.Models
         // Chi tiết hóa đơn
         public List<ChiTietHoaDonMD> ChiTietHds { get; set; } = new List<ChiTietHoaDonMD>();
     }
-    public class TrangThaiHd
+    public class TrangThaiHoaDonVM
     {
         public int MaTrangThai { get; set; }
         public string TenTrangThai { get; set; }
