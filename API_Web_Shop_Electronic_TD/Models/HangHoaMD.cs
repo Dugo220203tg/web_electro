@@ -18,8 +18,10 @@
 		public string TenLoai { get; set; }
 		public string TenDanhMuc { get; set; }
 		public int MaDanhMuc { get; set; }
+		public decimal TrungBinhSao { get; set; }
+		public int SoLuongDanhGia { get; set; }
 
-
+		public List<DanhGiaSpResponseMD> danhGiaSpMDs { get; set; } = new List<DanhGiaSpResponseMD>();
 	}
 	public class CreateHangHoaMD
 	{

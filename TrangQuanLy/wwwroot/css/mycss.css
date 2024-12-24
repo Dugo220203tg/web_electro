@@ -4,6 +4,73 @@
     color: #6C7293;
 }
 */
+/* Dark mode styles */
+:root {
+    --bg-dark: #191C24;
+    --text-dark: #fff;
+    --sidebar-dark: #191C24;
+    --content-dark: #000000;
+    --bg-light: #fff;
+    --text-light: #191C24;
+    --sidebar-light: antiquewhite;
+    --content-light: #f5f7fd;
+}
+
+/* Dark mode */
+.dark-mode .bg-secondary {
+    background-color: var(--bg-dark) !important;
+}
+
+.dark-mode .table {
+    color: var(--text-dark) !important;
+}
+
+.dark-mode .sidebar {
+    background-color: var(--sidebar-dark) !important;
+}
+
+.dark-mode .content {
+    background-color: var(--content-dark) !important;
+}
+
+.dark-mode .navbar {
+    background-color: var(--bg-dark) !important;
+}
+
+.dark-mode .dropdown-menu {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-dark) !important;
+}
+
+/* Light mode */
+.light-mode .bg-secondary {
+    background-color: var(--bg-light) !important;
+}
+
+.light-mode .table {
+    color: var(--text-light) !important;
+}
+
+.light-mode .sidebar {
+    background-color: var(--sidebar-light) !important;
+}
+
+.light-mode .content {
+    background-color: var(--content-light) !important;
+}
+
+.light-mode .navbar {
+    background-color: var(--bg-light) !important;
+}
+
+.light-mode .dropdown-menu {
+    background-color: var(--bg-light) !important;
+    color: var(--text-light) !important;
+}
+.table td,
+.table tr {
+    color: white;
+}
 .bg-secondary.dark-mode {
     background-color: #191C24
 }

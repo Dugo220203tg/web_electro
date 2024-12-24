@@ -17,7 +17,18 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 			string TenDanhMuc = Model.MaLoaiNavigation?.DanhMuc != null ? Model.MaLoaiNavigation.DanhMuc.TenDanhMuc : null;
 			int MaDanhMuc = Model.MaLoaiNavigation?.DanhMuc != null ? Model.MaLoaiNavigation.DanhMuc.MaDanhMuc : 0;
 
-			return new HangHoaMD
+			// Tính toán đánh giá trung bình và số lượng đánh giá
+			double trungBinhSao = 0;
+			int soLuongDanhGia = 0;
+			var danhGiaHopLe = Model.DanhGiaSps?.Where(d => d.TrangThai == 1).ToList();
+
+			if (danhGiaHopLe != null && danhGiaHopLe.Any())
+			{
+				trungBinhSao = danhGiaHopLe.Average(d => d.Sao ?? 0);
+				soLuongDanhGia = danhGiaHopLe.Count;
+			}
+
+			var hangHoaMD = new HangHoaMD
 			{
 				MaHH = Model.MaHh,
 				TenHH = Model.TenHh,
@@ -34,8 +45,24 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				TenLoai = TenLoai,
 				TenNCC = TenNCC,
 				TenDanhMuc = TenDanhMuc,
-				MaDanhMuc = MaDanhMuc
+				MaDanhMuc = MaDanhMuc,
+				TrungBinhSao = (decimal)trungBinhSao,
+				SoLuongDanhGia = soLuongDanhGia
 			};
+
+			// Thêm danh sách đánh giá chi tiết nếu có
+			if (danhGiaHopLe != null && danhGiaHopLe.Any())
+			{
+				hangHoaMD.danhGiaSpMDs = danhGiaHopLe.Select(d => new DanhGiaSpResponseMD
+				{
+					MaDg = d.MaDg,
+					MaKH = d.MaKh,
+					Sao = d.Sao ?? 0,
+					NoiDung = d.NoiDung,
+					Ngay = (DateTime)d.Ngay
+				}).ToList();
+			}
+			return hangHoaMD;
 		}
 
 
