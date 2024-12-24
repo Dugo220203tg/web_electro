@@ -5,13 +5,9 @@ const API_BASE_URL = 'https://localhost:7109/api';
 
 // Order Status Management
 function attachEventListeners() {
-    console.log('Attempting to attach event listeners');
-
     const statusSelects = document.querySelectorAll('select[id^="selectTrangThai-"]');
-    console.log('Found ' + statusSelects.length + ' select elements');
 
     statusSelects.forEach(select => {
-        console.log('Attaching listener to', select.id);
         select.addEventListener('change', function () {
             console.log('Change event triggered for', this.id);
             const maHD = this.id.split('-')[1];
@@ -21,8 +17,6 @@ function attachEventListeners() {
 }
 
 function confirmChangeTrangThai(maHD, selectElement) {
-    console.log('confirmChangeTrangThai called for order:', maHD);
-
     const newMaTrangThai = selectElement.value;
     const originalValue = selectElement.getAttribute('data-original-value');
 

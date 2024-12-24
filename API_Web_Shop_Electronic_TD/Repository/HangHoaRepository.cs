@@ -18,7 +18,8 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		public async Task<List<HangHoa>> GetAllAsync()
 		{
 			return await db.HangHoas
-				.Include(hh => hh.MaNccNavigation)  
+				.Include(hh => hh.MaNccNavigation)
+				.Include(hh => hh.DanhGiaSps)
 				.Include(hh => hh.MaLoaiNavigation) 
 					.ThenInclude(ml => ml.DanhMuc)
 				.ToListAsync();
@@ -95,12 +96,27 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 		public async Task<HangHoa> GetByIdAsync(int id)
 		{
-			return await db.HangHoas
-				.Include(h => h.MaLoaiNavigation) 
-					.ThenInclude(l => l.DanhMuc)      
-				.Include(h => h.MaNccNavigation) 
-				.FirstOrDefaultAsync(h => h.MaHh == id);
+			if (id <= 0)
+			{
+				throw new ArgumentException("ID must be greater than 0", nameof(id));
+			}
+
+			var hangHoa = await db.HangHoas
+				.Include(h => h.MaLoaiNavigation) // Tải dữ liệu liên quan từ Loại
+					.ThenInclude(l => l.DanhMuc) // Tải tiếp dữ liệu từ DanhMục
+				.Include(hh => hh.DanhGiaSps) // Tải dữ liệu đánh giá
+				.Include(h => h.MaNccNavigation) // Tải dữ liệu nhà cung cấp
+				.FirstOrDefaultAsync(h => h.MaHh == id); // Lấy hàng hóa có MaHh == id
+
+			if (hangHoa == null)
+			{
+				// Log lỗi hoặc xử lý khi không tìm thấy dữ liệu
+				throw new KeyNotFoundException($"HangHoa with ID {id} was not found.");
+			}
+
+			return hangHoa;
 		}
+
 
 		public async Task<List<HangHoa>> GetByDanhMuc(int maDanhMuc)
 		{
