@@ -12,8 +12,8 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 	public class CouponController : Controller
 	{
 		private readonly Hshop2023Context db;
-		private readonly ICoupon CouponRepository;
-		public CouponController(Hshop2023Context db, ICoupon CouponRepository)
+		private readonly ICouponRepository CouponRepository;
+		public CouponController(Hshop2023Context db, ICouponRepository CouponRepository)
 		{
 			this.db = db;
 			this.CouponRepository = CouponRepository;

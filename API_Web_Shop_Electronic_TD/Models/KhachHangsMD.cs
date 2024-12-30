@@ -196,4 +196,19 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public string Message { get; set; }
 		public List<string> Errors { get; set; }
 	}
+	public class WishListReport
+	{
+		public int maYt { get; set; }
+		public int maHH { get; set; }
+		public string tenHH { get; set; }
+		public double donGia { get; set; }
+		public string hinh { get; set; }
+		public string tenNCC { get; set; }
+	}
+	public class WishListRequest
+	{
+		public string maKh {  get; set; }
+		public int maHh {  get; set; }
+		public DateTime ngay { get; set; }
+	}
 }

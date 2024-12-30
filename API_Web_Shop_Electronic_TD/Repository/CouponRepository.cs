@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace API_Web_Shop_Electronic_TD.Repository
 {
-	public class CouponRepository : ICoupon
+	public class CouponRepository : ICouponRepository
 	{
 		private readonly Hshop2023Context _context;
 		public CouponRepository(Hshop2023Context context)

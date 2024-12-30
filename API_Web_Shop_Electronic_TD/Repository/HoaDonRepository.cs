@@ -7,7 +7,7 @@ using System;
 
 namespace API_Web_Shop_Electronic_TD.Repository
 {
-	public class HoaDonRepository : IHoaDon
+	public class HoaDonRepository : IHoaDonRepository
 	{
 		private readonly Hshop2023Context db;
 		public HoaDonRepository(Hshop2023Context db)

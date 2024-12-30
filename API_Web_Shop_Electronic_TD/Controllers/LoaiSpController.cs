@@ -16,8 +16,8 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 	{
 
 		private readonly Hshop2023Context db;
-		private readonly ILoaiSp LoaiSpRepository;
-		public LoaiSpController(Hshop2023Context db, ILoaiSp LoaiSpRepository)
+		private readonly ILoaiSpRepository LoaiSpRepository;
+		public LoaiSpController(Hshop2023Context db, ILoaiSpRepository LoaiSpRepository)
 		{
 			this.db = db;
 			this.LoaiSpRepository = LoaiSpRepository;

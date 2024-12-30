@@ -13,6 +13,8 @@ using System.Net;
 using RestSharp;
 using AuthResponseDto = API_Web_Shop_Electronic_TD.Models.AuthResponseDto;
 using ErrorResponse = API_Web_Shop_Electronic_TD.Models.ErrorResponse;
+using System;
+using API_Web_Shop_Electronic_TD.Repository;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
 {
@@ -207,7 +209,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 		}
 		#endregion --- END ---
 		#region ----- CONTROLLER FOR ANGULAR WEB ------ 
-		#region ------ LOGIN AND REFRESH TOKEN ANGULAR ------
+		#region ----- LOGIN AND REFRESH TOKEN ANGULAR ------
 		[HttpPost]
 		public async Task<IActionResult> Login([FromBody] LoginDTO model)
 		{
@@ -437,7 +439,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 		}
 		#endregion-----end-----
-		#region-----RESET PASSWORD ACCOUNT ANGULAR -----
+		#region----- RESET PASSWORD ACCOUNT ANGULAR -----
 		[HttpPost]
 		[AllowAnonymous]
 		public async Task<IActionResult> ResetPassword(ResetPasswordDto resetPasswordDto)
@@ -483,7 +485,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			});
 		}
 		#endregion-----end -----
-		#region -----GET ACCOUNT DETAIL -----
+		#region ----- GET ACCOUNT DETAIL -----
 		[Authorize]
 		[HttpGet]
 		public async Task<IActionResult> GetAccountDetail()
@@ -509,6 +511,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			});
 		}
 		#endregion----- end -----
+		
 		#region ----- REGISTER ACCOUNT ANGULAR -----
 		[HttpPost]
 		public async Task<IActionResult> RegisterAccount([FromBody] RegisterMD model)
@@ -613,7 +616,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			return tokenHandler.WriteToken(token);
 		}
 		#endregion ------- END -------
-		#region ------ CHANGE PASSWORD ACCOUNT ANGULAR ------
+		#region ----- CHANGE PASSWORD ACCOUNT ANGULAR -----
 		[HttpPost]
 		public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
 		{
@@ -671,5 +674,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 		//	return tokenHandler.WriteToken(token);
 		//}
+
+		
 	}
 }

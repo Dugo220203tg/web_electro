@@ -8,7 +8,7 @@ using System;
 
 namespace API_Web_Shop_Electronic_TD.Repository
 {
-	public class DanhMucRepository :IDanhMuc
+	public class DanhMucRepository :IDanhMucRepository
 	{
 		private readonly Hshop2023Context db;
 
@@ -43,7 +43,10 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 		public async Task<List<DanhMucSp>> GetAllAsync()
 		{
-			return await db.DanhMucSps.ToListAsync();
+			return await db.DanhMucSps
+				.Include(dm=> dm.Loais)
+					.ThenInclude(l=>l.HangHoas)
+				.ToListAsync();
 		}
 
 		public async Task<DanhMucSp?> GetByIdAsync(int MaDanhMuc)

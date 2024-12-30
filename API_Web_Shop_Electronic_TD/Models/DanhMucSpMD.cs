@@ -10,6 +10,8 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public int MaDanhMuc { get; set; }
 		[Required(ErrorMessage = "Tên danh mục không được để trống")]
 		public string TenDanhMuc { get; set;}
+		public int soLuong { get; set; }
+		public string image { get; set; }
 	}
 	public class LoaiSpMD
 	{

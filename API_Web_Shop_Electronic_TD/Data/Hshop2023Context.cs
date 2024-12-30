@@ -61,9 +61,6 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-4AS3J3K;Initial Catalog=Hshop2023;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BanBe>(entity =>
@@ -190,6 +187,9 @@ public partial class Hshop2023Context : DbContext
             entity.ToTable("DanhMucSP");
 
             entity.Property(e => e.MaDanhMuc).ValueGeneratedNever();
+            entity.Property(e => e.Image)
+                .IsUnicode(false)
+                .HasColumnName("image");
             entity.Property(e => e.TenDanhMuc)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -405,12 +405,9 @@ public partial class Hshop2023Context : DbContext
             entity.ToTable("PayHistory");
 
             entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.CouponCode)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.CouponCode).HasMaxLength(50);
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.FullName).HasMaxLength(50);
-            entity.Property(e => e.OrderId).HasMaxLength(50);
             entity.Property(e => e.OrderInfo).HasMaxLength(50);
             entity.Property(e => e.PayMethod).HasMaxLength(50);
         });

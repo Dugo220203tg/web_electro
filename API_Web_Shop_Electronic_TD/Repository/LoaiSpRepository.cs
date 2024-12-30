@@ -8,7 +8,7 @@ using System;
 
 namespace API_Web_Shop_Electronic_TD.Repository
 {
-	public class LoaiSpRepository : ILoaiSp
+	public class LoaiSpRepository : ILoaiSpRepository
 	{
 		private readonly Hshop2023Context db;
 		public LoaiSpRepository(Hshop2023Context db)

@@ -5,22 +5,27 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 {
 	public static class DanhMucMapper
 	{
-		 public static DanhMucMD ToDanhMucDo(this DanhMucSp Model)
+		public static DanhMucMD ToDanhMucDto(this DanhMucSp model)
 		{
+			int soLuong = model.Loais.Sum(loai => loai.HangHoas.Count);
+
 			return new DanhMucMD
 			{
-				MaDanhMuc = Model.MaDanhMuc,
-				TenDanhMuc = Model.TenDanhMuc
+				MaDanhMuc = model.MaDanhMuc,
+				TenDanhMuc = model.TenDanhMuc,
+				soLuong = soLuong,
+				image = model.Image
 			};
 		}
-		public static DanhMucSp ToDanhMucDTO(this DanhMucMD Model)
-		{
 
+		public static DanhMucSp ToDanhMucDTO(this DanhMucMD model)
+		{
 			return new DanhMucSp
 			{
-				MaDanhMuc = Model.MaDanhMuc,
-				TenDanhMuc = Model.TenDanhMuc,
+				MaDanhMuc = model.MaDanhMuc,
+				TenDanhMuc = model.TenDanhMuc
 			};
 		}
 	}
+
 }

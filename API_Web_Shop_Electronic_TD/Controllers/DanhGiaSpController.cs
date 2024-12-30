@@ -1,9 +1,7 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
-using API_Web_Shop_Electronic_TD.DTOs;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Mappers;
 using API_Web_Shop_Electronic_TD.Models;
-using API_Web_Shop_Electronic_TD.Repository;
 using Microsoft.AspNetCore.Mvc;
 using ErrorResponse = API_Web_Shop_Electronic_TD.DTOs.ErrorResponse;
 

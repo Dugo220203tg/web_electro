@@ -15,8 +15,8 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 	public class HoaDonController : Controller
 	{
 		private readonly Hshop2023Context db;
-		private readonly IHoaDon HoaDonRespository;
-		public HoaDonController(Hshop2023Context db, IHoaDon HoaDonRespository)
+		private readonly IHoaDonRepository HoaDonRespository;
+		public HoaDonController(Hshop2023Context db, IHoaDonRepository HoaDonRespository)
 		{
 			this.db = db;
 			this.HoaDonRespository = HoaDonRespository;
