@@ -33,6 +33,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 			return Ok(model);
 		}
+
 		[HttpGet("{MaHH}")]
 		public async Task<IActionResult> GetById([FromRoute] int MaHH)
 		{
@@ -52,6 +53,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 			return Ok(hangHoa.ToHangHoaDo());
 		}
+
 		[HttpGet("{maDanhMuc}")]
 		public async Task<IActionResult> GetByDanhMuc([FromRoute] int maDanhMuc)
 		{
@@ -71,6 +73,8 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			var model = hangHoa.Select(s => s.ToHangHoaDo()).ToList();
 			return Ok(model);
 		}
+
+
 		[HttpPost]
 		public async Task<IActionResult> Post(CreateHangHoaMD model)
 		{
@@ -88,6 +92,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
+
 		[HttpPut]
 		[Route("{MaHh}")]
 		public async Task<IActionResult> Update([FromRoute] int MaHh, [FromBody] UpdateHangHoaMD model)
@@ -189,6 +194,26 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			// Lưu các thay đổi vào cơ sở dữ liệu
 			await db.SaveChangesAsync();
 		}
+
 		#endregion
+		[HttpGet("{searchText}")]
+		public async Task<IActionResult> Search(string searchText)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			var hangHoa = await hangHoaRepository.SearchAsync(searchText);
+
+			if (hangHoa == null)
+			{
+				return NotFound(new ErrorResponse
+				{
+					Message = "Không tìm thấy dữ liệu",
+					Errors = new List<string> { "Không tìm thấy thông tin với mã đã cho" }
+				});
+			}
+			var model = hangHoa.Select(s => s.ToHangHoaDo()).ToList();
+			return Ok(model);
+		}
 	}
 }

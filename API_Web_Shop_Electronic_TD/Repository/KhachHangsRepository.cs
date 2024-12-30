@@ -3,7 +3,9 @@ using API_Web_Shop_Electronic_TD.Helpers;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Mappers;
 using API_Web_Shop_Electronic_TD.Models;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using System;
@@ -258,7 +260,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 					roles.Add("Admin");
 					break;
 				case 2:
-					roles.Add("Staff");
+					roles.Add("Dev");
 					break;
 				case 3:
 					roles.Add("Customer");
@@ -401,5 +403,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				return (false, $"Failed to change password: {ex.Message}");
 			}
 		}
+	
 	}
 }

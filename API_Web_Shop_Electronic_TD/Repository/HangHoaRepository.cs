@@ -20,7 +20,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			return await db.HangHoas
 				.Include(hh => hh.MaNccNavigation)
 				.Include(hh => hh.DanhGiaSps)
-				.Include(hh => hh.MaLoaiNavigation) 
+				.Include(hh => hh.MaLoaiNavigation)
 					.ThenInclude(ml => ml.DanhMuc)
 				.ToListAsync();
 		}
@@ -208,5 +208,33 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			return HangHoaModel;
 		}
 
+		public async Task<List<HangHoa>> SearchAsync(string searchText, int? maxResults = null)
+		{
+			// Nếu chuỗi tìm kiếm rỗng hoặc null, trả về danh sách rỗng
+			if (string.IsNullOrWhiteSpace(searchText))
+				return new List<HangHoa>();
+
+			searchText = searchText.Trim().ToLower();
+			var searchTerms = searchText.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+			var query = db.HangHoas
+				.Include(h => h.MaNccNavigation)
+				.Include(h => h.MaLoaiNavigation)
+					.ThenInclude(l => l!.DanhMuc)  
+				.Where(h => searchTerms.Any(term =>
+					(h.TenHh != null && h.TenHh.ToLower().Contains(term)) ||
+					(h.MaNccNavigation != null && h.MaNccNavigation.TenCongTy != null && h.MaNccNavigation.TenCongTy.ToLower().Contains(term)) ||
+					(h.MaLoaiNavigation != null && h.MaLoaiNavigation.TenLoai != null && h.MaLoaiNavigation.TenLoai.ToLower().Contains(term)) ||
+					(h.MaLoaiNavigation != null && h.MaLoaiNavigation.DanhMuc != null && h.MaLoaiNavigation.DanhMuc.TenDanhMuc != null && h.MaLoaiNavigation.DanhMuc.TenDanhMuc.ToLower().Contains(term)) ||
+					(h.MoTa != null && h.MoTa.ToLower().Contains(term))
+				));
+
+			if (maxResults.HasValue)
+			{
+				query = query.Take(maxResults.Value);
+			}
+
+			return await query.ToListAsync();
+		}
 	}
 }

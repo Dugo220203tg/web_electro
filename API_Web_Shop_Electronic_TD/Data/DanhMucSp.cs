@@ -9,5 +9,7 @@ public partial class DanhMucSp
 
     public string TenDanhMuc { get; set; } = null!;
 
+    public string? Image { get; set; }
+
     public virtual ICollection<Loai> Loais { get; set; } = new List<Loai>();
 }

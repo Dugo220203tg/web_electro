@@ -1,5 +1,67 @@
 [
   {
+    "ContainingType": "TDProjectMVC.Controllers.HomeController",
+    "Method": "PageNotFound",
+    "RelativePath": "404",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
+    "Method": "AddToCart",
+    "RelativePath": "api/Cart",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "quantity",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "type",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
+    "Method": "GetCartData",
+    "RelativePath": "api/Cart/GetCartData",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
+    "Method": "RemoveCart",
+    "RelativePath": "api/Cart/RemoveCart",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
     "Method": "DataSellProduct",
     "RelativePath": "api/ChiTietHoaDon/DataSellProduct",
@@ -441,6 +503,22 @@
       {
         "Name": "Model",
         "Type": "API_Web_Shop_Electronic_TD.Models.HangHoaMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.HangHoaController",
+    "Method": "Search",
+    "RelativePath": "api/HangHoa/Search/{searchText}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "searchText",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
@@ -996,6 +1074,26 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ThongKeController",
+    "Method": "GetTopFavoriteProduct",
+    "RelativePath": "api/ThongKe/GetTopFavoriteProduct",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ThongKeController",
+    "Method": "GetTopSellProduct",
+    "RelativePath": "api/ThongKe/GetTopSellProduct",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.TrangThaiHdController",
     "Method": "GetAll",
     "RelativePath": "api/TrangThaiHd/GetAll",
@@ -1003,6 +1101,53 @@
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.WishListController",
+    "Method": "AddToWishList",
+    "RelativePath": "api/WishList/AddToWishList/Add",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "API_Web_Shop_Electronic_TD.Models.WishListRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.WishListController",
+    "Method": "GetWishListByAccountId",
+    "RelativePath": "api/WishList/GetWishListByAccountId",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.WishListController",
+    "Method": "RemoveFromWishList",
+    "RelativePath": "api/WishList/RemoveFromWishList/Remove/{userId}/{productId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   }
 ]

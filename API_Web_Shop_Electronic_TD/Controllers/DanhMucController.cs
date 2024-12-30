@@ -14,8 +14,8 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 	public class DanhMucController : Controller
 	{
 		private readonly Hshop2023Context db;
-		private readonly IDanhMuc DanhMucRepository;
-		public DanhMucController(Hshop2023Context db, IDanhMuc DanhMucRepository)
+		private readonly IDanhMucRepository DanhMucRepository;
+		public DanhMucController(Hshop2023Context db, IDanhMucRepository DanhMucRepository)
 		{
 			this.db = db;
 			this.DanhMucRepository = DanhMucRepository;
@@ -25,7 +25,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 		{
 
 			var danhmucs = await DanhMucRepository.GetAllAsync();
-			var model = danhmucs.Select(s => s.ToDanhMucDo()).ToList();
+			var model = danhmucs.Select(s => s.ToDanhMucDto()).ToList();
 
 			return Ok(model);
 		}
@@ -48,7 +48,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 					});
 				}
 
-				return Ok(danhmucs.ToDanhMucDo());
+				return Ok(danhmucs.ToDanhMucDto());
 
 			}
 
@@ -130,7 +130,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				{
 					return NotFound();
 				}
-				return Ok(Model.ToDanhMucDo());
+				return Ok(Model.ToDanhMucDto());
 			}
 			catch (Exception ex)
 			{

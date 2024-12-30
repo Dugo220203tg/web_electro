@@ -144,11 +144,11 @@ namespace API_Web_Shop_Electronic_TD.Repository
 					{
 						TenDanhMuc = p.NameCategory,
 						MaHH = p.ProductId,
-						TenHangHoa = p.ProductName,
+						TenHH = p.ProductName,
 						SoLuong = p.TotalQuantitySold,
 						DonGia = (double)p.ProductPrice,
-						DiemDanhGia = p.DanhGia,
-						HinhAnh = p.HinhAnh
+						TrungBinhSao = p.DanhGia,
+						Hinh = p.HinhAnh
 					}))
 				.ToList();
 

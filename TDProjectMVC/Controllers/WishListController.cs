@@ -38,7 +38,7 @@ namespace TDProjectMVC.Controllers
             return Json(result);
         }
 
-        //[Authorize]
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddToWishList(int MaHH)
         {

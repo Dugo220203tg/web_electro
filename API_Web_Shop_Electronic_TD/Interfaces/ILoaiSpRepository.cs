@@ -3,7 +3,7 @@ using API_Web_Shop_Electronic_TD.Models;
 
 namespace API_Web_Shop_Electronic_TD.Interfaces
 {
-	public interface ILoaiSp
+	public interface ILoaiSpRepository
 	{
 		Task<List<Loai>> GetAllAsync();
 		Task<Loai?> GetByIdAsync(int MaLoai);

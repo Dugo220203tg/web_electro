@@ -3,7 +3,7 @@ using API_Web_Shop_Electronic_TD.Models;
 
 namespace API_Web_Shop_Electronic_TD.Interfaces
 {
-	public interface IHoaDon
+	public interface IHoaDonRepository
 	{
 		Task<List<HoaDon>> GetAllAsync();
 		Task<HoaDon?> GetByIdAsync(int MaHd);

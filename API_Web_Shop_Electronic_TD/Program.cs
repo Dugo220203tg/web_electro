@@ -57,14 +57,15 @@ builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddScoped<IHangHoaRepository, HangHoaRepository>();
 builder.Services.AddScoped<IKhachHangRepository, KhachHangsRepository>();
-builder.Services.AddScoped<ILoaiSp, LoaiSpRepository>();
+builder.Services.AddScoped<ILoaiSpRepository, LoaiSpRepository>();
 builder.Services.AddScoped<IHangSp, HangSpRepository>();
-builder.Services.AddScoped<IHoaDon, HoaDonRepository>();
+builder.Services.AddScoped<IHoaDonRepository, HoaDonRepository>();
 builder.Services.AddScoped<ITrangThaiHd, TrangThaiHdRepository>();
-builder.Services.AddScoped<IDanhMuc, DanhMucRepository>();
+builder.Services.AddScoped<IDanhMucRepository, DanhMucRepository>();
 builder.Services.AddScoped<IDanhGiaSp, DanhGiaSpRepository>();
 builder.Services.AddScoped<ICtHoaDon, ChiTietHoaDonRepository>();
-builder.Services.AddScoped<ICoupon, CouponRepository>();
+builder.Services.AddScoped<ICouponRepository, CouponRepository>();
+builder.Services.AddScoped<IWishListRepository, WishListRepository>();
 
 builder.Services.AddHttpClient();
 
@@ -87,10 +88,17 @@ builder.Services.AddAuthentication(options =>
 		ValidAudience = JWTSetting["validAudience"],
 		ValidateIssuerSigningKey = true,
 		IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(JWTSetting.GetSection("securityKey").Value!))
-{
+		{
 
 		}
 	};
+});
+
+builder.Services.AddSession(options =>
+{
+	options.IdleTimeout = TimeSpan.FromDays(30);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
 });
 
 // Add CORS configuration
@@ -113,7 +121,6 @@ if (app.Environment.IsDevelopment())
 	app.UseSwagger();
 	app.UseSwaggerUI();
 }
-
 app.UseRouting();
 
 app.UseHttpsRedirection();
@@ -128,7 +135,7 @@ app.UseCors(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSession();
 app.MapControllers();
 
 app.Run();
