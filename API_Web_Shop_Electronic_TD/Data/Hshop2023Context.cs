@@ -17,6 +17,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<BanBe> BanBes { get; set; }
 
+    public virtual DbSet<Cart> Carts { get; set; }
+
     public virtual DbSet<ChiTietHd> ChiTietHds { get; set; }
 
     public virtual DbSet<ChuDe> ChuDes { get; set; }
@@ -61,6 +63,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
 
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<BanBe>(entity =>
@@ -91,6 +95,31 @@ public partial class Hshop2023Context : DbContext
             entity.HasOne(d => d.MaKhNavigation).WithMany(p => p.BanBes)
                 .HasForeignKey(d => d.MaKh)
                 .HasConstraintName("FK_BanBe_KhachHang");
+        });
+
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.ToTable("Cart");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("createAt");
+            entity.Property(e => e.ProductId).HasColumnName("productId");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(20)
+                .HasColumnName("userId");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Carts)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Cart_HangHoa");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Carts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Cart_KhachHang");
         });
 
         modelBuilder.Entity<ChiTietHd>(entity =>
@@ -410,6 +439,10 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.FullName).HasMaxLength(50);
             entity.Property(e => e.OrderInfo).HasMaxLength(50);
             entity.Property(e => e.PayMethod).HasMaxLength(50);
+
+            entity.HasOne(d => d.Order).WithMany(p => p.PayHistories)
+                .HasForeignKey(d => d.OrderId)
+                .HasConstraintName("FK_PayHistory_HoaDon");
         });
 
         modelBuilder.Entity<PhanCong>(entity =>
@@ -523,6 +556,16 @@ public partial class Hshop2023Context : DbContext
                 .ToTable("User_Coupons");
 
             entity.Property(e => e.UserId).HasMaxLength(20);
+
+            entity.HasOne(d => d.Coupon).WithMany()
+                .HasForeignKey(d => d.CouponId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_User_Coupons_Coupon");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_User_Coupons_KhachHang");
         });
 
         modelBuilder.Entity<YeuThich>(entity =>

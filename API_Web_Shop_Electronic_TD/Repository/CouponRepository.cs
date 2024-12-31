@@ -103,5 +103,13 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			// Trả về HangHoaModel đã được cập nhật
 			return Model;
 		}
+
+		public async Task<UserCoupon> UseCoupone(string userId, string couponCode)
+		{
+			return await _context.UserCoupons
+				.Include(x => x.Coupon)
+				.FirstOrDefaultAsync(x => x.UserId == userId && x.Coupon.Description == couponCode);
+		}
+
 	}
 }

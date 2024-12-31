@@ -1,135 +1,146 @@
-﻿//using API_Web_Shop_Electronic_TD.Data;
-//using API_Web_Shop_Electronic_TD.Helpers;
-//using API_Web_Shop_Electronic_TD.Interfaces;
-//using API_Web_Shop_Electronic_TD.Models;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.EntityFrameworkCore;
+﻿using API_Web_Shop_Electronic_TD.Data;
+using API_Web_Shop_Electronic_TD.Interfaces;
+using API_Web_Shop_Electronic_TD.Models;
+using Microsoft.EntityFrameworkCore;
 
-//namespace API_Web_Shop_Electronic_TD.Repository
-//{
-//	public class CartRepository : ICartRepository
-//	{
-//		private readonly Hshop2023Context _db;
+namespace API_Web_Shop_Electronic_TD.Repository
+{
+	public class CartRepository : ICartRepository
+	{
+		private readonly Hshop2023Context db;
 
-//		public CartRepository(Hshop2023Context db)
-//		{
-//			_db = db;
-//		}
+		public CartRepository(Hshop2023Context db)
+		{
+			this.db = db;
+		}
 
-//		public List<CartItem> Cart => HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
+		public async Task<Cart> AddToCartAsync(CartResponse model)
+		{
+			var cartItem = await db.Carts
+				.SingleOrDefaultAsync(x => x.UserId == model.MaKh && x.ProductId == model.MaHh);
+			if(cartItem != null)
+			{
+				throw new ArgumentException("Error");
+			}
+			Cart newCart = new Cart
+			{
+				UserId = model.MaKh,
+				ProductId = model.MaHh,
+				Quantity = model.Quantity,
+				CreateAt = DateTime.UtcNow,
+			};
+			await db.Carts.AddAsync(newCart);
+			await db.SaveChangesAsync();
+			return newCart;
+		}
 
 
-//		private void SaveCart(List<CartItem> cart)
-//		{
-//			return HttpContext?.Session.Set(MySetting.CART_KEY, cart);
-//		}
+		public async Task<List<Cart>> GetCartDataAsync(string userId)
+		{
+			if (string.IsNullOrEmpty(userId))
+			{
+				throw new ArgumentException("Account ID cannot be null or empty.", nameof(userId));
+			}
 
-//		public async Task<CartResponse> AddToCartAsync(int id, int quantity = 1)
-//		{
-//			try
-//			{
-//				var cart = GetCart();
-//				var item = cart.SingleOrDefault(p => p.MaHH == id);
+			return await db.Carts
+				.Include(x => x.Product)
+					.ThenInclude(p => p.MaNccNavigation)
+				.Include(x => x.User)
+				.Where(x => x.UserId == userId)
+				.ToListAsync();
+		}
 
-//				var product = await _db.HangHoas.SingleOrDefaultAsync(p => p.MaHh == id);
-//				if (product == null)
-//				{
-//					return new CartResponse
-//					{
-//						Success = false,
-//						Message = $"Không tìm thấy hàng hóa có mã {id}"
-//					};
-//				}
+		public async Task IncreaseQuantity(string userId, int productId)
+		{
+				using var transaction = await db.Database.BeginTransactionAsync();
+			try
+			{
+				var cartItem = await db.Carts
+					.SingleOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
 
-//				if (item == null)
-//				{
-//					item = new CartItem
-//					{
-//						MaHH = product.MaHh,
-//						TenHH = product.TenHh,
-//						DonGia = product.DonGia ?? 0,
-//						Hinh = product.Hinh ?? string.Empty,
-//						SoLuong = quantity
-//					};
-//					cart.Add(item);
-//				}
-//				else
-//				{
-//					item.SoLuong += quantity;
-//				}
+				if (cartItem == null)
+				{
+					throw new ArgumentException($"No cart item found for UserId: {userId} and ProductId: {productId}");
+				}
 
-//				SaveCart(cart);
+				var product = await db.HangHoas
+					.SingleOrDefaultAsync(p => p.MaHh == productId);
 
-//				return new CartResponse
-//				{
-//					Success = true,
-//					CartCount = cart.Sum(i => i.SoLuong),
-//					Message = "Thêm vào giỏ hàng thành công"
-//				};
-//			}
-//			catch (Exception ex)
-//			{
-//				return new CartResponse
-//				{
-//					Success = false,
-//					Message = "Lỗi khi thêm vào giỏ hàng: " + ex.Message
-//				};
-//			}
-//		}
+				if (product == null)
+				{
+					throw new ArgumentException($"Product with ProductId: {productId} does not exist.");
+				}
 
-//		public async Task<CartData> GetCartDataAsync()
-//		{
-//			var cart = GetCart();
+				if (cartItem.Quantity >= product.SoLuong)
+				{
+					throw new InvalidOperationException("Cannot increase quantity. Exceeds available stock.");
+				}
 
-//			return new CartData
-//			{
-//				CartItems = cart.Select(p => new CartItemData
-//				{
-//					MaHH = p.MaHH,
-//					TenHH = p.TenHH,
-//					SoLuong = p.SoLuong,
-//					DonGia = (decimal)p.DonGia,
-//					Hinh = p.Hinh?.Split(',').FirstOrDefault()?.Trim() ?? ""
-//				}).ToList(),
-//				TotalQuantity = cart.Sum(p => p.SoLuong),
-//				TotalAmount = (decimal)cart.Sum(p => p.SoLuong * p.DonGia)
-//			};
-//		}
+				cartItem.Quantity += 1;	
+				var result = await db.SaveChangesAsync();
+				Console.WriteLine($"Number of affected rows: {result}");
+				await db.SaveChangesAsync();
+				await transaction.CommitAsync();
+			}
+			catch
+			{
+				await transaction.RollbackAsync();
+				throw;
+			}
+		}
 
-//		public async Task<CartResponse> RemoveFromCartAsync(int id)
-//		{
-//			try
-//			{
-//				var cart = GetCart();
-//				var item = cart.SingleOrDefault(p => p.MaHH == id);
 
-//				if (item == null)
-//				{
-//					return new CartResponse
-//					{
-//						Success = false,
-//						Message = "Sản phẩm không tồn tại trong giỏ hàng"
-//					};
-//				}
+		public async Task MinusQuantity(string userId, int productId)
+		{
+			using var transaction = await db.Database.BeginTransactionAsync();
+			try
+			{
+				var cartItem = await db.Carts
+					.SingleOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
 
-//				cart.Remove(item);
-//				SaveCart(cart);
+				if (cartItem == null)
+				{
+					throw new ArgumentException($"No cart item found for UserId: {userId} and ProductId: {productId}");
+				}
 
-//				return new CartResponse
-//				{
-//					Success = true,
-//					CartCount = cart.Sum(i => i.SoLuong),
-//					Message = "Đã xóa sản phẩm khỏi giỏ hàng"
-//				};
-//			}
-//			catch (Exception ex)
-//			{
-//				return new CartResponse
-//				{
-//					Success = false,
-//					Message = "Lỗi khi xóa sản phẩm: " + ex.Message
-//				};
-//			}
-//		}
-//	}
-//}
+				if (cartItem.Quantity <= 1)
+				{
+					throw new InvalidOperationException("Cannot decrease quantity below 1. Use remove function instead.");
+				}
+				cartItem.Quantity --;
+				await db.SaveChangesAsync();
+				await transaction.CommitAsync();
+			}
+			catch
+			{
+				await transaction.RollbackAsync();
+				throw;
+			}
+		}
+
+		public async Task RemoveFromCartAsync(string userId, int productId)
+		{
+			var cartItem = await db.Carts
+				.SingleOrDefaultAsync(x => x.UserId == userId && x.ProductId == productId);
+			var user = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == userId);
+			if (user == null)
+			{
+				throw new ArgumentException("User not exits");
+			}
+			if (cartItem == null)
+			{
+				throw new ArgumentException("Cart item không tồn tại.");
+			}
+
+			Console.WriteLine($"Removing cart item: UserId = {userId}, ProductId = {productId}");
+			db.Carts.Remove(cartItem);
+			var result = await db.SaveChangesAsync();
+
+			if (result <= 0)
+			{
+				throw new Exception("Không thể xóa bản ghi khỏi cơ sở dữ liệu.");
+			}
+		}
+
+	}
+}

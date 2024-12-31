@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TrangQuanLy")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eb0feaddf724b03fbca77ee9285bf3ff4ddbb797")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08119da4a47c7e2f40b4d211e568701febfb7bdd")]
 [assembly: System.Reflection.AssemblyProductAttribute("TrangQuanLy")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TrangQuanLy")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

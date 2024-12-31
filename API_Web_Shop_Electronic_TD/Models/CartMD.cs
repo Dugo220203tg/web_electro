@@ -1,4 +1,6 @@
-﻿namespace API_Web_Shop_Electronic_TD.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace API_Web_Shop_Electronic_TD.Models
 {
 	public class CartMD
 	{
@@ -16,13 +18,32 @@
 		public List<string> ImageUrls { get; set; }
 
 	}
-	public class CartResponse
+	public class CartRequest
 	{
 		public bool Success { get; set; }
 		public string Message { get; set; }
 		public int CartCount { get; set; }
 	}
-
+	public class CartRequests
+	{
+		[Key]
+		public int id {  get; set; }
+		public string MaKh { get; set; }
+		public int MaHh { get; set; }
+		public string TenHH { get; set; }
+		public string Hinh { get; set; }
+		public double DonGia { get; set; }
+		public string TenNcc { get; set; }
+		public int Quantity { get; set; }
+		public double Total => Quantity * DonGia;
+	}
+	public class CartResponse
+	{
+		public string MaKh { get; set; }
+		public int MaHh { get; set; }
+		public int Quantity { get; set; }
+		public DateTime Ngay { get; set; }
+	}
 	public class CartData
 	{
 		public List<CartItemData> CartItems { get; set; }

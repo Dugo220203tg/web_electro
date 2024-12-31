@@ -7,6 +7,9 @@ namespace API_Web_Shop_Electronic_TD.Interfaces
 	{
 		Task<List<YeuThich>> GetWishListByAccountId(string userDetailId);
 		Task RemoveFromWishListAsync(string userId, int productId);
+		//Task RemoveFromWishListAsync(string userId, int productId);
+		//Task RemoveFromWishListAsync(string userId, int productId);
+
 		Task<YeuThich> AddWishListAsync(WishListRequest model);
 	}
 }

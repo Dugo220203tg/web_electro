@@ -37,6 +37,8 @@ public partial class KhachHang
 
     public virtual ICollection<BanBe> BanBes { get; set; } = new List<BanBe>();
 
+    public virtual ICollection<Cart> Carts { get; set; } = new List<Cart>();
+
     public virtual ICollection<DanhGiaSp> DanhGiaSps { get; set; } = new List<DanhGiaSp>();
 
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();

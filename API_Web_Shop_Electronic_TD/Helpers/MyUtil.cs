@@ -46,5 +46,24 @@ namespace API_Web_Shop_Electronic_TD.Helpers
 
 		//	return tokenHandler.WriteToken(token);
 		//}
+		public static class ImageHelper
+		{
+			/// <summary>
+			/// Gets the first image from a comma-separated list of image file names.
+			/// </summary>
+			/// <param name="imageList">The comma-separated string of image file names.</param>
+			/// <returns>The first image file name, or an empty string if the input is null or empty.</returns>
+			public static string GetFirstImage(string imageList)
+			{
+				if (string.IsNullOrEmpty(imageList))
+				{
+					return string.Empty; // Return empty string if the input is null or empty
+				}
+
+				var images = imageList.Split(','); // Split the string by commas
+				return images.Length > 0 ? images[0] : string.Empty; // Return the first image or empty string
+			}
+		}
+
 	}
 }

@@ -10,5 +10,6 @@ namespace API_Web_Shop_Electronic_TD.Interfaces
 		Task<Coupon> CreateAsync(CouponsMD coupon);
 		Task<Coupon> UpdateAsync(CouponsMD coupon,int id);
 		Task<Coupon> DeleteAsync(int id);
+		Task<UserCoupon> UseCoupone(string userId, string couponCode);
 	}
 }
