@@ -3,12 +3,8 @@ using API_Web_Shop_Electronic_TD.Helpers;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Mappers;
 using API_Web_Shop_Electronic_TD.Models;
-using Microsoft.AspNetCore.Http.Metadata;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System;
 using System.Security.Cryptography;
 
 namespace API_Web_Shop_Electronic_TD.Repository
@@ -27,7 +23,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		{
 			return await db.KhachHangs.ToListAsync();
 		}
-
 		public async Task<KhachHang> CreateAsync(AdminDkMD model)
 		{
 			if (string.IsNullOrEmpty(model.UserName))
@@ -148,7 +143,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 			return khachhang;
 		}
-
 		private bool VerifyPasswordHash(string passwordText, string storedPassword, string passwordKey)
 		{
 			byte[] storedPasswordBytes = Convert.FromBase64String(storedPassword);
@@ -196,7 +190,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				);
 			}
 		}
-
 		public async Task<KhachHang> CreateAccountAsync(RegisterMD model)
 		{
 			// Input validation
@@ -224,7 +217,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 			return khachHang;
 		}
-
 		private void ValidateRegistrationModel(DangKyMD model)
 		{
 			if (string.IsNullOrWhiteSpace(model.UserName))
@@ -247,7 +239,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				throw new ArgumentException("Nhập sai định dạng số điện thoại");
 			}
 		}
-
 		public async Task<IEnumerable<string>> GetRoleAsync(KhachHang user)
 		{
 			// Simple implementation based on VaiTro field

@@ -4,6 +4,7 @@ using API_Web_Shop_Electronic_TD.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using API_Web_Shop_Electronic_TD.Models;
 using ErrorResponse = API_Web_Shop_Electronic_TD.DTOs.ErrorResponse;
+using System.Security.Claims;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
 {
@@ -164,6 +165,32 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 			// Trả về phản hồi NoContent nếu xóa thành công
 			return NoContent();
+		}
+		[HttpGet("{couponCode}")]
+		public async Task<IActionResult> UseCoupon(string couponCode)
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			// Xóa bản ghi từ bảng "HangHoas"
+			var model = await CouponRepository.UseCoupone(userId, couponCode);
+
+			// Nếu không tìm thấy bản ghi để xóa, trả về NotFound
+			if (model == null)
+				return NotFound();
+			if (model.Quantity < 1)
+				return StatusCode(400, new { message = " số lượng mã giảm giá này của bạn đã hết " });
+			couponReport coupon = new couponReport
+			{
+				price = (int)model.Coupon.Price,
+				Name = model.Coupon.Name,
+				DateEnd = (DateTime)model.Coupon.DateEnd,
+				status = (int)model.Coupon.Status,
+			};	
+			// Trả về phản hồi NoContent nếu xóa thành công
+			return Ok(coupon);
 		}
 	}
 }

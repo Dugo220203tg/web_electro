@@ -20,4 +20,6 @@ public partial class PayHistory
     public string? PayMethod { get; set; }
 
     public string? CouponCode { get; set; }
+
+    public virtual HoaDon? Order { get; set; }
 }

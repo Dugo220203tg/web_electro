@@ -66,6 +66,8 @@ builder.Services.AddScoped<IDanhGiaSp, DanhGiaSpRepository>();
 builder.Services.AddScoped<ICtHoaDon, ChiTietHoaDonRepository>();
 builder.Services.AddScoped<ICouponRepository, CouponRepository>();
 builder.Services.AddScoped<IWishListRepository, WishListRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IThongKeRepository, ThongKeRepository>();
 
 builder.Services.AddHttpClient();
 
@@ -94,14 +96,6 @@ builder.Services.AddAuthentication(options =>
 	};
 });
 
-builder.Services.AddSession(options =>
-{
-	options.IdleTimeout = TimeSpan.FromDays(30);
-	options.Cookie.HttpOnly = true;
-	options.Cookie.IsEssential = true;
-});
-
-// Add CORS configuration
 builder.Services.AddCors(options =>
 {
 	options.AddPolicy("AllowSpecificOrigin",
@@ -135,7 +129,16 @@ app.UseCors(options =>
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseSession();
 app.MapControllers();
 
 app.Run();
+//builder.Services.AddSession(options =>
+//{
+//	options.IdleTimeout = TimeSpan.FromDays(30);
+//	options.Cookie.HttpOnly = true;
+//	options.Cookie.IsEssential = true;
+//});
+
+// Add CORS configuration
+
+//app.UseSession();

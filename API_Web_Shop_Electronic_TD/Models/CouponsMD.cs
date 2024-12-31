@@ -16,4 +16,12 @@ namespace API_Web_Shop_Electronic_TD.Models
 		public decimal price { get; set; }
 		public int Status { get; set; }
 	}
+	public class couponReport
+	{
+		public string Name { get; set; }
+		public int price {  get; set; }
+		public int status { get; set; }
+		public DateTime DateEnd { get; set; }
+	}
+
 }

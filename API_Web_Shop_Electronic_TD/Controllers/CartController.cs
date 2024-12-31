@@ -1,7 +1,9 @@
-﻿using API_Web_Shop_Electronic_TD.Data;
-using API_Web_Shop_Electronic_TD.Helpers;
+﻿using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
+using System.Security.Claims;
+using static API_Web_Shop_Electronic_TD.Helpers.MyUtil;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
 {
@@ -9,83 +11,124 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 	[ApiController]
 	public class CartController : ControllerBase
 	{
-		private readonly Hshop2023Context db;
+		private readonly ICartRepository cartRepository;
 
-		public CartController(Hshop2023Context context)
+		public CartController(ICartRepository cartRepository)
 		{
-			this.db = context;
+			this.cartRepository = cartRepository;
 		}
-
-		public List<CartItem> Cart => HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
-
-		[HttpPost]
-		public IActionResult AddToCart(int id, int quantity = 1, string type = "Normal")
+		[HttpPost("AddToCart")]
+		public async Task<IActionResult> AddToCartAsync(CartResponse model)
 		{
-			var gioHang = Cart;
-			var item = gioHang.SingleOrDefault(p => p.MaHH == id);
-
-			if (item == null)
+			try
 			{
-				var hanghoa = db.HangHoas.SingleOrDefault(p => p.MaHh == id);
-				if (hanghoa == null)
+				if (!ModelState.IsValid)
 				{
-					return new JsonResult(new { success = false, message = $"Không tìm thấy hàng hóa có mã {id}" });
+					return BadRequest(ModelState);
 				}
 
-				item = new CartItem
-				{
-					MaHH = hanghoa.MaHh,
-					TenHH = hanghoa.TenHh,
-					DonGia = hanghoa.DonGia ?? 0,
-					Hinh = hanghoa.Hinh ?? string.Empty,
-					SoLuong = quantity
-				};
-				gioHang.Add(item);
+				var result = await cartRepository.AddToCartAsync(model);
+				return Ok(result);
 			}
-			else
+			catch (ArgumentException ex)
 			{
-				item.SoLuong += quantity;
+				return BadRequest(new { message = ex.Message });
 			}
-
-			HttpContext.Session.Set(MySetting.CART_KEY, gioHang);
-			return new JsonResult(new { success = true, cartCount = gioHang.Sum(i => i.SoLuong) });
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Đã xảy ra lỗi khi thêm vào danh sách" });
+			}
 		}
 
 		[HttpGet("GetCartData")]
-		public IActionResult GetCartData()
+		public async Task<IActionResult> GetCartDataAsync()
 		{
-			var cartData = new
+			var userDetailId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			if (string.IsNullOrEmpty(userDetailId))
 			{
-				CardProducts = Cart.Select(p => new
-				{
-					p.MaHH,
-					p.TenHH,
-					p.SoLuong,
-					p.DonGia,
-					Hinh = p.Hinh?.Split(',').FirstOrDefault()?.Trim() ?? ""
-				}),
-				TotalQuantity = Cart.Sum(p => p.SoLuong),
-				TotalAmount = Cart.Sum(p => p.SoLuong * p.DonGia)
-			};
-			return new JsonResult(cartData);
+				return Unauthorized("User is not logged in or invalid user detail ID.");
+			}
+
+			// Fetch the wishlist by account ID
+			var carts = await cartRepository.GetCartDataAsync(userDetailId);
+
+			if (carts == null || !carts.Any())
+			{
+				return NotFound("No data items found for this account.");
+			}
+
+			var cartRequest = carts.Select(item => new CartRequests
+			{
+				id = item.Id,
+				MaKh = item.UserId,
+				MaHh = item.ProductId,
+				TenHH = item.Product?.TenHh ?? "Unknown Product", 
+				DonGia = item.Product?.DonGia ?? 0.0,
+				Hinh = ImageHelper.GetFirstImage(item.Product?.Hinh),
+				TenNcc = item.Product?.MaNccNavigation?.TenCongTy ?? "Unknown Supplier",
+				Quantity = (int)item.Quantity,
+			}).ToList();
+
+			return Ok(cartRequest);
 		}
 
-		[HttpPost("RemoveCart")]
-		public JsonResult RemoveCart(int id)
-		{
-			var gioHang = HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
-			var item = gioHang.SingleOrDefault(p => p.MaHH == id);
 
-			if (item != null)
+		[HttpPost("Remove/{userId}/{productId}")]
+		public async Task<IActionResult> RemoveCart(string userId, int productId)
+		{
+			try
 			{
-				gioHang.Remove(item);
-				HttpContext.Session.Set(MySetting.CART_KEY, gioHang);
-				return new JsonResult(new { success = true });
+				Console.WriteLine($"Attempting to remove cart item. UserId: {userId}, ProductId: {productId}");
+				await cartRepository.RemoveFromCartAsync(userId, productId);
+				return Ok(new { message = "Đã xóa sản phẩm khỏi danh sách yêu thích" });
 			}
-			else
+			catch (ArgumentException ex)
 			{
-				return new JsonResult(new { success = false, message = "Sản phẩm không tồn tại trong giỏ hàng" });
+				return BadRequest(new { message = ex.Message });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Unexpected error: {ex.Message}");
+				return StatusCode(500, new { message = "Đã xảy ra lỗi khi xóa khỏi danh sách yêu thích" });
 			}
 		}
+
+		[HttpPut("increase-quantity/{userId}/{productId}")]
+		public async Task<IActionResult> IncreaseQuantityCartItem(string userId, int productId)
+		{
+			try
+			{
+				await cartRepository.IncreaseQuantity(userId, productId);
+				return Ok(new { message = "Thêm thành công" });
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Đã xảy ra lỗi" });
+			}
+		}
+
+		[HttpPut("minus-quantity/{userId}/{productId}")]
+		public async Task<IActionResult> MinusQuantityCartItem(string userId, int productId)
+		{
+			try
+			{
+				await cartRepository.MinusQuantity(userId, productId);
+				return Ok(new { message = "Xóa thành công" });
+			}
+			catch (ArgumentException ex)
+			{
+				return BadRequest(new { message = ex.Message });
+			}
+			catch (Exception ex)
+			{
+				return StatusCode(500, new { message = "Đã xảy ra lỗi" });
+			}
+		}
+
 	}
 }

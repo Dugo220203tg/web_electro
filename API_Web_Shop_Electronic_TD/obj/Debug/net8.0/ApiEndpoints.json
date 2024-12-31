@@ -11,33 +11,23 @@
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
-    "Method": "AddToCart",
-    "RelativePath": "api/Cart",
+    "Method": "AddToCartAsync",
+    "RelativePath": "api/Cart/AddToCart",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "quantity",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "type",
-        "Type": "System.String",
-        "IsRequired": false
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CartResponse",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
-    "Method": "GetCartData",
+    "Method": "GetCartDataAsync",
     "RelativePath": "api/Cart/GetCartData",
     "HttpMethod": "GET",
     "IsController": true,
@@ -47,16 +37,63 @@
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
+    "Method": "IncreaseQuantityCartItem",
+    "RelativePath": "api/Cart/increase-quantity/{userId}/{productId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
+    "Method": "MinusQuantityCartItem",
+    "RelativePath": "api/Cart/minus-quantity/{userId}/{productId}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CartController",
     "Method": "RemoveCart",
-    "RelativePath": "api/Cart/RemoveCart",
+    "RelativePath": "api/Cart/Remove/{userId}/{productId}",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
+        "Name": "userId",
+        "Type": "System.String",
+        "IsRequired": true
+      },
+      {
+        "Name": "productId",
         "Type": "System.Int32",
-        "IsRequired": false
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []
@@ -239,6 +276,22 @@
       {
         "Name": "model",
         "Type": "API_Web_Shop_Electronic_TD.Models.CouponsMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.CouponController",
+    "Method": "UseCoupon",
+    "RelativePath": "api/Coupon/UseCoupon/{couponCode}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "couponCode",
+        "Type": "System.String",
         "IsRequired": true
       }
     ],
