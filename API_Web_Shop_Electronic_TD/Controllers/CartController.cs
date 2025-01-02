@@ -55,7 +55,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 			if (carts == null || !carts.Any())
 			{
-				return NotFound("No data items found for this account.");
+				return Ok(new List<CartRequests>()); // Trả về danh sách trống
 			}
 
 			var cartRequest = carts.Select(item => new CartRequests
@@ -63,7 +63,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				id = item.Id,
 				MaKh = item.UserId,
 				MaHh = item.ProductId,
-				TenHH = item.Product?.TenHh ?? "Unknown Product", 
+				TenHH = item.Product?.TenHh ?? "Unknown Product",
 				DonGia = item.Product?.DonGia ?? 0.0,
 				Hinh = ImageHelper.GetFirstImage(item.Product?.Hinh),
 				TenNcc = item.Product?.MaNccNavigation?.TenCongTy ?? "Unknown Supplier",
@@ -72,6 +72,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 			return Ok(cartRequest);
 		}
+
 
 
 		[HttpPost("Remove/{userId}/{productId}")]

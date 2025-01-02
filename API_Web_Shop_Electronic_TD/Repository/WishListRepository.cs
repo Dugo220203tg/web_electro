@@ -1,6 +1,7 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API_Web_Shop_Electronic_TD.Repository
@@ -64,5 +65,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			await db.SaveChangesAsync();
 			return newYeuThich;
 		}
+
 	}
 }

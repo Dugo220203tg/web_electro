@@ -54,28 +54,28 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 		}
 		[Authorize]
 		[HttpPost]
-		[Route("Add")]
-		public async Task<IActionResult> AddToWishList([FromBody] WishListRequest request)
+		public async Task<IActionResult> AddToWishList([FromBody] WishListRequest model)
 		{
+			if (model == null)
+			{
+				return BadRequest("Invalid request data.");
+			}
+
 			try
 			{
-				if (!ModelState.IsValid)
-				{
-					return BadRequest(ModelState);
-				}
-
-				var result = await wishListRepository.AddWishListAsync(request);
-				return Ok(result);
+				var addedItem = await wishListRepository.AddWishListAsync(model);
+				return Ok(new { message = "Sản phẩm đã được thêm vào danh sách yêu thích.", data = addedItem });
 			}
 			catch (ArgumentException ex)
 			{
-				return BadRequest(new { message = ex.Message });
+				return Conflict(new { message = ex.Message });
 			}
 			catch (Exception ex)
 			{
-				return StatusCode(500, new { message = "Đã xảy ra lỗi khi thêm vào danh sách yêu thích" });
+				return StatusCode(500, $"Internal server error: {ex.Message}");
 			}
 		}
+
 		[HttpDelete]
 		[Route("Remove/{userId}/{productId}")]
 		public async Task<IActionResult> RemoveFromWishList(string userId, int productId)
