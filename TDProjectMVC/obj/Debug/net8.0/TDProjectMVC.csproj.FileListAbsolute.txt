@@ -10,6 +10,7 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\AutoMapper.d
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Azure.Identity.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Humanizer.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.AspNetCore.Razor.Language.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Build.dll
@@ -64,6 +65,7 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\NuGet.Protoc
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\NuGet.Versioning.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\PagedList.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\PagedList.Mvc.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\RestSharp.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.CodeDom.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Composition.AttributedModel.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Composition.Convention.dll
@@ -254,5 +256,3 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\refint\TDPro
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC.pdb
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC.genruntimeconfig.cache
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\ref\TDProjectMVC.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\RestSharp.dll

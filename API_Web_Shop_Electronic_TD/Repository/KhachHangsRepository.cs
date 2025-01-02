@@ -110,7 +110,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 			if (khachHang.RandomKey != codeSend)
 			{
-				return null; 
+				return null;
 			}
 			khachHang.MatKhau = HashPassword(newPassword, Convert.FromBase64String(khachHang.RandomKey));
 
@@ -394,6 +394,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				return (false, $"Failed to change password: {ex.Message}");
 			}
 		}
-	
+
 	}
 }

@@ -45,7 +45,7 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
 
-    public virtual DbSet<PayHistory> PayHistories { get; set; }
+    public virtual DbSet<PayHistory> PayHistorys { get; set; }
 
     public virtual DbSet<PhanCong> PhanCongs { get; set; }
 
@@ -62,8 +62,6 @@ public partial class Hshop2023Context : DbContext
     public virtual DbSet<UserCoupon> UserCoupons { get; set; }
 
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
-
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -429,20 +427,11 @@ public partial class Hshop2023Context : DbContext
 
         modelBuilder.Entity<PayHistory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Table__3214EC07BA1E86B4");
-
-            entity.ToTable("PayHistory");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.CouponCode).HasMaxLength(50);
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.FullName).HasMaxLength(50);
             entity.Property(e => e.OrderInfo).HasMaxLength(50);
             entity.Property(e => e.PayMethod).HasMaxLength(50);
-
-            entity.HasOne(d => d.Order).WithMany(p => p.PayHistories)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("FK_PayHistory_HoaDon");
         });
 
         modelBuilder.Entity<PhanCong>(entity =>

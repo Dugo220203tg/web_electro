@@ -97,7 +97,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 			catch (Exception ex)
 			{
-				// Xử lý và thông báo lỗi tại đây
+
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
@@ -144,7 +144,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 			catch (Exception ex)
 			{
-				// Xử lý và thông báo lỗi tại đây
+
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
@@ -159,11 +159,9 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			// Xóa bản ghi từ bảng "HangHoas"
 			var model = await CouponRepository.DeleteAsync(id);
 
-			// Nếu không tìm thấy bản ghi để xóa, trả về NotFound
 			if (model == null)
 				return NotFound();
 
-			// Trả về phản hồi NoContent nếu xóa thành công
 			return NoContent();
 		}
 		[HttpGet("{couponCode}")]
@@ -177,7 +175,6 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			// Xóa bản ghi từ bảng "HangHoas"
 			var model = await CouponRepository.UseCoupone(userId, couponCode);
 
-			// Nếu không tìm thấy bản ghi để xóa, trả về NotFound
 			if (model == null)
 				return NotFound();
 			if (model.Quantity < 1)
@@ -189,7 +186,6 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 				DateEnd = (DateTime)model.Coupon.DateEnd,
 				status = (int)model.Coupon.Status,
 			};	
-			// Trả về phản hồi NoContent nếu xóa thành công
 			return Ok(coupon);
 		}
 	}

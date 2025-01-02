@@ -104,7 +104,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 			catch (Exception ex)
 			{
-				// Xử lý và thông báo lỗi tại đây
+
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
@@ -158,7 +158,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 			catch (Exception ex)
 			{
-				// Xử lý và thông báo lỗi tại đây
+
 				return BadRequest("Đã xảy ra lỗi: " + ex.ToString());
 			}
 		}
