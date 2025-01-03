@@ -1,4 +1,6 @@
-﻿namespace TDProjectMVC.Models.MoMo
+﻿using Newtonsoft.Json;
+
+namespace TDProjectMVC.Models.MoMo
 {
     public class MomoCreatePaymentResponseModel
     {
@@ -8,6 +10,7 @@
         public string Message { get; set; }
         public string LocalMessage { get; set; }
         public string RequestType { get; set; }
+        [JsonProperty("payUrl")]
         public string PayUrl { get; set; }
         public string Signature { get; set; }
         public string QrCodeUrl { get; set; }

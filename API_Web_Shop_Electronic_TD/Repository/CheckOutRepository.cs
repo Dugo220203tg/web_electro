@@ -1,9 +1,13 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Models;
+using API_Web_Shop_Electronic_TD.Services;
+using Azure.Core;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+
 public class CheckOutRepository : ICheckOutRepository
 {
 	private readonly Hshop2023Context _db;
@@ -15,90 +19,105 @@ public class CheckOutRepository : ICheckOutRepository
 		_logger = logger;
 	}
 
-	public async Task<PayHistory> CheckOutAsync(CheckOutMD model)
+	//public async Task<PayHistory> InitiateCheckoutAsync(CheckOutMD model)
+	//{
+	//	using var transaction = await _db.Database.BeginTransactionAsync();
+	//	try
+	//	{
+	//		var payHistory = new PayHistory
+	//		{
+	//			FullName = model.FullName,
+	//			OrderInfo = model.OrderInfo,
+	//			Amount = model.Amount,
+	//			PayMethod = "VNPay",
+	//			CouponCode = model.CouponCode,
+	//			CreateDate = DateTime.UtcNow,
+	//		};
+
+	//		_db.PayHistorys.Add(payHistory);
+	//		await _db.SaveChangesAsync();
+	//		await transaction.CommitAsync();
+
+	//		return payHistory;
+	//	}
+	//	catch (Exception ex)
+	//	{
+	//		await transaction.RollbackAsync();
+	//		_logger.LogError(ex, "Error initiating checkout");
+	//		throw;
+	//	}
+	//}
+
+	public async Task ProcessVnPayPaymentAsync(CheckOutMD paymentResponse)
 	{
 		using var transaction = await _db.Database.BeginTransactionAsync();
 		try
 		{
-			// 1. Lưu thông tin thanh toán
 			var payHistory = new PayHistory
 			{
-				FullName = model.FullName,
-				OrderInfo = model.OrderInfo,
-				Amount = model.Amount,
-				PayMethod = model.PayMethod,
-				CouponCode = model.CouponCode,
-				CreateDate = DateTime.UtcNow
+				FullName = paymentResponse.FullName,
+				OrderInfo = paymentResponse.OrderInfo,
+				Amount = paymentResponse.Amount,
+				PayMethod = "VNPay",
+				CouponCode = paymentResponse.CouponCode,
+				CreateDate = DateTime.UtcNow,
 			};
-			await _db.PayHistorys.AddAsync(payHistory);
+
+			_db.PayHistorys.Add(payHistory);
 			await _db.SaveChangesAsync();
 
-			// 2. Lưu hóa đơn
+			// Create order
 			var hoaDon = new HoaDon
 			{
-				MaKh = model.MaKh,
+				MaKh = paymentResponse.MaKh, // Ensure this field exists in PayHistory
 				NgayDat = DateTime.UtcNow,
-				NgayGiao = DateTime.UtcNow,
-				NgayCan = DateTime.UtcNow,
-				HoTen = model.FullName,
-				DiaChi = model.DiaChi,
-				CachVanChuyen = model.CachVanChuyen,
-				PhiVanChuyen = model.ShippingFee,
-				CachThanhToan = model.PayMethod,
-				MaTrangThai = 0,
-				MaNv = null,
-				GhiChu = model.GhiChu,
-				DienThoai = model.DienThoai,
-				PayId = payHistory.Id
+				NgayGiao = DateTime.UtcNow.AddDays(3), // Configurable delivery time
+				HoTen = paymentResponse.FullName,
+				CachThanhToan = "VNPay",
+				MaTrangThai = 1, // Order status: Paid
+				PayId = payHistory.Id,
 			};
-			await _db.HoaDons.AddAsync(hoaDon);
+
+			_db.HoaDons.Add(hoaDon);
 			await _db.SaveChangesAsync();
 
-			// 3. Lưu chi tiết hóa đơn
-			foreach (var chiTiet in model.ChiTietHoaDons)
+			// Process order details from temporary storage or session
+			var orderDetails = await _db.ChiTietHds
+				.Where(od => od.MaCt == payHistory.Id)
+				.ToListAsync();
+
+			foreach (var detail in orderDetails)
 			{
-				var product = await _db.HangHoas.FindAsync(chiTiet.MaHh);
-				if (product == null)
-				{
-					throw new ValidationException($"Product with ID {chiTiet.MaHh} not found");
-				}
-				if (product.SoLuong < chiTiet.SoLuong)
-				{
-					throw new ValidationException($"Insufficient stock for product {product.TenHh}");
-				}
+				var product = await _db.HangHoas.FindAsync(detail.MaHh);
+				if (product == null || product.SoLuong < detail.SoLuong)
+					throw new InvalidOperationException($"Insufficient stock for product {detail.MaHh}");
 
 				var chiTietHd = new ChiTietHd
 				{
 					MaHd = hoaDon.MaHd,
-					MaHh = chiTiet.MaHh,
-					DonGia = chiTiet.DonGia,
-					SoLuong = chiTiet.SoLuong,
-					MaGiamGia = chiTiet.MaGiamGia ?? 0
+					MaHh = detail.MaHh,
+					DonGia = detail.DonGia,
+					SoLuong = detail.SoLuong,
+					MaGiamGia = detail.MaGiamGia
 				};
-				await _db.ChiTietHds.AddAsync(chiTietHd);
 
-				// Cập nhật số lượng sản phẩm
-				product.SoLuong -= chiTiet.SoLuong;
+				product.SoLuong -= detail.SoLuong;
+				_db.ChiTietHds.Add(chiTietHd);
 			}
 
-			await _db.SaveChangesAsync(); // Lưu các bản ghi ChiTietHd và cập nhật tồn kho
-			await transaction.CommitAsync();
-
-			// 4. Xóa các bản ghi trong bảng Carts
-			var productIds = model.ChiTietHoaDons.Select(chiTiet => chiTiet.MaHh).ToList(); // Lấy danh sách ProductId từ model
-			var cartsToDelete = await _db.Carts
-				.Where(cart => cart.UserId == model.MaKh && productIds.Contains(cart.ProductId))
+			// Clear cart
+			var cartItems = await _db.Carts
+				.Where(c => c.UserId == paymentResponse.MaKh)
 				.ToListAsync();
+			_db.Carts.RemoveRange(cartItems);
 
-			_db.Carts.RemoveRange(cartsToDelete);
 			await _db.SaveChangesAsync();
-
-			return payHistory;
+			await transaction.CommitAsync();
 		}
 		catch (Exception ex)
 		{
 			await transaction.RollbackAsync();
-			_logger.LogError(ex, "Error during checkout process");
+			_logger.LogError(ex, "Error processing VNPay payment");
 			throw;
 		}
 	}

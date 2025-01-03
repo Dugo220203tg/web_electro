@@ -9,7 +9,7 @@ using TDProjectMVC.Services;
 using TDProjectMVC.Services.Mail;
 using TDProjectMVC.Services.Momo;
 using TDProjectMVC.ViewModels;
-
+using System.Linq;
 namespace TDProjectMVC.Controllers
 {
     public class CartController : Controller
@@ -242,7 +242,7 @@ namespace TDProjectMVC.Controllers
                         var paymentModel = new PaymentInformationModel
                         {
                             FullName = model.HoTen,
-                            Amount = (double)total*100,
+                            Amount = (double)total * 100,
                             Description = "Thanh toán qua VNPAY",
                             OrderType = "other" // Cập nhật loại đơn hàng tùy thuộc vào cấu hình của bạn
 
@@ -328,45 +328,58 @@ namespace TDProjectMVC.Controllers
         #endregion -----
         #region---MOMO---
         [HttpPost]
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> CreatePaymentMomo(OrderInfoModel model)
         {
-                // Validate dữ liệu đầu vào
-                if (model == null)
-                {
-                    TempData["error"] = "Thông tin thanh toán không hợp lệ";
-                    return RedirectToAction("PaymentFail");
-                }
+            // Validate the input model
+            if (model == null)
+            {
+                TempData["error"] = "Thông tin thanh toán không hợp lệ.";
+                return RedirectToAction("PaymentFail");
+            }
 
-                // Kiểm tra số tiền
-                if (model.Amount <= 0)
-                {
-                    TempData["error"] = "Số tiền thanh toán không hợp lệ";
-                    return RedirectToAction("PaymentFail");
-                }
+            // Validate the amount
+            if (model.Amount <= 0)
+            {
+                TempData["error"] = "Số tiền thanh toán không hợp lệ.";
+                return RedirectToAction("PaymentFail");
+            }
 
-                // Gán thông tin bổ sung nếu thiếu
-                model.FullName = model.FullName ?? User.Identity.Name;
-                model.OrderInfo = model.OrderInfo ?? "Thanh toán đơn hàng";
+            // Assign default values if necessary
+            model.FullName ??= User.Identity?.Name ?? "Unknown User";
+            model.OrderInfo ??= "Thanh toán đơn hàng";
 
-                // In ra thông tin thanh toán để debug
-                Console.WriteLine($"Payment Amount: {model.Amount}");
-                Console.WriteLine($"Payment FullName: {model.FullName}");
-                Console.WriteLine($"Payment OrderInfo: {model.OrderInfo}");
+            // Log payment information for debugging
+            _logger.LogInformation($"Initiating MoMo payment with details: Amount={model.Amount}, FullName={model.FullName}, OrderInfo={model.OrderInfo}");
 
+            try
+            {
+                // Call the service to create a payment
                 var response = await _momoService.CreatePaymentAsync(model);
 
-                // Kiểm tra response từ MoMo
+                // Validate the response
                 if (response == null || string.IsNullOrEmpty(response.PayUrl))
                 {
                     TempData["error"] = "Không thể tạo liên kết thanh toán. Vui lòng thử lại.";
+                    _logger.LogError("Failed to create MoMo payment. Response is null or missing PayUrl.");
                     return RedirectToAction("PaymentFail");
                 }
 
-                // Log URL thanh toán để kiểm tra
-                Console.WriteLine($"MoMo Payment URL: {response.PayUrl}");
+                // Log the payment URL for debugging
+                _logger.LogInformation($"MoMo Payment URL created: {response.PayUrl}");
 
+                // Redirect to the payment URL
                 return Redirect(response.PayUrl);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                _logger.LogError(ex, "An error occurred while creating MoMo payment.");
+
+                // Show a user-friendly error message
+                TempData["error"] = "Đã xảy ra lỗi trong quá trình xử lý thanh toán. Vui lòng thử lại.";
+                return RedirectToAction("PaymentFail");
+            }
         }
 
         [HttpGet]

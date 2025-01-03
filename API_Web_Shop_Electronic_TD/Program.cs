@@ -1,11 +1,14 @@
 using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Repository;
+using API_Web_Shop_Electronic_TD.Services;
+using API_Web_Shop_Electronic_TD.Services.Momo;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Text;
+using TDProjectMVC.Models.MoMo;
 
 var builder = WebApplication.CreateBuilder(args);
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
@@ -52,7 +55,6 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddDbContext<Hshop2023Context>(options => {
 	options.UseSqlServer(builder.Configuration.GetConnectionString("HShop"));
 });
-
 builder.Services.AddDistributedMemoryCache();
 
 builder.Services.AddScoped<IHangHoaRepository, HangHoaRepository>();
@@ -69,8 +71,12 @@ builder.Services.AddScoped<IWishListRepository, WishListRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IThongKeRepository, ThongKeRepository>();
 builder.Services.AddScoped<ICheckOutRepository, CheckOutRepository>();
+builder.Services.AddSingleton<IVnPayService, VnPayService>();
+builder.Services.AddSingleton<IMomoService, MomoService>();
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MoMoAPI"));
 
 builder.Services.AddHttpClient();
+
 
 builder.Services.AddAuthentication(options =>
 {

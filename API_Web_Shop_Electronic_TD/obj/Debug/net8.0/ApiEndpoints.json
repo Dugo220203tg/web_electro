@@ -115,6 +115,48 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "CheckoutController",
+    "Method": "PaymentCallBack",
+    "RelativePath": "api/Checkout",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CheckoutController",
+    "Method": "CreatePaymentUrl",
+    "RelativePath": "api/Checkout/Momo/url",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "API_Web_Shop_Electronic_TD.Models.OrderInfoModel",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CheckoutController",
+    "Method": "VnPayCallback",
+    "RelativePath": "api/Checkout/vnpay/callback",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "API_Web_Shop_Electronic_TD.Models.CheckOutMD",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
     "Method": "DataSellProduct",
     "RelativePath": "api/ChiTietHoaDon/DataSellProduct",
