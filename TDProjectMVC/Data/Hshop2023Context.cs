@@ -17,6 +17,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<BanBe> BanBes { get; set; }
 
+    public virtual DbSet<Cart> Carts { get; set; }
+
     public virtual DbSet<ChiTietHd> ChiTietHds { get; set; }
 
     public virtual DbSet<ChuDe> ChuDes { get; set; }
@@ -43,13 +45,15 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
 
-    public virtual DbSet<PayHistory> PayHistories { get; set; }
+    public virtual DbSet<PayHistory> PayHistorys { get; set; }
 
     public virtual DbSet<PhanCong> PhanCongs { get; set; }
 
     public virtual DbSet<PhanQuyen> PhanQuyens { get; set; }
 
     public virtual DbSet<PhongBan> PhongBans { get; set; }
+
+    public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<TrangThai> TrangThais { get; set; }
 
@@ -92,6 +96,31 @@ public partial class Hshop2023Context : DbContext
             entity.HasOne(d => d.MaKhNavigation).WithMany(p => p.BanBes)
                 .HasForeignKey(d => d.MaKh)
                 .HasConstraintName("FK_BanBe_KhachHang");
+        });
+
+        modelBuilder.Entity<Cart>(entity =>
+        {
+            entity.ToTable("Cart");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreateAt)
+                .HasColumnType("datetime")
+                .HasColumnName("createAt");
+            entity.Property(e => e.ProductId).HasColumnName("productId");
+            entity.Property(e => e.Quantity).HasColumnName("quantity");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(20)
+                .HasColumnName("userId");
+
+            entity.HasOne(d => d.Product).WithMany(p => p.Carts)
+                .HasForeignKey(d => d.ProductId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Cart_HangHoa");
+
+            entity.HasOne(d => d.User).WithMany(p => p.Carts)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Cart_KhachHang");
         });
 
         modelBuilder.Entity<ChiTietHd>(entity =>
@@ -188,6 +217,9 @@ public partial class Hshop2023Context : DbContext
             entity.ToTable("DanhMucSP");
 
             entity.Property(e => e.MaDanhMuc).ValueGeneratedNever();
+            entity.Property(e => e.Image)
+                .IsUnicode(false)
+                .HasColumnName("image");
             entity.Property(e => e.TenDanhMuc)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -343,11 +375,10 @@ public partial class Hshop2023Context : DbContext
                 .HasMaxLength(50)
                 .HasDefaultValue("Photo.gif");
             entity.Property(e => e.HoTen).HasMaxLength(50);
-            entity.Property(e => e.MatKhau).HasMaxLength(50);
+            entity.Property(e => e.MatKhau).HasMaxLength(256);
             entity.Property(e => e.NgayTao).HasColumnType("datetime");
-            entity.Property(e => e.RandomKey)
-                .HasMaxLength(50)
-                .IsUnicode(false);
+            entity.Property(e => e.RandomKey).HasMaxLength(512);
+            entity.Property(e => e.RefreshTokenExpiryTime).HasColumnType("datetime");
         });
 
         modelBuilder.Entity<Loai>(entity =>
@@ -399,17 +430,9 @@ public partial class Hshop2023Context : DbContext
 
         modelBuilder.Entity<PayHistory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Table__3214EC07BA1E86B4");
-
-            entity.ToTable("PayHistory");
-
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.CouponCode)
-                .HasMaxLength(10)
-                .IsFixedLength();
+            entity.Property(e => e.CouponCode).HasMaxLength(50);
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.FullName).HasMaxLength(50);
-            entity.Property(e => e.OrderId).HasMaxLength(50);
             entity.Property(e => e.OrderInfo).HasMaxLength(50);
             entity.Property(e => e.PayMethod).HasMaxLength(50);
         });
@@ -487,6 +510,14 @@ public partial class Hshop2023Context : DbContext
                 .HasColumnName("TenPB");
         });
 
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.ToTable("Role");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.RoleName).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<TrangThai>(entity =>
         {
             entity.HasKey(e => e.MaTrangThai);
@@ -517,6 +548,16 @@ public partial class Hshop2023Context : DbContext
                 .ToTable("User_Coupons");
 
             entity.Property(e => e.UserId).HasMaxLength(20);
+
+            entity.HasOne(d => d.Coupon).WithMany()
+                .HasForeignKey(d => d.CouponId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_User_Coupons_Coupon");
+
+            entity.HasOne(d => d.User).WithMany()
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_User_Coupons_KhachHang");
         });
 
         modelBuilder.Entity<YeuThich>(entity =>

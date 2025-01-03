@@ -7,17 +7,15 @@ public partial class PayHistory
 {
     public int Id { get; set; }
 
-    public string OrderId { get; set; } = null!;
-
     public string? FullName { get; set; }
 
     public string? OrderInfo { get; set; }
 
-    public string? Amount { get; set; }
-
-    public DateTime? CreateDate { get; set; }
+    public double? Amount { get; set; }
 
     public string? PayMethod { get; set; }
 
     public string? CouponCode { get; set; }
+
+    public DateTime? CreateDate { get; set; }
 }

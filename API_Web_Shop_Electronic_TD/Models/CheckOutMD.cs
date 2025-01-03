@@ -80,7 +80,7 @@ namespace API_Web_Shop_Electronic_TD.Models
 		[Required(ErrorMessage = "Phone number is required")]
 		[Phone(ErrorMessage = "Invalid phone number format")]
 		public string DienThoai { get; set; }
-
+		
 		// Chi tiết hóa đơn
 		[Required(ErrorMessage = "Order details are required")]
 		[MinLength(1, ErrorMessage = "Order must contain at least one item")]
