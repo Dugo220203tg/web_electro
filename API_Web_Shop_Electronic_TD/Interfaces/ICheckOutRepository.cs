@@ -6,7 +6,7 @@ namespace API_Web_Shop_Electronic_TD.Interfaces
 {
 	public interface ICheckOutRepository
 	{
-		//Task<PayHistory> InitiateCheckoutAsync(CheckOutMD model);
-		Task ProcessVnPayPaymentAsync(CheckOutMD paymentResponse);
+		Task<int> ProcessPaymentAsync(CheckOutMD request, string paymentMethod);
+		Task UpdatePaymentStatus(int orderId, bool isSuccessful);
 	}
 }

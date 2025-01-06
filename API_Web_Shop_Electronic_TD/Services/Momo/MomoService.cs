@@ -16,28 +16,55 @@ namespace API_Web_Shop_Electronic_TD.Services.Momo
 	{
 		private readonly IOptions<MomoOptionModel> _options;
 		private readonly HttpClient _httpClient;
+		private readonly ILogger<MomoService> _logger;
 
-		public MomoService(IOptions<MomoOptionModel> options, HttpClient httpClient)
+		public MomoService(
+			IOptions<MomoOptionModel> options,
+			HttpClient httpClient,
+			ILogger<MomoService> logger)
 		{
 			_options = options;
 			_httpClient = httpClient;
+			_logger = logger;
 		}
 
 		public MomoExecuteResponseModel PaymentExecuteAsync(IQueryCollection collection)
 		{
-			if (!collection.TryGetValue("amount", out var amount) ||
-				!collection.TryGetValue("orderInfo", out var orderInfo) ||
-				!collection.TryGetValue("orderId", out var orderId))
+			try
 			{
-				throw new ArgumentException("Missing required query parameters: amount, orderInfo, or orderId.");
-			}
+				_logger.LogInformation("Processing MOMO callback with query parameters: {@QueryParams}",
+					collection.ToDictionary(x => x.Key, x => x.Value.ToString()));
 
-			return new MomoExecuteResponseModel
+				// Extract and validate required parameters
+				var amount = collection["amount"].ToString();
+				var orderId = collection["orderId"].ToString();
+				var orderInfo = collection["orderInfo"].ToString();
+				var resultCode = int.Parse(collection["resultCode"].ToString());
+				var message = collection["message"].ToString();
+				var payType = collection["payType"].ToString();
+				var transId = long.Parse(collection["transId"].ToString());
+
+				if (string.IsNullOrEmpty(amount) || string.IsNullOrEmpty(orderId))
+				{
+					throw new ArgumentException("Missing required MOMO callback parameters");
+				}
+
+				return new MomoExecuteResponseModel
+				{
+					Amount = amount,
+					OrderId = orderId,
+					OrderInfo = orderInfo,
+					ResponseCode = resultCode,
+					Message = message,
+					PayType = payType,
+					TransId = transId
+				};
+			}
+			catch (Exception ex)
 			{
-				Amount = amount,
-				OrderId = orderId,
-				OrderInfo = orderInfo
-			};
+				_logger.LogError(ex, "Error processing MOMO callback");
+				throw;
+			}
 		}
 
 
@@ -45,26 +72,14 @@ namespace API_Web_Shop_Electronic_TD.Services.Momo
 		{
 			model.OrderId = DateTime.UtcNow.Ticks.ToString();
 			model.OrderInfo = "Khách hàng: " + model.FullName + ". Nội dung: " + model.OrderInfo;
-
-			var rawData =
-				$"partnerCode={_options.Value.PartnerCode}&accessKey={_options.Value.AccessKey}&requestId={model.OrderId}&amount={model.Amount}&orderId={model.OrderId}&orderInfo={model.OrderInfo}&returnUrl={_options.Value.ReturnUrl}¬ifyUrl={_options.Value.NotifyUrl}&extraData=";
-
-			if (string.IsNullOrEmpty(rawData))
-			{
-				throw new ArgumentException("Raw data for signature cannot be null or empty.");
-			}
-
-			if (string.IsNullOrEmpty(_options.Value.SecretKey))
-			{
-				throw new ArgumentException("Secret key cannot be null or empty.");
-			}
+			var rawData = $"partnerCode={_options.Value.PartnerCode}&accessKey={_options.Value.AccessKey}&requestId={model.OrderId}&amount={model.Amount}&orderId={model.OrderId}&orderInfo={model.OrderInfo}&returnUrl={_options.Value.ReturnUrl}&notifyUrl={_options.Value.NotifyUrl}&extraData=";
 
 			var signature = ComputeHmacSha256(rawData, _options.Value.SecretKey);
 
 			var client = new RestClient(_options.Value.MomoApiUrl);
-			var request = new RestRequest() { Method = Method.Post };
-			request.AddHeader("Content-Type", "application/json; charset=UTF-8");
-
+			var request = new RestRequest(_options.Value.MomoApiUrl, Method.Post);
+			request.AddHeader("Content-Type", "application/json");
+			// Create an object representing the request data
 			var requestData = new
 			{
 				accessKey = _options.Value.AccessKey,
@@ -84,33 +99,24 @@ namespace API_Web_Shop_Electronic_TD.Services.Momo
 
 			var response = await client.ExecuteAsync(request);
 
-			if (response == null || string.IsNullOrEmpty(response.Content))
-			{
-				throw new Exception("Failed to receive a valid response from the Momo API.");
-			}
-
 			return JsonConvert.DeserializeObject<MomoCreatePaymentResponseModel>(response.Content);
 		}
 
 		private string ComputeHmacSha256(string message, string secretKey)
 		{
-			if (string.IsNullOrEmpty(message))
-			{
-				throw new ArgumentNullException(nameof(message), "Message cannot be null or empty.");
-			}
-
-			if (string.IsNullOrEmpty(secretKey))
-			{
-				throw new ArgumentNullException(nameof(secretKey), "Secret key cannot be null or empty.");
-			}
-
 			var keyBytes = Encoding.UTF8.GetBytes(secretKey);
 			var messageBytes = Encoding.UTF8.GetBytes(message);
 
-			using var hmac = new HMACSHA256(keyBytes);
-			var hashBytes = hmac.ComputeHash(messageBytes);
+			byte[] hashBytes;
 
-			return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+			using (var hmac = new HMACSHA256(keyBytes))
+			{
+				hashBytes = hmac.ComputeHash(messageBytes);
+			}
+
+			var hashString = BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+
+			return hashString;
 		}
 	}
 }

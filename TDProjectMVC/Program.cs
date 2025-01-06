@@ -5,9 +5,9 @@ using TDProjectMVC.Data;
 using TDProjectMVC.Helpers;
 using TDProjectMVC.Models;
 using TDProjectMVC.Models.MoMo;
-using TDProjectMVC.Services;
 using TDProjectMVC.Services.Mail;
 using TDProjectMVC.Services.Momo;
+using TDProjectMVC.Services.VnPay;
 
 public class Program 
 {
@@ -23,7 +23,7 @@ public class Program
         builder.Services.AddTransient<IMailSender, MailSender>();   
         builder.Services.AddHttpClient();
         builder.Services.AddScoped<IMomoService, MomoService>();
-        builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MoMoAPI"));
+        builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 
         builder.Services.AddDistributedMemoryCache();
         builder.Services.AddHttpContextAccessor();
