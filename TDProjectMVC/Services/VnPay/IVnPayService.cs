@@ -1,6 +1,6 @@
 ﻿using TDProjectMVC.ViewModels;
 
-namespace TDProjectMVC.Services
+namespace TDProjectMVC.Services.VnPay
 {
     public interface IVnPayService
     {

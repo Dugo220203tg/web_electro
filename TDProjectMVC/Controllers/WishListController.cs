@@ -17,7 +17,7 @@ namespace TDProjectMVC.Controllers
 
         [Authorize]
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> updateWishList()
         {
            var MaKh = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
            
@@ -37,7 +37,28 @@ namespace TDProjectMVC.Controllers
             // Trả về dữ liệu dưới dạng JSON
             return Json(result);
         }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var MaKh = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+            var YeuThichs = db.YeuThiches.AsQueryable()
+                                         .Where(p => p.MaKh == MaKh);
+            var result = await YeuThichs
+                .Select(p => new WishListVM
+                {
+                    MaYT = p.MaYt,
+                    MaHH = (int)p.MaHh,
+                    TenHH = p.MaHhNavigation.TenHh,
+                    DonGia = (double)p.MaHhNavigation.DonGia,
+                    Hinh = p.MaHhNavigation.Hinh
+                })
+                .ToListAsync();
+
+            // Trả về dữ liệu dưới dạng JSON
+            return View(result);
+        }
         [Authorize]
         [HttpPost]
         public async Task<IActionResult> AddToWishList(int MaHH)

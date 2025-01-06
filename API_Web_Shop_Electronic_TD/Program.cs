@@ -1,5 +1,6 @@
 using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
+using API_Web_Shop_Electronic_TD.Models;
 using API_Web_Shop_Electronic_TD.Repository;
 using API_Web_Shop_Electronic_TD.Services;
 using API_Web_Shop_Electronic_TD.Services.Momo;
@@ -7,8 +8,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Configuration;
 using System.Text;
-using TDProjectMVC.Models.MoMo;
 
 var builder = WebApplication.CreateBuilder(args);
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
@@ -18,7 +19,10 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 {
 	options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
-
+builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
+		   .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+		   .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+		   .AddEnvironmentVariables();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
@@ -72,11 +76,16 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IThongKeRepository, ThongKeRepository>();
 builder.Services.AddScoped<ICheckOutRepository, CheckOutRepository>();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
-builder.Services.AddSingleton<IMomoService, MomoService>();
-builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MoMoAPI"));
+builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
+
+builder.Services.AddHttpClient<IMomoService, MomoService>(client =>
+{
+	client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+});
+
+builder.Services.AddScoped<IMomoService, MomoService>();
 
 builder.Services.AddHttpClient();
-
 
 builder.Services.AddAuthentication(options =>
 {

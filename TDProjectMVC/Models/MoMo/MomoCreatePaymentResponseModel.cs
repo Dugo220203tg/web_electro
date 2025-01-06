@@ -10,7 +10,6 @@ namespace TDProjectMVC.Models.MoMo
         public string Message { get; set; }
         public string LocalMessage { get; set; }
         public string RequestType { get; set; }
-        [JsonProperty("payUrl")]
         public string PayUrl { get; set; }
         public string Signature { get; set; }
         public string QrCodeUrl { get; set; }

@@ -55,6 +55,8 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<Role> Roles { get; set; }
 
+    public virtual DbSet<Slide> Slides { get; set; }
+
     public virtual DbSet<TrangThai> TrangThais { get; set; }
 
     public virtual DbSet<TrangWeb> TrangWebs { get; set; }
@@ -516,6 +518,19 @@ public partial class Hshop2023Context : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.RoleName).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Slide>(entity =>
+        {
+            entity.ToTable("Slide");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Image)
+                .IsUnicode(false)
+                .HasColumnName("image");
+            entity.Property(e => e.SlideName)
+                .HasMaxLength(50)
+                .HasColumnName("slideName");
         });
 
         modelBuilder.Entity<TrangThai>(entity =>

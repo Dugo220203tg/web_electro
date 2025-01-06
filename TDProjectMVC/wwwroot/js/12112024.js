@@ -304,7 +304,7 @@ function updateWishListCount() {
 }
 function updateWishList() {
     $.ajax({
-        url: "/WishList/Index",
+        url: "/WishList/updateWishList",
         type: "GET",
         success: function (data) {
             $('.wish-list').empty(); // Làm trống danh sách trước khi cập nhật

@@ -40,8 +40,12 @@ namespace API_Web_Shop_Electronic_TD.Models
 	}
 	public class MomoExecuteResponseModel
 	{
-		public string OrderId { get; set; }
 		public string Amount { get; set; }
+		public string OrderId { get; set; }
 		public string OrderInfo { get; set; }
+		public int ResponseCode { get; set; }
+		public string Message { get; set; }
+		public string PayType { get; set; }
+		public long TransId { get; set; }
 	}
 }

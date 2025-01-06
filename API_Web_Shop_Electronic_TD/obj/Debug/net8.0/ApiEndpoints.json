@@ -116,8 +116,8 @@
   },
   {
     "ContainingType": "CheckoutController",
-    "Method": "PaymentCallBack",
-    "RelativePath": "api/Checkout",
+    "Method": "MomoCallback",
+    "RelativePath": "api/Checkout/momo/callback",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
@@ -126,8 +126,8 @@
   },
   {
     "ContainingType": "CheckoutController",
-    "Method": "CreatePaymentUrl",
-    "RelativePath": "api/Checkout/Momo/url",
+    "Method": "CreatePaymentMomo",
+    "RelativePath": "api/Checkout/momo/payment",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
@@ -149,9 +149,9 @@
     "Order": 0,
     "Parameters": [
       {
-        "Name": "request",
-        "Type": "API_Web_Shop_Electronic_TD.Models.CheckOutMD",
-        "IsRequired": true
+        "Name": "orderId",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []

@@ -248,13 +248,13 @@
             var priceSlider = document.getElementById("price-slider");
             if (priceSlider) {
                 noUiSlider.create(priceSlider, {
-                    start: [0, 10000000],
+                    start: [0, 100000000],
                     connect: true,
                     range: {
                         min: 0,
-                        max: 10000000,
+                        max: 100000000,
                     },
-                    step: 1000,
+                    step: 10000,
                     format: {
                         to: function (value) {
                             return Math.round(value);

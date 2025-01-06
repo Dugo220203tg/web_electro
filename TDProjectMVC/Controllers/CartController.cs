@@ -10,6 +10,7 @@ using TDProjectMVC.Services.Mail;
 using TDProjectMVC.Services.Momo;
 using TDProjectMVC.ViewModels;
 using System.Linq;
+using TDProjectMVC.Services.VnPay;
 namespace TDProjectMVC.Controllers
 {
     public class CartController : Controller
@@ -328,7 +329,6 @@ namespace TDProjectMVC.Controllers
         #endregion -----
         #region---MOMO---
         [HttpPost]
-        //[Authorize]
         public async Task<IActionResult> CreatePaymentMomo(OrderInfoModel model)
         {
             // Validate the input model

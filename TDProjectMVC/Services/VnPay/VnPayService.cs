@@ -4,7 +4,7 @@ using System.Net;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace TDProjectMVC.Services
+namespace TDProjectMVC.Services.VnPay
 {
     public class VnPayService : IVnPayService
     {
@@ -29,7 +29,7 @@ namespace TDProjectMVC.Services
             pay.AddRequestData("vnp_Version", _configuration["Vnpay:Version"]);
             pay.AddRequestData("vnp_Command", _configuration["Vnpay:Command"]);
             pay.AddRequestData("vnp_TmnCode", _configuration["Vnpay:TmnCode"]);
-            pay.AddRequestData("vnp_Amount", ((int)(model.Amount)).ToString());
+            pay.AddRequestData("vnp_Amount", ((int)model.Amount).ToString());
             pay.AddRequestData("vnp_CreateDate", DateTime.Now.ToString("yyyyMMddHHmmss"));
             pay.AddRequestData("vnp_CurrCode", "VND");
             pay.AddRequestData("vnp_IpAddr", context.Connection.RemoteIpAddress?.ToString() ?? "127.0.0.1");
