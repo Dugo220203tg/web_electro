@@ -5,12 +5,10 @@ using System.Security.Claims;
 using TDProjectMVC.Data;
 using TDProjectMVC.Helpers;
 using TDProjectMVC.Models.MoMo;
-using TDProjectMVC.Services;
 using TDProjectMVC.Services.Mail;
 using TDProjectMVC.Services.Momo;
-using TDProjectMVC.ViewModels;
-using System.Linq;
 using TDProjectMVC.Services.VnPay;
+using TDProjectMVC.ViewModels;
 namespace TDProjectMVC.Controllers
 {
     public class CartController : Controller
@@ -30,11 +28,12 @@ namespace TDProjectMVC.Controllers
             _logger = logger;
         }
         public List<CartItem> Cart => HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
+
+        #region ---- CART ----
         public IActionResult Index()
         {
             return View(Cart);
         }
-        #region ---- CART ----
         [HttpPost]
         public IActionResult AddToCart(int id, int quantity = 1, string type = "Normal")
         {
@@ -137,17 +136,17 @@ namespace TDProjectMVC.Controllers
             var item = gioHang.SingleOrDefault(p => p.MaHH == id);
             if (item != null)
             {
-                item.SoLuong++; 
+                item.SoLuong++;
                 HttpContext.Session.Set(MySetting.CART_KEY, gioHang); // Update session
             }
-            return RedirectToAction("Index"); 
+            return RedirectToAction("Index");
         }
 
         public IActionResult MinusQuantity(int id)
         {
             var gioHang = Cart;
             var item = gioHang.SingleOrDefault(p => p.MaHH == id);
-            if (item != null && item.SoLuong > 1) 
+            if (item != null && item.SoLuong > 1)
             {
                 item.SoLuong--;
                 HttpContext.Session.Set(MySetting.CART_KEY, gioHang); // Update session
@@ -187,70 +186,62 @@ namespace TDProjectMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Checkout(CheckOutVM model, string paymentMethod)
         {
-            //if (!ModelState.IsValid)
-            //{
-            //    return View(Cart);
-            //}
-
-            var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrEmpty(customerId))
-            {
-                return RedirectToAction("Login", "Account");
-            }
-
-            string couponCode = HttpContext.Session.GetString("CouponCode");
-            decimal discount = 0;
-            if (!string.IsNullOrEmpty(couponCode))
-            {
-                discount = decimal.Parse(HttpContext.Session.GetString("CouponDiscount"));
-            }
-
-            decimal subtotal = (decimal)Cart.Sum(p => p.SoLuong * p.DonGia);
-            decimal total = subtotal * (100 - discount) / 100;
-
-            ViewBag.Discount = discount;
-            ViewBag.Total = total;
-
-            KhachHang khachHang = null;
-            if (model.GiongKhachHang)
-            {
-                khachHang = await db.KhachHangs.SingleOrDefaultAsync(kh => kh.MaKh == customerId);
-                if (khachHang == null)
-                {
-                    ModelState.AddModelError("", "Không tìm thấy thông tin khách hàng");
-                    return View(Cart);
-                }
-            }
-
-            var hoadon = new HoaDon
-            {
-                MaKh = customerId,
-                HoTen = model.HoTen,
-                DiaChi = model.DiaChi,
-                DienThoai = model.DienThoai,
-                NgayDat = DateTime.Now,
-                CachThanhToan = paymentMethod,
-                CachVanChuyen = "GRAB",
-                MaTrangThai = 0,
-                GhiChu = model.GhiChu,
-            };
-
             try
             {
-                switch (paymentMethod.ToUpperInvariant())
+                if (!ModelState.IsValid)
                 {
-                    case "VNPAY":
-                        var paymentModel = new PaymentInformationModel
-                        {
-                            FullName = model.HoTen,
-                            Amount = (double)total * 100,
-                            Description = "Thanh toán qua VNPAY",
-                            OrderType = "other" // Cập nhật loại đơn hàng tùy thuộc vào cấu hình của bạn
+                    TempData["error"] = "Vui lòng kiểm tra lại thông tin đặt hàng";
+                    return View(Cart);
+                }
 
-                        };
+                var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(customerId))
+                {
+                    return RedirectToAction("DangNhap", "KhachHang");
+                }
 
-                        var paymentUrl = _vnPayservice.CreatePaymentUrl(paymentModel, HttpContext);
-                        return Redirect(paymentUrl);
+                // Kiểm tra giỏ hàng
+                if (Cart == null || !Cart.Any())
+                {
+                    TempData["error"] = "Giỏ hàng trống!";
+                    return RedirectToAction("Index", "Cart");
+                }
+
+                // Tính toán giá trị đơn hàng
+                string couponCode = HttpContext.Session.GetString("CouponCode");
+                decimal discount = 0;
+                if (!string.IsNullOrEmpty(couponCode))
+                {
+                    var discountStr = HttpContext.Session.GetString("CouponDiscount");
+                    decimal.TryParse(discountStr, out discount);
+                }
+
+                decimal subtotal = (decimal)Cart.Sum(p => p.SoLuong * p.DonGia);
+                decimal total = subtotal * (100 - discount) / 100;
+                HttpContext.Session.SetString("FullName", model.HoTen);
+                HttpContext.Session.SetString("PhoneNumber", model.DienThoai);
+                HttpContext.Session.SetString("Address", model.DiaChi);
+
+                // Tạo đối tượng HoaDon
+                var hoadon = new HoaDon
+                {
+                    MaKh = customerId,
+                    HoTen = model.HoTen,
+                    DiaChi = model.DiaChi,
+                    DienThoai = model.DienThoai,
+                    NgayDat = DateTime.Now,
+                    CachThanhToan = paymentMethod,
+                    CachVanChuyen = "GRAB",
+                    MaTrangThai = 0,
+                    GhiChu = model.GhiChu
+                };
+
+                // Xử lý theo phương thức thanh toán
+                switch (paymentMethod?.ToUpper())
+                {
+                    case "COD":
+                        return await ProcessOrder(hoadon, model.Email);
+
                     case "MOMO":
                         var momoModel = new OrderInfoModel
                         {
@@ -259,45 +250,177 @@ namespace TDProjectMVC.Controllers
                             OrderId = Guid.NewGuid().ToString(),
                             OrderInfo = "Thanh toán MOMO"
                         };
-                        return await CreatePaymentMomo(momoModel);
+
+                        CreatePaymentMomo(momoModel);
+                        return await PaymentCallBack(model); ;
+
+                    case "VNPAY":
+                        var paymentModel = new PaymentInformationModel
+                        {
+                            FullName = model.HoTen,
+                            Amount = (double)total*100, 
+                            Description = "Thanh toán qua VNPAY",
+                            OrderType = "other"
+                        };
+                        var paymentUrl = _vnPayservice.CreatePaymentUrl(paymentModel, HttpContext);
+
+                        return Redirect(paymentUrl);
+
                     default:
-                        return await ProcessOrder(hoadon, model.Email);
+                        TempData["error"] = "Vui lòng chọn phương thức thanh toán!";
+                        return View(Cart);
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Checkout Error: {ex}");
-                TempData["Message"] = "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.";
-                return RedirectToAction("PaymentFail");
+                TempData["error"] = "Đã xảy ra lỗi trong quá trình xử lý đơn hàng!";
+                return View(Cart);
             }
         }
-
-        // Refactored Method to Process Order
-        private async Task<IActionResult> ProcessOrder(HoaDon hoadon, string email)
+        private async Task<bool> SaveOrderAndPaymentData(
+    string customerId,
+    string fullName,
+    string address,
+    string phone,
+    string paymentMethod,
+    string orderInfo,
+    decimal amount,
+    string? couponCode,
+    List<CartItem> cartItems,
+    string? notes = null)
         {
             using (var transaction = await db.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    db.Add(hoadon);
+                    var payHistory = new PayHistory
+                    {
+                        FullName = fullName,
+                        OrderInfo = $"Thanh toán qua {paymentMethod}",
+                        Amount = (double)amount,
+                        PayMethod = paymentMethod,
+                        CouponCode = couponCode,
+                        CreateDate = DateTime.UtcNow
+                    };
+                    db.Add(payHistory);
                     await db.SaveChangesAsync();
 
-                    var cthds = Cart.Select(item => new ChiTietHd
+                    var hoaDon = new HoaDon
                     {
-                        MaHd = hoadon.MaHd,
-                        MaHh = item.MaHH,
+                        MaKh = customerId,                 
+                        HoTen = fullName,
+                        DiaChi = address,
+                        DienThoai = phone,
+                        NgayDat = DateTime.Now,
+                        CachThanhToan = paymentMethod,
+                        CachVanChuyen = "GRAB",
+                        MaTrangThai = 0,               
+                        MaNv = null,                  
+                        GhiChu = notes,
+                        PayId = payHistory.Id
+                    };
+
+                    var customerExists = await db.KhachHangs.AnyAsync(k => k.MaKh == customerId);
+                    if (!customerExists)
+                    {
+                        throw new Exception($"Customer with ID {customerId} not found");
+                    }
+
+                    db.Add(hoaDon);
+                    await db.SaveChangesAsync();
+
+                    var chiTietHds = cartItems.Select(item => new ChiTietHd
+                    {
+                        MaHd = hoaDon.MaHd,   
+                        MaHh = item.MaHH,       
                         DonGia = item.DonGia,
                         SoLuong = item.SoLuong,
-                        MaGiamGia = item.GiamGia,
+                        MaGiamGia = item.GiamGia
                     }).ToList();
 
-                    db.AddRange(cthds);
+                    db.AddRange(chiTietHds);
                     await db.SaveChangesAsync();
-
                     await transaction.CommitAsync();
 
-                    // Clear cart
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    await transaction.RollbackAsync();
+                    _logger.LogError($"Error saving order data: {ex.Message}");
+                    throw;
+                }
+            }
+        }
+
+        // Helper method to verify all required foreign keys exist
+        private async Task ValidateForeignKeys(string customerId, List<string> productIds)
+        {
+            // Verify customer exists
+            var customerExists = await db.KhachHangs.AnyAsync(k => k.MaKh == customerId);
+            if (!customerExists)
+            {
+                throw new Exception($"Customer with ID {customerId} not found");
+            }
+
+            // Verify all products exist
+            //var existingProducts = await db.KhachHangs
+            //    .Where(h => productIds.Contains(h.MaHh))
+            //    .Select(h => h.MaHh)
+            //    .ToListAsync();
+
+            //var missingProducts = productIds.Except(existingProducts).ToList();
+            //if (missingProducts.Any())
+            //{
+            //    throw new Exception($"Products not found: {string.Join(", ", missingProducts)}");
+            //}
+
+            var statusExists = await db.TrangThais.AnyAsync(t => t.MaTrangThai == 0);
+            if (!statusExists)
+            {
+                throw new Exception("Invalid order status");
+            }
+        }
+        private void ClearOrderSessionData()
+        {
+            // Clear cart
+            HttpContext.Session.Remove(MySetting.CART_KEY);
+
+            // Clear coupon related data
+            HttpContext.Session.Remove("CouponCode");
+            HttpContext.Session.Remove("CouponDiscount");
+            HttpContext.Session.Remove("FullName");
+            HttpContext.Session.Remove("PhoneNumber");
+            HttpContext.Session.Remove("Address");
+        }
+        // Refactored Method to Process Order
+        private async Task<IActionResult> ProcessOrder(HoaDon hoadon, string email)
+        {
+            try
+            {
+                string couponCode = HttpContext.Session.GetString("CouponCode");
+                decimal amount = (decimal)Cart.Sum(item => item.SoLuong * item.DonGia);
+
+                bool saved = await SaveOrderAndPaymentData(
+                    customerId: hoadon.MaKh,
+                    fullName: hoadon.HoTen,
+                    address: hoadon.DiaChi,
+                    phone: hoadon.DienThoai,
+                    paymentMethod: "COD",
+                    orderInfo: "Thanh toán khi nhận hàng",
+                    amount: amount,
+                    couponCode: couponCode,
+                    cartItems: Cart,
+                    notes: hoadon.GhiChu
+                );
+
+                if (saved)
+                {
+                    // Clear cart and coupon data
                     HttpContext.Session.Remove(MySetting.CART_KEY);
+                    HttpContext.Session.Remove("CouponCode");
+                    HttpContext.Session.Remove("CouponDiscount");
 
                     if (!string.IsNullOrEmpty(email))
                     {
@@ -305,14 +428,17 @@ namespace TDProjectMVC.Controllers
                     }
 
                     TempData["success"] = "Đặt hàng thành công";
-                    return View("Success");
+                    return RedirectToAction("PaymentSuccess");
                 }
-                catch (Exception ex)
-                {
-                    await transaction.RollbackAsync();
-                    TempData["error"] = "Đã xảy ra lỗi vui lòng liên hệ nhà phát triển!";
-                    throw;
-                }
+
+                TempData["error"] = "Đã xảy ra lỗi khi lưu đơn hàng";
+                return View("PaymentFail");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"ProcessOrder Error: {ex.Message}");
+                TempData["error"] = "Đã xảy ra lỗi vui lòng liên hệ nhà phát triển!";
+                return View("PaymentFail");
             }
         }
 
@@ -323,8 +449,8 @@ namespace TDProjectMVC.Controllers
         }
         public IActionResult PaymentSuccess()
         {
+            ClearOrderSessionData();
             return View("Success");
-
         }
         #endregion -----
         #region---MOMO---
@@ -382,207 +508,177 @@ namespace TDProjectMVC.Controllers
             }
         }
 
-        [HttpGet]
-        public async Task<IActionResult> PaymentCallBack(OrderInfoModel model)
-        {
-            var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
-            var requestQuery = HttpContext.Request.Query;
-            if (requestQuery["resultCode"] == "0") // Successful payment
-            {
-                var orderId = requestQuery["orderId"];
-                var amount = decimal.Parse(requestQuery["amount"]);
-                var orderInfo = requestQuery["orderInfo"];
-                var datePaid = DateTime.Now;
-                try
-                {
-                    var result = await SaveOrderToDatabase(orderId, amount, orderInfo, datePaid, "Momo");
-                    if (!result)
-                    {
-                        TempData["error"] = "Đơn hàng đã được tạo nhưng có lỗi khi lưu.";
-                        return RedirectToAction("PaymentFail");
-                    }
-
-                    TempData["success"] = "Giao dịch thành công!";
-                    return RedirectToAction("PaymentSuccess");
-                }
-                catch (Exception ex)
-                {
-                    // Log error
-                    TempData["error"] = "Có lỗi xảy ra khi xử lý đơn hàng: " + ex.Message;
-                    return RedirectToAction("PaymentFail");
-                }
-            }
-            else // Failed or canceled payment
-            {
-                var newMomoInsert = new OrderInfoModel
-                {
-                    OrderId = requestQuery["orderId"],
-                    FullName = User.FindFirstValue(ClaimTypes.Email),
-                    Amount = decimal.Parse(requestQuery["amount"]),
-                    OrderInfo = requestQuery["orderInfo"],
-                    DatePaid = DateTime.Now
-                };
-
-                db.Add(newMomoInsert);
-                await db.SaveChangesAsync();
-
-                TempData["error"] = "Giao dịch Momo đã bị hủy.";
-                return RedirectToAction("Index", "Cart");
-            }
-        }
-
-        // Refactored Method for Saving Orders
-        private async Task<bool> SaveOrderToDatabase(string orderId, decimal amount, string orderInfo, DateTime datePaid, string paymentMethod)
-        {
-            using (var transaction = await db.Database.BeginTransactionAsync())
-            {
-                try
-                {
-                    // Create the order
-                    var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    if (string.IsNullOrEmpty(customerId))
-                    {
-                        throw new InvalidOperationException("Customer ID is missing.");
-                    }
-
-                    var hoadon = new HoaDon
-                    {
-                        MaKh = customerId,
-                        HoTen = User.FindFirstValue(ClaimTypes.Name) ?? "N/A",
-                        DiaChi = "Default Address", // Customize as needed
-                        DienThoai = "Default Phone", // Customize as needed
-                        NgayDat = DateTime.Now,
-                        CachThanhToan = paymentMethod,
-                        CachVanChuyen = "Default Shipping", // Customize as needed
-                        MaTrangThai = 0,
-                        GhiChu = orderInfo
-                    };
-
-                    db.Add(hoadon);
-                    await db.SaveChangesAsync();
-
-                    // Create order details
-                    var cart = HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY);
-                    if (cart == null || !cart.Any())
-                    {
-                        throw new InvalidOperationException("Cart is empty.");
-                    }
-
-                    var cthds = cart.Select(item => new ChiTietHd
-                    {
-                        MaHd = hoadon.MaHd,
-                        MaHh = item.MaHH,
-                        DonGia = item.DonGia,
-                        SoLuong = item.SoLuong,
-                        MaGiamGia = item.GiamGia,
-                    }).ToList();
-
-                    db.AddRange(cthds);
-                    await db.SaveChangesAsync();
-
-                    // Commit transaction
-                    await transaction.CommitAsync();
-
-                    // Clear cart
-                    HttpContext.Session.Remove(MySetting.CART_KEY);
-                    HttpContext.Session.Remove("CouponCode");
-                    HttpContext.Session.Remove("CouponDiscount");
-                    return true;
-                }
-                catch
-                {
-                    await transaction.RollbackAsync();
-                    throw;
-                }
-            }
-        }
-        #endregion
-        #region--- VNPAY ---
-        public async Task<IActionResult> VNPayCallBack(CheckOutVM model)
+        [HttpPost]
+        public async Task<IActionResult> PaymentCallBack(CheckOutVM hoadon)
         {
             try
             {
-                var response = _vnPayservice.PaymentExecute(Request.Query);
+                var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
+                var requestQuery = HttpContext.Request.Query;
 
-                // Check if payment failed
-                if (response == null || response.VnPayResponseCode != "00")
+                if (requestQuery["resultCode"] == "0") // Successful payment
                 {
-                    _logger.LogWarning($"VNPay Payment Failed. ResponseCode: {response?.VnPayResponseCode ?? "null"}");
-                    TempData["Message"] = "Thanh toán không thành công. Vui lòng thử lại.";
-                    return RedirectToAction("PaymentFail");
-                }
-
-                // Get customer details
-                var customerId = HttpContext.User.Claims.SingleOrDefault(p => p.Type == MySetting.CLAIM_CUSTOMERID)?.Value;
-                if (string.IsNullOrEmpty(customerId))
-                {
-                    _logger.LogWarning("Customer ID not found in claims.");
-                    TempData["Message"] = "Không tìm thấy thông tin khách hàng. Vui lòng đăng nhập lại.";
-                    return RedirectToAction("PaymentFail");
-                }
-
-                // Map data from response to the order
-                var hoadon = new HoaDon
-                {
-                    MaKh = customerId,
-                    HoTen = model.HoTen ?? "Unknown Customer",
-                    DiaChi = model.DiaChi ?? "N/A",
-                    DienThoai = model.DienThoai ?? "N/A",
-                    NgayDat = DateTime.Now,
-                    CachThanhToan = "VNPay",
-                    CachVanChuyen = "VnExpress",
-                    MaTrangThai = 0,
-                    GhiChu = model.GhiChu ?? "No additional notes",
-                };
-
-                // Save order and details in a database transaction
-                using (var transaction = await db.Database.BeginTransactionAsync())
-                {
-                    try
+                    var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (string.IsNullOrEmpty(customerId))
                     {
-                        db.Add(hoadon);
-                        await db.SaveChangesAsync();
-
-                        var cthds = Cart.Select(item => new ChiTietHd
-                        {
-                            MaHd = hoadon.MaHd,
-                            MaHh = item.MaHH,
-                            DonGia = item.DonGia,
-                            SoLuong = item.SoLuong,
-                            MaGiamGia = item.GiamGia,
-                        }).ToList();
-
-                        db.AddRange(cthds);
-                        await db.SaveChangesAsync();
-
-                        // Commit the transaction
-                        await transaction.CommitAsync();
-
-                        // Clear the cart
-                        HttpContext.Session.Set<List<CartItem>>(MySetting.CART_KEY, new List<CartItem>());
-                        HttpContext.Session.Remove("CouponCode");
-                        HttpContext.Session.Remove("CouponDiscount");
-                        TempData["Message"] = "Thanh toán VNPay thành công!";
-                        return View("Success");
-                    }
-                    catch (Exception dbEx)
-                    {
-                        // Rollback the transaction in case of failure
-                        await transaction.RollbackAsync();
-                        _logger.LogError($"Error saving order details: {dbEx}");
-                        TempData["Message"] = "Đã xảy ra lỗi khi xử lý đơn hàng. Vui lòng thử lại.";
+                        _logger.LogWarning("Customer ID not found in claims.");
+                        TempData["error"] = "Không tìm thấy thông tin khách hàng. Vui lòng đăng nhập lại.";
                         return RedirectToAction("PaymentFail");
                     }
+
+                    var amount = decimal.Parse(requestQuery["amount"]);
+                    var orderInfo = requestQuery["orderInfo"].ToString();
+                    var cart = HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY);
+
+                    if (cart == null || !cart.Any())
+                    {
+                        TempData["error"] = "Giỏ hàng trống.";
+                        return RedirectToAction("PaymentFail");
+                    }
+                    string fullName = HttpContext.Session.GetString("FullName");
+                    string phoneNumber = HttpContext.Session.GetString("PhoneNumber");
+                    string address = HttpContext.Session.GetString("Address");
+                    bool saved = await SaveOrderAndPaymentData(
+                        customerId: customerId,
+                        fullName: fullName,
+                        address: address,
+                        phone: phoneNumber,
+                        paymentMethod: "MOMO",
+                        orderInfo: orderInfo,
+                        amount: amount,
+                        couponCode: HttpContext.Session.GetString("CouponCode"),
+                        cartItems: cart,
+                        notes: hoadon.GhiChu
+                    );
+
+                    if (saved)
+                    {
+                        TempData["success"] = "Giao dịch thành công!";
+                        return RedirectToAction("PaymentSuccess");
+                    }
+
+                    TempData["error"] = "Đơn hàng đã được tạo nhưng có lỗi khi lưu.";
+                    return RedirectToAction("PaymentFail");
+                }
+                else // Failed or canceled payment
+                {
+                    _logger.LogWarning($"MOMO Payment Failed. ResponseCode: {requestQuery["resultCode"]}");
+                    TempData["error"] = "Giao dịch Momo đã bị hủy.";
+                    return RedirectToAction("Index", "Cart");
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError($"VNPayCallBack encountered an error: {ex}");
-                TempData["Message"] = "Đã xảy ra lỗi khi xử lý thanh toán. Vui lòng thử lại.";
+                _logger.LogError($"MOMO PaymentCallBack Error: {ex}");
+                TempData["error"] = "Có lỗi xảy ra khi xử lý đơn hàng: " + ex.Message;
                 return RedirectToAction("PaymentFail");
             }
         }
+        #endregion
+        #region --- VNPAY ---
+        public IActionResult CreatePaymentVnPay(PaymentInformationModel paymentModel)
+        {
+            // Validate the input model
+            if (paymentModel == null)
+            {
+                TempData["error"] = "Thông tin thanh toán không hợp lệ.";
+                return RedirectToAction("PaymentFail");
+            }
 
+            // Validate the amount
+            if (paymentModel.Amount <= 0)
+            {
+                TempData["error"] = "Số tiền thanh toán không hợp lệ.";
+                return RedirectToAction("PaymentFail");
+            }
+
+            try
+            {
+                // Call the service to create a payment
+                var paymentUrl = _vnPayservice.CreatePaymentUrl(paymentModel, HttpContext);
+
+                // Redirect to VNPAY payment gateway
+                return Redirect(paymentUrl);
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                _logger.LogError(ex, "An error occurred while creating VNPAY payment.");
+
+                // Show a user-friendly error message
+                TempData["error"] = "Đã xảy ra lỗi trong quá trình xử lý thanh toán. Vui lòng thử lại.";
+                return RedirectToAction("PaymentFail");
+            }
+        }
+        [HttpGet]
+        public async Task<IActionResult> VNPayCallBack(CheckOutVM hoadon)
+        {
+            try
+            {
+                var vnpayResponse = _vnPayservice.PaymentExecute(Request.Query);
+
+                if (!vnpayResponse.Success)
+                {
+                    _logger.LogWarning("VNPay payment validation failed");
+                    TempData["error"] = "Không thể xác thực giao dịch";
+                    return RedirectToAction("PaymentFail");
+                }
+
+                if (vnpayResponse.VnPayResponseCode != "00")
+                {
+                    _logger.LogWarning($"VNPay payment failed. Response Code: {vnpayResponse.VnPayResponseCode}");
+                    TempData["error"] = "Thanh toán không thành công";
+                    return RedirectToAction("PaymentFail");
+                }
+
+                var customerId = HttpContext.User.Claims.SingleOrDefault(p => p.Type == MySetting.CLAIM_CUSTOMERID)?.Value;
+                if (string.IsNullOrEmpty(customerId))
+                {
+                    _logger.LogWarning("Customer ID not found in claims");
+                    TempData["error"] = "Không tìm thấy thông tin khách hàng";
+                    return RedirectToAction("PaymentFail");
+                }
+
+                var cart = Cart;
+                if (cart == null || !cart.Any())
+                {
+                    TempData["error"] = "Giỏ hàng trống";
+                    return RedirectToAction("PaymentFail");
+                }
+
+                decimal amount = (decimal)cart.Sum(item => item.SoLuong * item.DonGia);
+                string fullName = HttpContext.Session.GetString("FullName");
+                string phoneNumber = HttpContext.Session.GetString("PhoneNumber");
+                string address = HttpContext.Session.GetString("Address");
+                bool saved = await SaveOrderAndPaymentData(
+                    customerId: customerId,
+                    fullName: fullName,
+                    address: address,
+                    phone: phoneNumber,
+                    paymentMethod: "VNPAY",
+                    orderInfo: vnpayResponse.OrderDescription,
+                    amount: amount,
+                    couponCode: HttpContext.Session.GetString("CouponCode"),
+                    cartItems: cart,
+                    notes: $"VNPAY Transaction ID: {vnpayResponse.TransactionId}"
+                );
+
+                if (saved)
+                {
+                    TempData["success"] = "Thanh toán thành công!";
+                    return RedirectToAction("PaymentSuccess");
+                }
+
+                TempData["error"] = "Lỗi khi lưu thông tin đơn hàng";
+                return RedirectToAction("PaymentFail");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"VNPayCallBack error: {ex}");
+                TempData["error"] = "Đã xảy ra lỗi trong quá trình xử lý";
+                return RedirectToAction("PaymentFail");
+            }
+        }
         #endregion
     }
 }

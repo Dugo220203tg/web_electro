@@ -47,32 +47,13 @@ namespace TDProjectMVC.Services.VnPay
 
         public PaymentResponseModel PaymentExecute(IQueryCollection collections)
         {
-            ArgumentNullException.ThrowIfNull(collections, nameof(collections));
-
-            try
-            {
-                var pay = new VnPayLibrary();
-                var hashSecret = _configuration["Vnpay:HashSecret"]
-                    ?? throw new InvalidOperationException("VnPay Hash Secret not configured");
-
-                var response = GetFullResponseData(collections, hashSecret);
-                return response;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error executing payment");
-                throw;
-            }
+            // Call GetFullResponseData directly
+            return GetFullResponseData(collections, _configuration["Vnpay:HashSecret"]);
         }
-
         public PaymentResponseModel GetFullResponseData(IQueryCollection collection, string hashSecret)
         {
-            ArgumentNullException.ThrowIfNull(collection, nameof(collection));
-            ArgumentNullException.ThrowIfNull(hashSecret, nameof(hashSecret));
-
             var vnPay = new VnPayLibrary();
 
-            // Filter and add only VnPay-related parameters
             foreach (var (key, value) in collection)
             {
                 if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))
@@ -81,48 +62,32 @@ namespace TDProjectMVC.Services.VnPay
                 }
             }
 
-            try
-            {
-                var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
-                var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
-                var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
-                var vnpSecureHash = collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value;
+            var orderId = Convert.ToInt64(vnPay.GetResponseData("vnp_TxnRef"));
+            var vnPayTranId = Convert.ToInt64(vnPay.GetResponseData("vnp_TransactionNo"));
+            var vnpResponseCode = vnPay.GetResponseData("vnp_ResponseCode");
+            var vnpSecureHash = collection.FirstOrDefault(k => k.Key == "vnp_SecureHash").Value;
 
-                // Sửa ValidateSignature
-                var checkSignature = vnPay.ValidateSignature(vnpSecureHash, hashSecret);
-                if (!checkSignature)
-                {
-                    _logger.LogWarning("Invalid payment signature");
-                    return new PaymentResponseModel { Success = false };
-                }
+            var orderInfo = vnPay.GetResponseData("vnp_OrderInfo");
 
-                return new PaymentResponseModel
+            var checkSignature = vnPay.ValidateSignature(vnpSecureHash, hashSecret);
+
+            if (!checkSignature)
+                return new PaymentResponseModel()
                 {
-                    Success = true,
-                    PaymentMethod = "VnPay",
-                    OrderDescription = vnPay.GetResponseData("vnp_OrderInfo"),
-                    OrderId = orderId.ToString(),
-                    PaymentId = vnPayTranId.ToString(),
-                    TransactionId = vnPayTranId.ToString(),
-                    Token = vnpSecureHash,
-                    VnPayResponseCode = vnpResponseCode
+                    Success = false
                 };
-            }
-            catch (Exception ex)
+
+            return new PaymentResponseModel()
             {
-                _logger.LogError(ex, "Error processing payment response");
-                return new PaymentResponseModel { Success = false };
-            }
-        }
-
-        private string ComputeHmacSha256(string message, string secretKey)
-        {
-            var keyBytes = Encoding.UTF8.GetBytes(secretKey);
-            var messageBytes = Encoding.UTF8.GetBytes(message);
-
-            using var hmac = new HMACSHA256(keyBytes);
-            var hashBytes = hmac.ComputeHash(messageBytes);
-            return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+                Success = true,
+                PaymentMethod = "VnPay",
+                OrderDescription = orderInfo,
+                OrderId = orderId.ToString(),
+                PaymentId = vnPayTranId.ToString(),
+                TransactionId = vnPayTranId.ToString(),
+                Token = vnpSecureHash,
+                VnPayResponseCode = vnpResponseCode
+            };
         }
     }
 }

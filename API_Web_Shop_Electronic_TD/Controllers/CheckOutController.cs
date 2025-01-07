@@ -72,13 +72,6 @@ public class CheckoutController : ControllerBase
 					};
 					return await CreatePaymentMomo(momoModel);
 
-					//var momoResponse = await _momoService.CreatePaymentAsync(momoModel);
-					//if (momoResponse?.PayUrl == null)
-					//{
-					//	return BadRequest(new { Message = "Failed to create MOMO payment" });
-					//}
-					//return Ok(new { PayUrl = momoResponse.PayUrl, OrderId = orderId });
-
 				case "directcheck":
 					return Ok(new { Id = orderId });
 
@@ -141,16 +134,16 @@ public class CheckoutController : ControllerBase
 			{
 				_logger.LogWarning("VNPay payment validation failed: {OrderId}", orderId);
 				await _checkoutRepository.UpdatePaymentStatus(int.Parse(orderId), false);
-				return Ok("error");
+				return Redirect("https://localhost:4200/checkout/failure");
 			}
 
 			await _checkoutRepository.UpdatePaymentStatus(int.Parse(orderId), true);
-			return Ok("ok");
+			return Redirect("https://localhost:4200/checkout/success");
 		}
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error processing VNPay callback");
-			return NotFound("error");
+			return Redirect("https://localhost:4200/checkout/failure");
 		}
 	}
 
@@ -163,17 +156,14 @@ public class CheckoutController : ControllerBase
 
 			var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
 
-			// Check if we can parse the orderId
 			if (!int.TryParse(response.OrderId, out int orderId))
 			{
 				_logger.LogError("Invalid orderId in MOMO callback: {OrderId}", response.OrderId);
-				return BadRequest(new { Message = "Invalid order ID" });
+				return Redirect("https://localhost:4200/checkout/failure");
 			}
 
-			// Check if payment was successful (0 is success code for MOMO)
 			var isSuccessful = response.ResponseCode == 0;
 
-			// Log the response
 			_logger.LogInformation(
 				"MOMO payment {Status} for order {OrderId}. TransactionId: {TransId}",
 				isSuccessful ? "succeeded" : "failed",
@@ -181,22 +171,14 @@ public class CheckoutController : ControllerBase
 				response.TransId
 			);
 
-			// Update payment status
 			await _checkoutRepository.UpdatePaymentStatus(orderId, isSuccessful);
 
-			// Return appropriate response
-			return Ok(new
-			{
-				Success = isSuccessful,
-				Message = response.Message,
-				OrderId = response.OrderId,
-				TransactionId = response.TransId
-			});
+			return Redirect(isSuccessful ? "https://localhost:4200/checkout/success" : "https://localhost:4200/checkout/failure");
 		}
 		catch (Exception ex)
 		{
 			_logger.LogError(ex, "Error processing MOMO callback");
-			return StatusCode(500, new { Message = "Internal server error" });
+			return Redirect("https://localhost:4200/checkout/failure");
 		}
 	}
 }
