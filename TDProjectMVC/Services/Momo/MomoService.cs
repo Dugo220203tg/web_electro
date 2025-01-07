@@ -1,14 +1,8 @@
-﻿using System.Data;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using RestSharp;
-using TDProjectMVC.Models;
+using System.Security.Cryptography;
+using System.Text;
 using TDProjectMVC.Models.MoMo;
 
 namespace TDProjectMVC.Services.Momo
