@@ -1,5 +1,6 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Models;
+using static API_Web_Shop_Electronic_TD.Helpers.MyUtil;
 
 namespace API_Web_Shop_Electronic_TD.Mappers
 {
@@ -20,7 +21,7 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				MaTrangThai = model.MaTrangThai,
 				CachVanChuyen = model.CachVanChuyen,
 				PhiVanChuyen = (float?)model.PhiVanChuyen,
-				NgayCan = model.NgayCan ?? DateTime.MinValue, 
+				NgayCan = DateTime.UtcNow,
 				NgayGiao = model.NgayGiao ?? DateTime.MinValue 
 			};
 
@@ -42,7 +43,8 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 						DonGia = ct.DonGia,  
 						MaGiamGia = (int)ct.MaGiamGia, 
 						TenHangHoa = ct.MaHhNavigation?.TenHh ?? "", 
-						HinhAnh = ct.MaHhNavigation?.Hinh ?? "" 
+						HinhAnh = ImageHelper.GetFirstImage(ct.MaHhNavigation?.Hinh ?? "")
+
 					}).ToList();
 			}
 			else
@@ -70,7 +72,7 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				MaTrangThai = (int)model.MaTrangThai,
 				CachVanChuyen = model.CachVanChuyen,
 				PhiVanChuyen = (float)model.PhiVanChuyen,
-				NgayCan = model.NgayCan,
+				NgayCan = DateTime.UtcNow,
 				NgayGiao = model.NgayGiao,
 				MaNv = model.MaNV,
 			};

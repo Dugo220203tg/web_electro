@@ -5,7 +5,7 @@
 }
 */
 /* Dark mode styles */
-:root {
+/*:root {
     --bg-dark: #191C24;
     --text-dark: #fff;
     --sidebar-dark: #191C24;
@@ -14,10 +14,10 @@
     --text-light: #191C24;
     --sidebar-light: antiquewhite;
     --content-light: #f5f7fd;
-}
+}*/
 
 /* Dark mode */
-.dark-mode .bg-secondary {
+/*.dark-mode .bg-secondary {
     background-color: var(--bg-dark) !important;
 }
 
@@ -40,10 +40,10 @@
 .dark-mode .dropdown-menu {
     background-color: var(--bg-dark) !important;
     color: var(--text-dark) !important;
-}
+}*/
 
 /* Light mode */
-.light-mode .bg-secondary {
+/*.light-mode .bg-secondary {
     background-color: var(--bg-light) !important;
 }
 
@@ -95,12 +95,12 @@
 }
 .content.light-mode{
     background:#fff
-}
+}*/
 .btn-add-image {
     margin-top: -55px;
 }
 .btn-account-status {
-    width: 130px; /* Chọn chiều rộng đủ để chứa cả hai văn bản */
+    width: 130px; 
 }
 .btn-comment-status{
     width:160px;
@@ -146,10 +146,17 @@
     }
 
 /* Image input styles */
+
+.imageInputsContainer {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px;
+}
+
 .image-input-group {
     margin-bottom: 1rem;
-    width:240px;
-    height:340px
+    width: 155px;
+    height: 340px
 }
 
 .image-preview-item {

@@ -11,7 +11,6 @@ builder.Services.AddHttpContextAccessor();
 // Configure the HTTP request pipeline.
 
 builder.Services.AddDistributedMemoryCache();
-
 builder.Services.AddSession(options =>
 {
 	options.IdleTimeout = TimeSpan.FromSeconds(10);

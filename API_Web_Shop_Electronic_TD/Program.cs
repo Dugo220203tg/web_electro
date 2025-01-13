@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
 using System.Text;
+using API_Web_Shop_Electronic_TD.Services.Map;
 
 var builder = WebApplication.CreateBuilder(args);
 var JWTSetting = builder.Configuration.GetSection("JWTSetting");
@@ -25,6 +26,7 @@ builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
 		   .AddEnvironmentVariables();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpClient<OpenStreetMapService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

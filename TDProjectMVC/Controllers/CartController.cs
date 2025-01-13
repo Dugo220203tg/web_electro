@@ -6,6 +6,7 @@ using TDProjectMVC.Data;
 using TDProjectMVC.Helpers;
 using TDProjectMVC.Models.MoMo;
 using TDProjectMVC.Services.Mail;
+using TDProjectMVC.Services.Map;
 using TDProjectMVC.Services.Momo;
 using TDProjectMVC.Services.VnPay;
 using TDProjectMVC.ViewModels;
@@ -18,14 +19,18 @@ namespace TDProjectMVC.Controllers
         private readonly IMailSender _mailSender;
         private readonly IMomoService _momoService;
         private readonly ILogger<CartController> _logger;
+        private readonly OpenStreetMapService _osmService;
 
-        public CartController(IMailSender mailSender, Hshop2023Context context, IVnPayService vnPayService, IMomoService momoService, ILogger<CartController> logger)
+        public CartController(IMailSender mailSender,
+            OpenStreetMapService osmService, Hshop2023Context context, IVnPayService vnPayService, IMomoService momoService, ILogger<CartController> logger)
         {
             db = context;
             _vnPayservice = vnPayService;
             _mailSender = mailSender;
             _momoService = momoService;
             _logger = logger;
+            _osmService = osmService;
+
         }
         public List<CartItem> Cart => HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
 
@@ -258,7 +263,7 @@ namespace TDProjectMVC.Controllers
                         var paymentModel = new PaymentInformationModel
                         {
                             FullName = model.HoTen,
-                            Amount = (double)total*100, 
+                            Amount = (double)total * 100,
                             Description = "Thanh toán qua VNPAY",
                             OrderType = "other"
                         };
@@ -308,15 +313,15 @@ namespace TDProjectMVC.Controllers
 
                     var hoaDon = new HoaDon
                     {
-                        MaKh = customerId,                 
+                        MaKh = customerId,
                         HoTen = fullName,
                         DiaChi = address,
                         DienThoai = phone,
                         NgayDat = DateTime.Now,
                         CachThanhToan = paymentMethod,
                         CachVanChuyen = "GRAB",
-                        MaTrangThai = 0,               
-                        MaNv = null,                  
+                        MaTrangThai = 0,
+                        MaNv = null,
                         GhiChu = notes,
                         PayId = payHistory.Id
                     };
@@ -332,8 +337,8 @@ namespace TDProjectMVC.Controllers
 
                     var chiTietHds = cartItems.Select(item => new ChiTietHd
                     {
-                        MaHd = hoaDon.MaHd,   
-                        MaHh = item.MaHH,       
+                        MaHd = hoaDon.MaHd,
+                        MaHh = item.MaHH,
                         DonGia = item.DonGia,
                         SoLuong = item.SoLuong,
                         MaGiamGia = item.GiamGia
@@ -677,6 +682,42 @@ namespace TDProjectMVC.Controllers
                 _logger.LogError($"VNPayCallBack error: {ex}");
                 TempData["error"] = "Đã xảy ra lỗi trong quá trình xử lý";
                 return RedirectToAction("PaymentFail");
+            }
+        }
+        #endregion
+        #region ---OpenStreetMap---
+        public async Task<IActionResult> Search(string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return BadRequest(new { message = "Query cannot be empty." });
+            }
+            try
+            {
+                // Log the incoming request
+                _logger.LogInformation($"Received search request with query: {query}");
+
+                var suggestions = await _osmService.GetAddressSuggestionsAsync(query);
+
+                // Log the OpenStreetMap URL
+                var osmUrl = $"https://nominatim.openstreetmap.org/search?q={Uri.EscapeDataString(query)}&format=json&addressdetails=1&limit=5";
+                _logger.LogInformation($"OpenStreetMap URL: {osmUrl}");
+
+                if (suggestions == null || !suggestions.Any())
+                {
+                    _logger.LogWarning("No suggestions found for query: {Query}", query);
+                    return NotFound(new { message = "No suggestions found." });
+                }
+
+                // Log the number of suggestions
+                _logger.LogInformation($"Found {suggestions.Count} suggestions for query: {query}");
+
+                return Ok(suggestions);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error searching for address with query: {Query}", query);
+                return StatusCode(500, new { message = "Internal server error.", details = ex.Message });
             }
         }
         #endregion

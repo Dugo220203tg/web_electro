@@ -12,6 +12,9 @@ using TDProjectMVC.Models;
 using TDProjectMVC.Services.Mail;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System.Net.Http;
+using Newtonsoft.Json;
+using TDProjectMVC.Services.Map;
 
 
 namespace TDProjectMVC.Controllers
@@ -480,5 +483,7 @@ namespace TDProjectMVC.Controllers
         }
 
         #endregion
+
+
     }
 }

@@ -72,8 +72,6 @@ namespace API_Web_Shop_Electronic_TD.Models
 		[Required(ErrorMessage = "Name is required")]
 		public string DiaChi { get; set; }
 
-		[Required(ErrorMessage = "Shipping method is required")]
-		public string CachVanChuyen { get; set; }
 		[Range(0, double.MaxValue, ErrorMessage = "Shipping fee cannot be negative")]
 		public double ShippingFee { get; set; }
 		public string? GhiChu { get; set; }

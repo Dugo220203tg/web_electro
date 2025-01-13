@@ -33,9 +33,10 @@
             <td>@Html.DisplayFor(modelItem => item.TrangThai)</td>
             <td style="text-align: left;">
                 <div style="display: inline-grid; grid-template-columns: auto auto auto;">
-                    <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaHH })">
+                    <form method="get" style="margin-right:5px" action="@Url.Action("Edit", "HangHoa", new { MaHH = item.MaHH })">
                         <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
                     </form>
+
                     |
                     <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
                         <input type="hidden" name="MaHH" value="@item.MaHH" />

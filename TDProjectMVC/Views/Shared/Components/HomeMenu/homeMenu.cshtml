@@ -5,7 +5,7 @@
         @foreach (var item in Model.Take(5))
         {
             <li class="@((ViewContext.HttpContext.Request.Query["loai"] == item.MaLoai.ToString()) ? "active" : "")">
-                <a asp-controller="Home" asp-action="Index" asp-route-loai="@item.MaLoai">
+                <a asp-controller="Product" asp-action="Index" asp-route-loai="@item.MaLoai">
                     @item.TenLoai
                 </a>
             </li>

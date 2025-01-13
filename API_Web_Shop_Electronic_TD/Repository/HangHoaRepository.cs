@@ -155,7 +155,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			{
 				throw new ArgumentException("Giảm giá không hợp lệ hoặc chưa được nhập");
 			}
-			if (Model.DonGia <= 0)
+			if (Model.DonGia < 0)
 			{
 				throw new ArgumentException("Đơn giá không hợp lệ ");
 			}

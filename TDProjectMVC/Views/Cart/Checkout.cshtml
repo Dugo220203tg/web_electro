@@ -29,7 +29,14 @@
                             <input class="input" type="email" name="Email" placeholder="Email">
                         </div>
                         <div class="form-group delivery-info">
-                            <input class="input" type="text" name="DiaChi" placeholder="Address">
+                            <div class="address-search-container">
+                                <input class="input form-control"
+                                       type="text"
+                                       name="DiaChi"
+                                       id="address-input"
+                                       placeholder="Nhập địa chỉ của bạn">
+                                <ul id="suggestions-list" class="suggestions-list"></ul>
+                            </div>
                         </div>
                         <div class="form-group delivery-info">
                             <input class="input" type="number" name="DienThoai" placeholder="Telephone">
@@ -116,7 +123,7 @@
                         </label>
                     </div>
                     <button type="submit" class="primary-btn order-submit text-xl-center">Place order</button>
-                 
+
                 </div>
                 <!-- /Order Details -->
             </div>
@@ -128,3 +135,39 @@
 
 
 <!-- /SECTION -->
+<style>
+    .suggestions-list {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 1050;
+        list-style: none;
+        margin: 0.25rem 0 0 0;
+        padding: 0;
+        background: white;
+        border: 1px solid rgba(0,0,0,0.1);
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        max-height: 250px;
+        overflow-y: auto;
+    }
+
+    .suggestion-item {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .suggestion-item:hover {
+        background-color: #f8f9fa;
+        padding-left: 1.25rem;
+    }
+
+    .address-search-container {
+        position: relative;
+        width: 100%;
+    }
+</style>

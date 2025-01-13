@@ -6,6 +6,7 @@ using TDProjectMVC.Helpers;
 using TDProjectMVC.Models;
 using TDProjectMVC.Models.MoMo;
 using TDProjectMVC.Services.Mail;
+using TDProjectMVC.Services.Map;
 using TDProjectMVC.Services.Momo;
 using TDProjectMVC.Services.VnPay;
 
@@ -58,6 +59,7 @@ public class Program
 
         builder.Services.AddSingleton<IVnPayService, VnPayService>();
         builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("Vnpay"));
+        builder.Services.AddHttpClient<OpenStreetMapService>();
 
         //builder.Services.AddSingleton(x => new PaypalClient(
         //      builder.Configuration["PaypalOptions:AppId"],
