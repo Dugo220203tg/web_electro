@@ -6,13 +6,13 @@
 <div class="container-fluid pt-4 px-4">
     <div class="bg-secondary rounded h-100 p-4">
         <h5 class="mb-4">Cập nhật đơn hàng</h5>
-        <form asp-action="Edit" method="post" enctype="multipart/form-data" asp-route-id="@Model.MaHD">
+        <form asp-action="Edit" asp-route-MaHD="@Model.MaHD" method="post" enctype="multipart/form-data">
             <div class="form-content">
                 <div class="form-fields">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                     <input type="hidden" asp-for="MaHD" />
 
-                    <div class="form-group" >
+                    <div class="form-group">
                         <label asp-for="MaKH" class="control-label">Mã khách hàng</label>
                         <input asp-for="MaKH" style="background-color: #5c5c5c;" class="form-control" readonly />
                         <span asp-validation-for="MaKH" class="text-danger"></span>
@@ -52,13 +52,13 @@
                         <span asp-validation-for="CachVanChuyen" class="text-danger"></span>
                     </div>
 
-@*                     <div class="form-group">
-                        <label asp-for="PhiVanChuyen" class="control-label">Phí vận chuyển</label>
-                        <input asp-for="PhiVanChuyen" class="form-control" />
-                        <span asp-validation-for="PhiVanChuyen" class="text-danger"></span>
-                    </div>   *@      
+                    @*                     <div class="form-group">
+                    <label asp-for="PhiVanChuyen" class="control-label">Phí vận chuyển</label>
+                    <input asp-for="PhiVanChuyen" class="form-control" />
+                    <span asp-validation-for="PhiVanChuyen" class="text-danger"></span>
+                    </div>   *@
                     <td style="color: white;">
-                        <select asp-for="@Model.MaTrangThai" class="form-select form-select-sm mb-3" aria-label=".form-select-sm example" data-original-value="@Model.MaTrangThai" >
+                        <select asp-for="@Model.MaTrangThai" class="form-select form-select-sm mb-3" aria-label=".form-select-sm example" data-original-value="@Model.MaTrangThai">
                             @await Component.InvokeAsync("TrangThaiHd", new { maTrangThai = Model.MaTrangThai })
                         </select>
                     </td>
@@ -74,24 +74,55 @@
                         <h3 class="title">Chi Tiết Hóa Đơn</h3>
                     </div>
                     <div class="order-summary">
-                        <div class="order-col">
-                            <div><strong>Sản Phẩm</strong></div>
-                            <div><strong>Đơn giá</strong></div>
-                        </div>
-                        <div class="order-products">
-                            @foreach (var chiTiet in Model.ChiTietHds)
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th scope="col">Products</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Price</th>
+                                <th scope="col">Quantity</th>
+                                <th scope="col">Handle</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @for (int i = 0; i < Model.ChiTietHds.Count; i++)
                             {
-                                <div class="order-col">
-                                    <div>@chiTiet.SoLuong x @chiTiet.TenHangHoa</div>
-                                    <div style="color:red">@String.Format("{0:0}$", chiTiet.DonGia * chiTiet.SoLuong)</div>
-                                </div>
-                                <img src="~/Hinh/Hinh/HangHoa/@chiTiet.MaHH/@chiTiet.FirstImageUrl" alt="@chiTiet.TenHangHoa" style="width:80px;height:80px">
+                                <input type="hidden" asp-for="ChiTietHds[i].MaHD" />
+                                <input type="hidden" asp-for="ChiTietHds[i].IsDeleted" />
+                                <tr class="product-widget" data-id="@Model.ChiTietHds[i].MaHH">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="~/Hinh/Hinh/HangHoa/@Model.ChiTietHds[i].MaHH/@Model.ChiTietHds[i].HinhAnh" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="@Model.ChiTietHds[i].TenHangHoa">
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p class="mb-0">
+                                            <a href="#">@Model.ChiTietHds[i].TenHangHoa</a>
+                                        </p>
+                                        <input type="hidden" asp-for="ChiTietHds[i].MaHH" />
+                                    </td>
+                                    <td>
+                                        <p class="mb-0" style="width: 100px;">
+                                            <input type="text" asp-for="ChiTietHds[i].DonGia" class="form-control" />
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <div class="input-group quantity" style="width: 90px;">
+                                            <input type="number" asp-for="ChiTietHds[i].SoLuong" class="form-control form-control-sm text-center" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
+                                    </td>
+                                </tr>
                             }
-                        </div>
+                            </tbody>
 
-                        <div class="order-col" style="border-top:1px solid #fff;border-bottom:none;margin-top:10px">
+                        </table>
+                        <div class="order-col" style="border-top: 1px solid #fff; border-bottom: none; margin-top: 10px">
                             <div><strong>Phí vận chuyển</strong></div>
-                            <div style="color:wheat">@String.Format("{0:0}$", Model.PhiVanChuyen)</div>
+                            <div style="color: wheat">@String.Format("{0:#,##0} VND", Model.PhiVanChuyen)</div>
+                            <input type="hidden" asp-for="PhiVanChuyen" />
                         </div>
 
                         <!-- Calculate the updated total -->
@@ -99,17 +130,30 @@
                             <div><strong>Tổng cộng</strong></div>
                             <div>
                                 <strong class="order-total">
-                                    @String.Format("{0:0}$", Model.ChiTietHds.Sum(c => c.DonGia * c.SoLuong) + Model.PhiVanChuyen)
+                                    @String.Format("{0:#,##0} VND", Model.ChiTietHds.Sum(c => c.DonGia * c.SoLuong) + Model.PhiVanChuyen)
                                 </strong>
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
             <div class="form-group submit-button">
-                <input type="submit" value="Lưu" class="btn btn-primary" />
+                <input type="submit" value="Lưu" class="btn btn-primary" style="position: absolute; top: 105px; right: 105px;"/>
             </div>
         </form>
     </div>
-    <a asp-action="Index" class="close-button">X</a>
+    <a asp-action="Index" class="btn btn-primary" style="position: absolute; top:105px; right:55px">X</a>
 </div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add event listeners for quantity and price changes
+            const inputs = document.querySelectorAll('input[type="number"], input[type="text"]');
+            inputs.forEach(input => {
+                input.addEventListener('change', updateTotal);
+            });
+            updateTotal();
+        });
+    </script>
+}

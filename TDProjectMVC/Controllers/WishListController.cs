@@ -15,7 +15,6 @@ namespace TDProjectMVC.Controllers
             db = context;
         }
 
-        [Authorize]
         [HttpGet]
         public async Task<IActionResult> updateWishList()
         {

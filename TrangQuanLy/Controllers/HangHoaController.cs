@@ -210,65 +210,44 @@ namespace TrangQuanLy.Controllers
         }
         [Authorize]
         [HttpGet]
-        [ActionName("Edit")]
-        public IActionResult Edit_Get(int id)
+        [Route("HangHoa/Edit/{MaHH}")]
+        public async Task<IActionResult> Edit(int MaHH)
         {
             try
             {
-                HangHoaVM hanghoa = new HangHoaVM();
-                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + id).Result;
+                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + MaHH).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    string data = response.Content.ReadAsStringAsync().Result;
-                    hanghoa = JsonConvert.DeserializeObject<HangHoaVM>(data);
+                    var product = JsonConvert.DeserializeObject<HangHoaVM>(response.Content.ReadAsStringAsync().Result);
+                    return View(product); // Make sure to pass the model to the view
                 }
-                return View(hanghoa);
+                TempData["error"] = "Không tìm thấy sản phẩm!";
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                return View();
+                return RedirectToAction("Index");
             }
         }
 
         [Authorize]
         [HttpPost]
-        [ActionName("Edit")]
-        public IActionResult Edit_Post(AllHangHoaVM model, int MaHH)
+        [Route("HangHoa/Edit/{MaHH}")]
+        public async Task<IActionResult> Edit(AllHangHoaVM model, IFormFile[] ImageFiles, int MaHH)
         {
             try
             {
                 if (model == null)
                 {
                     TempData["error"] = "Dữ liệu không hợp lệ!";
-                    return View();
-                }
-
-                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + MaHH).Result;
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    TempData["error"] = "Không tìm thấy sản phẩm!";
-                    return RedirectToAction("Index");
-                }
-
-                var existingProduct = JsonConvert.DeserializeObject<AllHangHoaVM>(response.Content.ReadAsStringAsync().Result);
-
-                if (existingProduct == null)
-                {
-                    TempData["error"] = "Sản phẩm không hợp lệ!";
-                    return RedirectToAction("Index");
-                }
-
-                if (string.IsNullOrEmpty(model.Hinh))
-                {
-                    model.Hinh = existingProduct.Hinh;
+                    return View(model);  // Return the model back to the view
                 }
 
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                response = _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content).Result;
+                HttpResponseMessage response = _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {

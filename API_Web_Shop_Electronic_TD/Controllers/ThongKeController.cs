@@ -1,4 +1,6 @@
 ﻿using API_Web_Shop_Electronic_TD.Interfaces;
+using API_Web_Shop_Electronic_TD.Models;
+using API_Web_Shop_Electronic_TD.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
@@ -25,6 +27,18 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 		{
 			var product = await thongKeRepository.GetTopFavoriteProduct();
 			return Ok(product);
+		}
+		[HttpGet]
+		public async Task<IActionResult> Statistics()
+		{
+			var statistics = await thongKeRepository.GetStatisticsAsync();
+			return Ok(statistics);
+		}
+		[HttpGet]
+		public async Task<IActionResult> DataSellProduct()
+		{
+			var statistics = await thongKeRepository.GetDataSellProduct();
+			return Ok(statistics);
 		}
 	}
 }

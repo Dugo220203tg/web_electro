@@ -1,7 +1,4 @@
-﻿@using System.Security.Claims
-@using TDProjectMVC.Helpers
-@using TDProjectMVC.ViewModels
-@{
+﻿@{
     string ADDRESS = "52 Triều Khúc, Thanh Xuân, Hà Nội";
     string PHONENUMBER = "0986236932";
     string EMAIL = " duong22tg@email.com";
@@ -45,6 +42,7 @@
     <![endif]-->
     <!-- SWEET ALERT-->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.min.css" rel="stylesheet">
+     @* <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"> *@
 
     <link href="~/css/MyCss.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.0/themes/base/jquery-ui.css">
@@ -187,7 +185,7 @@
     <script src="~/js/main.js"></script>
     <script src="~/js/12112024.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> *@
     <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.all.min.js"></script>
     @RenderSection("Scripts", required: false)
@@ -245,8 +243,10 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             // Initialize price slider
-            var priceSlider = document.getElementById("price-slider");
-            if (priceSlider) {
+            const priceSlider = document.getElementById("price-slider");
+            const filterPriceBtn = document.getElementById("filterPriceBtn");
+
+            if (priceSlider && filterPriceBtn) {
                 noUiSlider.create(priceSlider, {
                     start: [0, 100000000],
                     connect: true,
@@ -265,50 +265,54 @@
                     },
                 });
                 // Update price labels dynamically
-                var minPriceElem = document.getElementById("min-price");
-                var maxPriceElem = document.getElementById("max-price");
-                priceSlider.noUiSlider.on("update", function (values) {
-                    minPriceElem.textContent = `VND ${parseInt(values[0]).toLocaleString()}`;
-                    maxPriceElem.textContent = `VND ${parseInt(values[1]).toLocaleString()}`;
-                });
-            }
-            // Handle price filtering
-            document.getElementById("filterPriceBtn").addEventListener("click", function () {
-                const [minPrice, maxPrice] = priceSlider.noUiSlider.get();
-                const params = new URLSearchParams(window.location.search);
-                params.set("minPrice", minPrice);
-                params.set("maxPrice", maxPrice);
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
-                window.location.href = newUrl;
-            });
-            // Handle sorting
-            document.querySelector(".sort-product").addEventListener("change", function (event) {
-                const selectedOption = event.target.value;
-                const params = new URLSearchParams(window.location.search);
-
-                // Clear existing sort parameter first
-                params.delete("sortOrder");
-
-                // Apply sorting based on selected option
-                switch (selectedOption) {
-                    case "0": // Price Descending
-                        params.set("sortOrder", "price_desc");
-                        break;
-                    case "1": // Price Ascending
-                        params.set("sortOrder", "price_asc");
-                        break;
-                    case "2": // Popularity
-                        params.set("sortOrder", "popularity");
-                        break;
-                    default:
-                        // Remove sort for default sorting
-                        params.delete("sortOrder");
+                const minPriceElem = document.getElementById("min-price");
+                const maxPriceElem = document.getElementById("max-price");
+                if (minPriceElem && maxPriceElem) {
+                    priceSlider.noUiSlider.on("update", function (values) {
+                        minPriceElem.textContent = `VND ${parseInt(values[0]).toLocaleString()}`;
+                        maxPriceElem.textContent = `VND ${parseInt(values[1]).toLocaleString()}`;
+                    });
                 }
 
-                const newUrl = `${window.location.pathname}?${params.toString()}`;
-                window.location.href = newUrl;
-            });
-        });
+                // Handle price filtering
+                filterPriceBtn.addEventListener("click", function () {
+                    const [minPrice, maxPrice] = priceSlider.noUiSlider.get();
+                    const params = new URLSearchParams(window.location.search);
+                    params.set("minPrice", minPrice);
+                    params.set("maxPrice", maxPrice);
+                    const newUrl = `${window.location.pathname}?${params.toString()}`;
+                    window.location.href = newUrl;
+                });
+
+                // Handle sorting
+                const sortProduct = document.querySelector(".sort-product");
+                if (sortProduct) {
+                    sortProduct.addEventListener("change", function (event) {
+                        const selectedOption = event.target.value;
+                        const params = new URLSearchParams(window.location.search);
+
+                        params.delete("sortOrder");
+
+                        switch (selectedOption) {
+                            case "0":
+                                params.set("sortOrder", "price_desc");
+                                break;
+                            case "1":
+                                params.set("sortOrder", "price_asc");
+                                break;
+                            case "2":
+                                params.set("sortOrder", "popularity");
+                                break;
+                            default:
+                                params.delete("sortOrder");
+                        }
+
+                        const newUrl = `${window.location.pathname}?${params.toString()}`;
+                        window.location.href = newUrl;
+                    });
+                }
+            }
+        }); 
     </script>
 
     <!--Huy Don Hang trang Don Hang -->
@@ -582,6 +586,99 @@
         }
 
     </script>
+    @* STREETMAP *@
+    <script>
+        // Đợi DOM load xong mới chạy script
+        function initAddressAutocomplete() {
+            const addressInput = document.getElementById('address-input');
+            const suggestionsList = document.getElementById('suggestions-list');
+
+            // Kiểm tra xem elements có tồn tại không
+            if (!addressInput || !suggestionsList) {
+                // console.error('Required elements not found. Check IDs: address-input and suggestions-list');
+                return;
+            }
+
+            let debounceTimer;
+
+            addressInput.addEventListener('input', function () {
+                clearTimeout(debounceTimer);
+                const query = this.value.trim();
+
+                console.log('Input value:', query);
+
+                if (query.length < 3) {
+                    suggestionsList.innerHTML = '';
+                    return;
+                }
+
+                const apiUrl = `/Checkout/search?query=${encodeURIComponent(query)}`;
+            };
+            console.log('Calling API:', apiUrl);
+
+            debounceTimer = setTimeout(() => {
+                fetch(apiUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        if (!response.ok) {
+                            throw new Error(HTTP error! status: ${ response.status });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('API Response:', data);
+                        suggestionsList.innerHTML = '';
+
+                        if (data && Array.isArray(data)) {
+                            data.forEach(item => {
+                                const li = document.createElement('li');
+                                li.className = 'suggestion-item';
+                                li.textContent = item.display_name;
+                                li.addEventListener('click', function () {
+                                    addressInput.value = item.display_name;
+                                    suggestionsList.style.display = 'none';
+                                });
+                                suggestionsList.appendChild(li);
+                            });
+
+                            if (data.length > 0) {
+                                suggestionsList.style.display = 'block';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire({
+                            icon: "error",
+                            title: "Lỗi",
+                            text: "Đã xảy ra lỗi khi tìm kiếm địa chỉ",
+                        });
+                    });
+            }, 300);
+        });
+
+        // Xử lý click outside
+        document.addEventListener('click', function (e) {
+            if (!addressInput.contains(e.target) && !suggestionsList.contains(e.target)) {
+                suggestionsList.style.display = 'none';
+            }
+        });
+            }
+
+        // Có thể sử dụng một trong hai cách sau để khởi tạo:
+
+        // Cách 1: Sử dụng DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initAddressAutocomplete);
+
+        // Cách 2: Gọi hàm sau khi load page
+        // window.onload = initAddressAutocomplete;
+    </script>
+
 
 </body>
 </html>

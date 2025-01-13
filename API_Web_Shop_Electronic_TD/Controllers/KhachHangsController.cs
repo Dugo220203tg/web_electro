@@ -13,8 +13,6 @@ using System.Net;
 using RestSharp;
 using AuthResponseDto = API_Web_Shop_Electronic_TD.Models.AuthResponseDto;
 using ErrorResponse = API_Web_Shop_Electronic_TD.Models.ErrorResponse;
-using System;
-using API_Web_Shop_Electronic_TD.Repository;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
 {
@@ -674,7 +672,5 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 
 		//	return tokenHandler.WriteToken(token);
 		//}
-
-		
 	}
 }

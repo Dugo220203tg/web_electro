@@ -6,5 +6,8 @@ namespace API_Web_Shop_Electronic_TD.Interfaces
 	{
 		Task<List<DataSellProductVMD>> GetTopSellProduct();
 		Task<List<DataSellProductVMD>> GetTopFavoriteProduct();
+		Task<List<CategorySalesStatistics>> GetStatisticsAsync();
+		Task<List<DataSellProductVMD>> GetDataSellProduct();
+
 	}
 }

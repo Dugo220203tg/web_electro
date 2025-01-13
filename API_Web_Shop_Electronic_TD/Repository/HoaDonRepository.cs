@@ -161,7 +161,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			hoaDon.MaTrangThai = (int)model.MaTrangThai;
 			hoaDon.DienThoai = model.DienThoai;
 
-			// Cập nhật thông tin trong bảng ChiTietHoaDon
 			// Xóa những chi tiết không còn trong model
 			var chiTietToRemove = hoaDon.ChiTietHds
 				.Where(ct => !model.ChiTietHds.Any(m => m.MaCT == ct.MaCt))

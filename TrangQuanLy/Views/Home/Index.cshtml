@@ -75,21 +75,21 @@
                                     <div class="testimonial-item @(products.IndexOf(product) == 0 ? "active" : "")">
                                         @{
                                             string firstImageUrl = string.Empty;
-                                            if (!string.IsNullOrEmpty(product.HinhAnh))
+                                            if (!string.IsNullOrEmpty(product.Hinh))
                                             {
-                                                var imageUrls = product.HinhAnh.Split(',');
+                                                var imageUrls = product.Hinh.Split(',');
                                                 firstImageUrl = imageUrls.FirstOrDefault();
                                             }
                                         }
                                         @if (!string.IsNullOrEmpty(firstImageUrl))
                                         {
-                                            <img class="product-image" src="~/Hinh/Hinh/HangHoa/@product.MaHH/@firstImageUrl" alt="@product.TenHangHoa">
+                                            <img class="product-image" src="~/Hinh/Hinh/HangHoa/@product.MaHH/@firstImageUrl" alt="@product.TenHH">
                                         }
                                         else
                                         {
                                             <img class="product-image" src="~/Hinh/default.jpg" alt="Default Image">
                                         }
-                                        <h5 class="product-name">@product.TenHangHoa</h5>
+                                        <h5 class="product-name">@product.TenHH</h5>
                                         <p class="product-price">@product.DonGia.ToString("#,##0 VNĐ")</p>
                                         <p class="product-rating">Rating: @product.DiemDanhGia stars</p>
                                         <small class="product-sold">@product.SoLuong units sold</small>
@@ -137,7 +137,7 @@
                     <tbody>
                         @if (Model != null && Model.Any())
                         {
-                            @await Html.PartialAsync("HoaDon", Model)
+                            @await Html.PartialAsync("HoaDon", (PaginatedList<HoaDonViewModel>)Model)
                         }
                     </tbody>
                 </table>
@@ -200,4 +200,3 @@
         initializeSalesChart(labels, salesData1, salesData8, salesData11);
     </script>
 }
-

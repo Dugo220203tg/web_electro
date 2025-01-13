@@ -3,6 +3,7 @@ using API_Web_Shop_Electronic_TD.Helpers;
 using API_Web_Shop_Electronic_TD.Interfaces;
 using API_Web_Shop_Electronic_TD.Models;
 using API_Web_Shop_Electronic_TD.Services;
+using API_Web_Shop_Electronic_TD.Services.Map;
 using API_Web_Shop_Electronic_TD.Services.Momo;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,17 +17,21 @@ public class CheckoutController : ControllerBase
 	private readonly IVnPayService _vnPayService;
 	private readonly IMomoService _momoService;
 	private readonly ILogger<CheckoutController> _logger;
+	private readonly OpenStreetMapService _osmService;
 
 	public CheckoutController(
 		ICheckOutRepository checkoutRepository,
 		IVnPayService vnPayService,
 		IMomoService momoService,
-		ILogger<CheckoutController> logger)
+		ILogger<CheckoutController> logger,
+		OpenStreetMapService osmService)
 	{
 		_checkoutRepository = checkoutRepository;
 		_vnPayService = vnPayService;
 		_momoService = momoService;
 		_logger = logger;
+		_osmService = osmService;
+
 	}
 
 	[HttpPost]
@@ -181,4 +186,40 @@ public class CheckoutController : ControllerBase
 			return Redirect("https://localhost:4200/checkout/failure");
 		}
 	}
+	[HttpGet("search")]
+	public async Task<IActionResult> Search(string query)
+	{
+		if (string.IsNullOrWhiteSpace(query))
+		{
+			return BadRequest(new { message = "Query cannot be empty." });
+		}
+
+		try
+		{
+			var suggestions = await _osmService.GetAddressSuggestionsAsync(query);
+			if (suggestions == null || !suggestions.Any())
+			{
+				return NotFound(new { message = "No suggestions found." });
+			}
+
+			// Tính phí ship cho từng địa chỉ
+			foreach (var suggestion in suggestions)
+			{
+				suggestion.ShippingFee = _osmService.CalculateShippingFee(new AddressSuggestion
+				{
+					Lat = suggestion.Lat,
+					Lon = suggestion.Lon,
+					display_name = suggestion.display_name
+				});
+			}
+
+			return Ok(suggestions);
+		}
+		catch (Exception ex)
+		{
+			return StatusCode(500, new { message = "Internal server error.", details = ex.Message });
+		}
+	}
+
+
 }

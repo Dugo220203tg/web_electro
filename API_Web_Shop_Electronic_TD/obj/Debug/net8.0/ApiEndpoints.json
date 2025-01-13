@@ -142,6 +142,22 @@
   },
   {
     "ContainingType": "CheckoutController",
+    "Method": "Search",
+    "RelativePath": "api/Checkout/search",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "query",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "CheckoutController",
     "Method": "VnPayCallback",
     "RelativePath": "api/Checkout/vnpay/callback",
     "HttpMethod": "GET",
@@ -154,16 +170,6 @@
         "IsRequired": false
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
-    "Method": "DataSellProduct",
-    "RelativePath": "api/ChiTietHoaDon/DataSellProduct",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -227,16 +233,6 @@
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
-    "Method": "Statistics",
-    "RelativePath": "api/ChiTietHoaDon/Statistics",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -1186,6 +1182,16 @@
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ThongKeController",
+    "Method": "DataSellProduct",
+    "RelativePath": "api/ThongKe/DataSellProduct",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ThongKeController",
     "Method": "GetTopFavoriteProduct",
     "RelativePath": "api/ThongKe/GetTopFavoriteProduct",
     "HttpMethod": "GET",
@@ -1198,6 +1204,16 @@
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ThongKeController",
     "Method": "GetTopSellProduct",
     "RelativePath": "api/ThongKe/GetTopSellProduct",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ThongKeController",
+    "Method": "Statistics",
+    "RelativePath": "api/ThongKe/Statistics",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
