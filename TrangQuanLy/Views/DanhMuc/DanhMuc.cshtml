@@ -14,11 +14,15 @@
           
             <td style="display:flex;align-items: center; color:white">
                 <form method="get" style="margin-right:5px" action="@Url.Action("Edit", new { id = item.MaDanhMuc })">
-                    <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                    <button type="submit" class="btn btn-outline-info m-2">                    <i class="bi bi-pencil-square"></i>
+                    </button>
                 </form>
                 <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
                     <input type="hidden" name="MaDanhMuc" value="@item.MaDanhMuc" />
-                    <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+                    <button type="submit" value="Delete" class="btn btn-outline-info m-2">
+                        <i class="bi bi-trash"></i>
+
+                        </button>
                 </form>
             </td>
         </tr>

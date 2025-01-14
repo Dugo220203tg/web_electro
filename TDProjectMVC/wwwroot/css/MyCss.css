@@ -18,15 +18,15 @@
 
 .icon-cart {
     position: absolute;
-    right: 30px; /* Cách lề phải 10px */
-    top: 65%; /* Đặt ở giữa chiều cao */
+    right: 30px; 
+    top: 65%;  
     cursor:pointer;
-    transform: translateY(-50%); /* Căn chỉnh chính giữa theo chiều dọc */
-    transition: transform 0.3s ease, color 0.3s ease; /* Hiệu ứng mượt */
+    transform: translateY(-50%); 
+    transition: transform 0.3s ease, color 0.3s ease; 
 }
     .icon-cart:hover {
-        transform: translateY(-50%) scale(1.2); /* Phóng to 1.2 lần */
-        color: #FF4500; /* Đổi màu khi hover (tùy chọn) */
+        transform: translateY(-50%) scale(1.2);
+        color: #FF4500;
     }
 .dropdown-menu {
     position: absolute;
@@ -318,3 +318,133 @@
         background-color: #cc3434;
     }
 /*Map*/
+
+
+/*=============================Đơn Hàng==============================*/
+.order-details-nb {
+    display: none;
+}
+
+    .order-details-nb.active {
+        display: block;
+    }
+
+tr.selected {
+    font-weight: bold;
+    background-color: #f8f9fa; /* Nhấn mạnh thêm màu nền nhạt */
+}
+
+.text-truncate-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+}
+
+/* Table 1 styling */
+.table1-container {
+    max-height: 650px;
+    overflow-y: auto;
+}
+
+.table1 {
+    position: relative;
+}
+/* Table Styling */
+.table2-container {
+    position: relative;
+    max-height: 265px;
+    overflow-y: auto;
+}
+
+.table2 {
+    position: relative;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+    .table2 thead,
+    .table2 tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed; /* Consistent column widths */
+    }
+
+    .table2 tbody {
+        display: block;
+        max-height: 300px; /* Adjust scrolling area */
+        overflow-y: auto;
+    }
+
+    .table2 thead {
+        position: sticky;
+        top: 0;
+        background-color: white;
+        z-index: 2;
+    }
+
+    /* Fixed rows at the bottom */
+    .table2 tbody tr.sticky-row {
+        position: sticky;
+        bottom: 0;
+        background-color: white;
+        z-index: 1;
+    }
+
+        .table2 tbody tr.sticky-row:nth-last-child(1) {
+            border-top: 2px solid #dee2e6;
+        }
+
+    /* Ensure consistent row heights */
+    .table2 tbody tr {
+        height: 50px; /* Adjust as needed */
+    }
+
+    /* Column Widths */
+    .table2 th:nth-child(1),
+    .table2 td:nth-child(1) {
+        width: 20%;
+    }
+
+    .table2 th:nth-child(2),
+    .table2 td:nth-child(2) {
+        width: 30%;
+    }
+
+    .table2 th:nth-child(3),
+    .table2 td:nth-child(3) {
+        width: 25%;
+    }
+
+    .table2 th:nth-child(4),
+    .table2 td:nth-child(4) {
+        width: 25%;
+    }
+
+
+/* Align titles of both tables */
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Adjust spacing between the two sections */
+.row {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.col-md-6 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+    .col-md-6 h3 {
+        position: relative;
+        top: 0;
+        text-align: center;
+    }

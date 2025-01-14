@@ -156,7 +156,6 @@
 .image-input-group {
     margin-bottom: 1rem;
     width: 155px;
-    height: 340px
 }
 
 .image-preview-item {
@@ -166,6 +165,8 @@
     border-radius: 4px;
     padding: 10px;
     margin-bottom: 10px;
+    display: grid;
+
 }
 
 .preview-image {

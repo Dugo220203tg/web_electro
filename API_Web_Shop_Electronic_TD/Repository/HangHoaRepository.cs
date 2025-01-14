@@ -47,10 +47,10 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			{
 				throw new ArgumentException("Mã loại không hợp lệ hoặc chưa được nhập");
 			}
-			if (!model.GiamGia.HasValue || model.GiamGia <= 0)
-			{
-				throw new ArgumentException("Giảm giá không hợp lệ hoặc chưa được nhập");
-			}
+			//if (!model.GiamGia.HasValue || model.GiamGia <= 0)
+			//{
+			//	throw new ArgumentException("Giảm giá không hợp lệ hoặc chưa được nhập");
+			//}
 			if (model.DonGia <= 0)
 			{
 				throw new ArgumentException("Đơn giá không hợp lệ ");

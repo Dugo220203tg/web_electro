@@ -80,7 +80,7 @@
                             onclick="window.ImageHandler.addNewImageInput()">
                         Thêm ảnh
                     </button>
-                    <div id="imageInputsContainer">
+                    <div class="imageInputsContainer" id="imageInputsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px">
                         <!-- Hiển thị các ảnh hiện có (nếu có) và trường nhập cho ảnh mới -->
                         @if (Model != null && !string.IsNullOrEmpty(Model.Hinh))
                         {

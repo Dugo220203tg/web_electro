@@ -10,64 +10,62 @@
         <div class="col-12">
             <div class="bg-secondary rounded h-100 p-4">
                 <div class="navbar">
-                    <h3 class="mb-4" style="margin-bottom:0px;">Sản phẩm hàng hóa</h3>
+                    <div class="nav-item dropdown top-nav">
+                        <div class="me-3">
+                            <label class="text-white me-2">Danh mục:</label>
+                            <select class="form-select bg-dark text-white" id="categoryFilter"
+                                    onchange="window.location.href='@Url.Action("Index")?categoryId=' + this.value +
+'&sortOrder=@ViewBag.CurrentSort&pagesize=@ViewBag.PageSize'">
+                                <option value="">Tất cả danh mục</option>
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    if (ViewBag.CategoryId == category.MaDanhMuc)
+                                    {
+                                        <option value="@category.MaDanhMuc" selected>@category.TenDanhMuc</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@category.MaDanhMuc">@category.TenDanhMuc</option>
+                                    }
+                                }
+                            </select>
+                        </div>
 
-                    <div class="nav-item dropdown" style="display: inline-flex; justify-content:center; align-items:center; margin-left: 800px">
-                        <form class="ms-4" asp-action="Search" asp-controller="HangHoa" method="get">
+                        <h3 class="mb-4">Sản phẩm hàng hóa</h3>
+                        <form class="ms-4" style="display: grid; grid-template-columns: 200px 50px; place-items: center;" asp-action="Search" asp-controller="HangHoa" method="get">
                             <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
                             <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
                         </form>
+                        <div>
+                            <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm sản phẩm</a>
+                        </div>
                     </div>
-                    <div style="margin-right:9px">
-                        <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm sản phẩm</a>
-                    </div>
+                   
                 </div>
 
                 <!-- Filter and Sort Controls -->
-                <div class="mb-3 d-flex align-items-center">
-                    <div class="me-3">
-                        <label class="text-white me-2">Danh mục:</label>
-                        <select class="form-select bg-dark text-white" id="categoryFilter"
-                                onchange="window.location.href='@Url.Action("Index")?categoryId=' + this.value +
-            '&sortOrder=@ViewBag.CurrentSort&pagesize=@ViewBag.PageSize'">
-                            <option value="">Tất cả danh mục</option>
-                            @foreach (var category in ViewBag.Categories)
-                            {
-                                if (ViewBag.CategoryId == category.MaDanhMuc)
-                                {
-                                    <option value="@category.MaDanhMuc" selected>@category.TenDanhMuc</option>
-                                }
-                                else
-                                {
-                                    <option value="@category.MaDanhMuc">@category.TenDanhMuc</option>
-                                }
-                            }
-                        </select>
-                    </div>
-                </div>
-
                 <div class="table-responsive">
                     <table class="table text-start align-middle mb-0 table-hover">
                         <thead>
-                            <tr class="text-white">
-                                <th scope="col">SKU</th>
-                                <th scope="col">Sản phẩm</th>
-                                <th scope="col">Danh mục</th>
-                                <th scope="col">
-                                    <a href="@Url.Action("Index", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.QuantitySortParm, pagesize = ViewBag.PageSize })"
-                                       class="text-white">
-                                        Số lượng @(ViewBag.CurrentSort == "quantity_desc" ? "↓" : "↑")
-                                    </a>
-                                </th>
-                                <th scope="col">
-                                    <a href="@Url.Action("Index", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.PriceSortParm, pagesize = ViewBag.PageSize })"
-                                       class="text-white">
-                                        Giá @(ViewBag.CurrentSort == "price_desc" ? "↓" : "↑")
-                                    </a>
-                                </th>
-                                <th scope="col">Trạng thái</th>
-                                <th scope="col">Chức năng</th>
-                            </tr>
+                        <tr class="text-white">
+                            <th scope="col">SKU</th>
+                            <th scope="col">Sản phẩm</th>
+                            <th scope="col">Danh mục</th>
+                            <th scope="col">
+                                <a href="@Url.Action("Index", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.QuantitySortParm, pagesize = ViewBag.PageSize })"
+                                   class="text-white">
+                                    Số lượng @(ViewBag.CurrentSort == "quantity_desc" ? "↓" : "↑")
+                                </a>
+                            </th>
+                            <th scope="col">
+                                <a href="@Url.Action("Index", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.PriceSortParm, pagesize = ViewBag.PageSize })"
+                                   class="text-white">
+                                    Giá @(ViewBag.CurrentSort == "price_desc" ? "↓" : "↑")
+                                </a>
+                            </th>
+                            <th scope="col">Trạng thái</th>
+                            <th scope="col">Chức năng</th>
+                        </tr>
                         </thead>
                         @if (Model != null && Model.Any())
                         {
@@ -122,3 +120,14 @@
         </div>
     </div>
 </div>
+<style>
+    .top-nav {
+        display: grid;
+        grid-template-columns: 210px 255px 200px 165px;
+        justify-content: space-between; 
+        padding: 10px; 
+        color: white;
+        gap: 200px;
+    }
+
+</style>
