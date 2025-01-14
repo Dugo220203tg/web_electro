@@ -284,16 +284,17 @@ namespace TDProjectMVC.Controllers
             }
         }
         private async Task<bool> SaveOrderAndPaymentData(
-    string customerId,
-    string fullName,
-    string address,
-    string phone,
-    string paymentMethod,
-    string orderInfo,
-    decimal amount,
-    string? couponCode,
-    List<CartItem> cartItems,
-    string? notes = null)
+            string customerId,
+            string fullName,
+            string address,
+            string phone,
+            string paymentMethod,
+            string orderInfo,
+            decimal amount,
+            string? couponCode,
+            List<CartItem> cartItems,
+            string? notes = null
+        )
         {
             using (var transaction = await db.Database.BeginTransactionAsync())
             {

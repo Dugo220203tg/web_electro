@@ -16,8 +16,10 @@
                 </form>
             </div>
             <div style="margin-right:9px">
-                <a asp-action="Create" type="button" class="btn btn-outline-info m-2">Thêm Coupon</a>
-            </div>
+                <a asp-action="Create" type="button" class="btn btn-outline-info m-2">
+                    <i class="bi bi-plus-square"></i>
+                </a>
+            </div>  
         </div>
         <div class="table-responsive">
             <table class="table text-start align-middle mb-0 table-hover" style="border-color:#0dcaf0;">
@@ -31,6 +33,7 @@
                         <th scope="col">Date Start</th>
                         <th scope="col">Date End</th>
                         <th scope="col">Status</th>
+                        <th scope="col">Action</th>
                     </tr>
                 </thead>
                 @if (Model != null && Model.Any())

@@ -9,7 +9,8 @@
             <td style="color: white;">
                 @Html.DisplayFor(modelItem => item.MaKH)
             </td>
-            <td style="color: white;">
+            <td style="color: white; white-space: nowrap; overflow: hidden;text-overflow: ellipsis;
+                       width: 200px;">
                 @Html.DisplayFor(modelItem => item.TenHangHoa)
             </td>
             <td style="color: white;">
@@ -21,10 +22,10 @@
             <td style="color: white;">
                 @Html.DisplayFor(modelItem => item.NoiDung)
             </td>
-            <td id="status-text-@item.MaDg" style="color: white;">
-                @Html.DisplayFor(modelItem => item.TenTrangThai)
-            </td>
-            <td style="display:flex;align-items: center; color:white">
+          @*    <td id="status-text-@item.MaDg" style="color: white;">
+                 @Html.DisplayFor(modelItem => item.TenTrangThai)
+             </td> *@
+            <td style="display:flex;align-items: center; color: white;    padding: 20px;">
                 <input type="button"
                        id="status-button-@item.MaDg"
                        class="btn btn-outline-info m-2 btn-comment-status"
@@ -32,7 +33,8 @@
                        onclick="toggleCommentStatus('@item.MaDg', @(item.TrangThai))" />
                 <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
                     <input type="hidden" name="Maloai" value="@item.MaDg" />
-                    <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
+                    <button type="submit" value="Delete" class="btn btn-outline-info m-2" >                    <i class="bi bi-trash"></i>
+                    </button>
                 </form>
             </td>
         </tr>

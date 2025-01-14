@@ -19,7 +19,6 @@
     <div class="container py-5">
         <!-- Left Column: Most Recent Order -->
         <div class="row">
-            <!-- Left Column: Most Recent Order -->
             <div class="col-md-6">
                 <h3>Thông tin</h3>
                 <div class="order-container view-orderleft">
@@ -27,58 +26,64 @@
                     {
                         <div class="order-details-nb @(order.MaHD == Model.Item1?.MaHD ? "active" : "d-none")" data-id="@order.MaHD">
                             <div class="table-responsive">
-                                <table class="table ">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Products</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Total</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var ct in order.ChiTietHds)
-                                        {
+                                <div class="table1-container">
+                                    <table class="table table2">
+                                        <thead>
                                             <tr>
-                                                <td class="align-middle">
-                                                    @if (!string.IsNullOrEmpty(ct.HinhAnh))
-                                                    {
-                                                        var firstImageUrl = ct.HinhAnh.Split(',').FirstOrDefault();
-                                                        <img src="~/Hinh/Hinh/HangHoa/@ct.MaHH/@firstImageUrl"
-                                                             class="img-fluid rounded-circle"
-                                                             style="width: 80px; height: 80px;"
-                                                             alt="@ct.TenHangHoa">
-                                                    }
-                                                    else
-                                                    {
-                                                        <span>No image available</span>
-                                                    }
-                                                </td>
-                                                <td class="align-middle">
-                                                    <p class="fw-bold mb-1">
-                                                    <p class="fw-bold mb-1 text-truncate-2-lines">
-                                                        <a href="/Product/Detail/@ct.MaHH" >@ct.TenHangHoa</a>
-                                                    </p>
-                                                    <p class="mb-0">X @ct.SoLuong</p>
-                                                </td>
-                                                <td class="align-middle text-danger">@ct.DonGia.ToString("#,##0 VND")</td>
+                                                <th scope="col">Products</th>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Total</th>
                                             </tr>
-                                        }
-                                        <tr> 
-                                            <td colspan="2" class="text-end fw-bold">Order Total:</td>
-                                            <td class="text-danger fw-bold">@order.ChiTietHds.Sum(ct => ct.ThanhTien).ToString("#,##0 VND")</td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="3" class="text-end">
-                                                <a class="btn btn-danger me-2" asp-action="ChiTietDonHang" asp-controller="DonHang" asp-route-MaHD="@order.MaHD">
-                                                    Chi tiết đơn hàng
-                                                </a>
-                                                <button class="btn btn-danger" onclick="confirmCancelOrder(@order.MaHD, this)">
-                                                    Hủy đơn hàng
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            <!-- Dynamic rows -->
+                                            @foreach (var ct in order.ChiTietHds)
+                                            {
+                                                <tr>
+                                                    <td class="align-middle">
+                                                        @if (!string.IsNullOrEmpty(ct.HinhAnh))
+                                                        {
+                                                            var firstImageUrl = ct.HinhAnh.Split(',').FirstOrDefault();
+                                                            <img src="~/Hinh/Hinh/HangHoa/@ct.MaHH/@firstImageUrl"
+                                                                 class="img-fluid rounded-circle"
+                                                                 style="width: 80px; height: 80px;"
+                                                                 alt="@ct.TenHangHoa">
+                                                        }
+                                                        else
+                                                        {
+                                                            <span>No image available</span>
+                                                        }
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        <p class="fw-bold mb-1">
+                                                        <p class="fw-bold mb-1 text-truncate-2-lines">
+                                                            <a href="/Product/Detail/@ct.MaHH">@ct.TenHangHoa</a>
+                                                        </p>
+                                                        <p class="mb-0">X @ct.SoLuong</p>
+                                                    </td>
+                                                    <td class="align-middle text-danger">@ct.DonGia.ToString("#,##0 VND")</td>
+                                                </tr>
+                                            }
+                                            <!-- Sticky rows -->
+                                            <tr class="sticky-row">
+                                                <td colspan="2" class="text-end fw-bold">
+                                                    <a class="btn btn-danger me-2" asp-action="ChiTietDonHang" asp-controller="DonHang" asp-route-MaHD="@order.MaHD">
+                                                        Chi tiết đơn hàng
+                                                    </a>
+                                                </td>
+                                                <td colspan="3" class="text-end">
+
+                                                    <button class="btn btn-danger" onclick="confirmCancelOrder(@order.MaHD, this)">
+                                                        Hủy đơn hàng
+                                                    </button>
+                                                </td>
+                                                <td class="text-danger fw-bold">@order.ChiTietHds.Sum(ct => ct.ThanhTien).ToString("#,##0 VND")</td>
+
+                                            </tr>
+                                        </tbody>
+                                    </table>
+
+                                </div>
                             </div>
                         </div>
                     }
@@ -88,8 +93,8 @@
             <!-- Right Column: Order List -->
             <div class="col-md-6">
                 <h3>Danh Sách Đơn Hàng</h3>
-                <div class="table-responsive view-orderright">
-                    <table class="table">
+                <div class="table-responsive view-orderright table2-container">
+                    <table class="table table1">
                         <thead>
                             <tr>
                                 <th scope="col">Order ID</th>
@@ -119,27 +124,3 @@
         </div>
     </div>
 </div>
-<style>
-    .order-details-nb {
-        display: none;
-    }
-
-        .order-details-nb.active {
-            display: block;
-        }
-
-    tr.selected {
-        font-weight: bold;
-        background-color: #f8f9fa; /* Nhấn mạnh thêm màu nền nhạt */
-    }
-
-    .text-truncate-2-lines {
-        display: -webkit-box;
-        -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        text-overflow: ellipsis; /* Thêm dấu "..." nếu nội dung bị cắt */
-        white-space: normal;
-    }
-
-</style>

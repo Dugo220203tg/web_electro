@@ -76,60 +76,62 @@
                     <div class="order-summary">
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th scope="col">Products</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Price</th>
-                                <th scope="col">Quantity</th>
-                                <th scope="col">Handle</th>
-                            </tr>
+                                <tr>
+                                    <th scope="col">Products</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Handle</th>
+                                </tr>
                             </thead>
                             <tbody>
-                            @for (int i = 0; i < Model.ChiTietHds.Count; i++)
-                            {
-                                <input type="hidden" asp-for="ChiTietHds[i].MaHD" />
-                                <input type="hidden" asp-for="ChiTietHds[i].IsDeleted" />
-                                <tr class="product-widget" data-id="@Model.ChiTietHds[i].MaHH">
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <img src="~/Hinh/Hinh/HangHoa/@Model.ChiTietHds[i].MaHH/@Model.ChiTietHds[i].HinhAnh" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="@Model.ChiTietHds[i].TenHangHoa">
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <p class="mb-0">
-                                            <a href="#">@Model.ChiTietHds[i].TenHangHoa</a>
-                                        </p>
-                                        <input type="hidden" asp-for="ChiTietHds[i].MaHH" />
-                                    </td>
-                                    <td>
-                                        <p class="mb-0" style="width: 100px;">
-                                            <input type="text" asp-for="ChiTietHds[i].DonGia" class="form-control" />
-                                        </p>
-                                    </td>
-                                    <td>
-                                        <div class="input-group quantity" style="width: 90px;">
-                                            <input type="number" asp-for="ChiTietHds[i].SoLuong" class="form-control form-control-sm text-center" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger" onclick="removeRow(this)">Remove</button>
-                                    </td>
-                                </tr>
-                            }
+                                @for (int i = 0; i < Model.ChiTietHds.Count; i++)
+                                {
+                                    <input type="hidden" asp-for="ChiTietHds[i].MaHD" />
+                                    <input type="hidden" asp-for="ChiTietHds[i].IsDeleted" />
+                                    <tr class="product-widget" data-id="@Model.ChiTietHds[i].MaHH">
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <img src="~/Hinh/Hinh/HangHoa/@Model.ChiTietHds[i].MaHH/@Model.ChiTietHds[i].HinhAnh" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="@Model.ChiTietHds[i].TenHangHoa">
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="mb-0">
+                                                <a style="color: white" href="#">@Model.ChiTietHds[i].TenHangHoa</a>
+                                            </p>
+                                            <input type="hidden" asp-for="ChiTietHds[i].MaHH" />
+                                        </td>
+                                        <td>
+                                            <p class="mb-0" style="width: 100px;">
+                                                <input type="text" asp-for="ChiTietHds[i].DonGia" class="form-control" />
+                                            </p>
+                                        </td>
+                                        <td>
+                                            <div class="input-group quantity" style="width: 90px;">
+                                                <input type="number" asp-for="ChiTietHds[i].SoLuong" class="form-control form-control-sm text-center" />
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-danger" onclick="removeRow(this)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
                             </tbody>
 
                         </table>
-                        <div class="order-col" style="border-top: 1px solid #fff; border-bottom: none; margin-top: 10px">
-                            <div><strong>Phí vận chuyển</strong></div>
-                            <div style="color: wheat">@String.Format("{0:#,##0} VND", Model.PhiVanChuyen)</div>
+                        <div class="order-col" style="display: grid; grid-template-columns: 150px 1fr; border-top: 1px solid #fff; border-bottom: none; margin-top: 10px">
+                            <div><strong>Phí vận chuyển:</strong></div>
+                            <div style="color: #60dff5">@String.Format("{0:#,##0} VND", Model.PhiVanChuyen)</div>
                             <input type="hidden" asp-for="PhiVanChuyen" />
                         </div>
 
                         <!-- Calculate the updated total -->
-                        <div class="order-col">
-                            <div><strong>Tổng cộng</strong></div>
+                        <div class="order-col" style="display: grid; grid-template-columns: 150px 1fr">
+                            <div><strong>Tổng cộng:</strong></div>
                             <div>
-                                <strong class="order-total">
+                                <strong class="order-total" style="color: #04daff">
                                     @String.Format("{0:#,##0} VND", Model.ChiTietHds.Sum(c => c.DonGia * c.SoLuong) + Model.PhiVanChuyen)
                                 </strong>
                             </div>
@@ -138,12 +140,14 @@
                     </div>
                 </div>
             </div>
-            <div class="form-group submit-button">
-                <input type="submit" value="Lưu" class="btn btn-primary" style="position: absolute; top: 105px; right: 105px;"/>
+            <div class="form-group submit-button" style="position: relative;">
+                <button type="button" class="btn btn-outline-info m-2" style="position: absolute; bottom: 752px; right: 60px;">
+                    <i class="bi bi-save-fill"></i>  save
+                </button>
             </div>
         </form>
     </div>
-    <a asp-action="Index" class="btn btn-primary" style="position: absolute; top:105px; right:55px">X</a>
+    <a asp-action="Index" class="btn btn-danger" style="position: absolute; top:105px; right:55px">X</a>
 </div>
 @section Scripts {
     <script>

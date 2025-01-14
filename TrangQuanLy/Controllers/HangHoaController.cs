@@ -185,10 +185,6 @@ namespace TrangQuanLy.Controllers
                 HttpResponseMessage response = _client.PostAsync(_client.BaseAddress + "/HangHoa/Post", content).Result;
                 // Serial hóa dữ liệu từ model thành JSON
 
-                // Ghi dữ liệu đã serial hóa ra cửa sổ Output trong Visual Studio
-                System.Diagnostics.Debug.WriteLine("Response status: " + response.StatusCode);
-                System.Diagnostics.Debug.WriteLine("Response content: " + response.Content.ReadAsStringAsync().Result);
-
                 // Check if the response is successful
                 if (response.IsSuccessStatusCode)
                 {
@@ -266,23 +262,21 @@ namespace TrangQuanLy.Controllers
         }
 
         [Authorize]
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm(int MaHH)
+        [HttpPost]
+        public IActionResult DeleteProduct(int MaHH)
         {
             try
             {
                 HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/HangHoa/Delete/" + MaHH).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Xóa thành công!";
-                    return RedirectToAction("Index");
+                    return Json(new { success = true });
                 }
-                return View("Index", "HangHoa");
+                return Json(new { success = false });
             }
             catch (Exception ex)
             {
-                TempData["error"] = ex.Message;
-                return View();
+                return Json(new { success = false, message = ex.Message });
             }
         }
     }

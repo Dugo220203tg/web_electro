@@ -68,7 +68,8 @@
                             class="btn btn-primary btn-add-image"
                             onclick="window.ImageHandler.addNewImageInput()">
                         Thêm ảnh
-                    </button>                    <div id="imageInputsContainer">
+                    </button>                    
+                    <div class="imageInputsContainer" id="imageInputsContainer" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px">
                         <!-- Hiển thị các ảnh hiện có (nếu có) và trường nhập cho ảnh mới -->
                         @if (Model != null && !string.IsNullOrEmpty(Model.Hinh))
                         {
@@ -102,4 +103,19 @@
     </div>
 </div>
 @section Scripts {
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize CKEditor
+            var editor = CKEDITOR.replace('MoTa');
+
+            // Handle form submission
+            document.querySelector('form').addEventListener('submit', function (e) {
+                // Get the data from CKEditor
+                var mota = editor.getData();
+                // Set it in the textarea (sync CKEditor with textarea)
+                document.querySelector('[name="MoTa"]').value = mota;
+            });
+        });
+        </script>
 }

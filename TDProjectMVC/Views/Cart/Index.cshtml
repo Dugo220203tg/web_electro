@@ -2,6 +2,14 @@
 @{
     ViewData["Title"] = "Cart";
 }
+@if (TempData["success"] != null)
+{
+    <input type="hidden" id="temp-success-message" value="@TempData["success"]" />
+}
+@if (TempData["Error"] != null)
+{
+    <input type="hidden" id="temp-error-message" value="@TempData["Error"]" />
+}
 <!-- Cart Page Start -->
 <div class="container-fluid py-5">
     <div class="container py-5">
@@ -77,7 +85,7 @@
                             <td>
                                 <p class="mb-0 mt-4">@item.ThanhTien.ToString("#,##0 VNĐ")</p>
                             </td>
-                            <td>
+                            <td>    
                                 <button onclick="RemoveCart(@item.MaHH, this)">
                                     <i class="fa fa-times text-danger"></i>
                                 </button>

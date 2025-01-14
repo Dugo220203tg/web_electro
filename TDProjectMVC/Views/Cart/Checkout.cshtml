@@ -58,8 +58,8 @@
                             <div><strong>PRODUCT</strong></div>
                             <div><strong>TOTAL</strong></div>
                         </div>
-                        <div class="order-products">
-                            @foreach (var item in Model) // Model is now the Cart
+                        <div class="order-products" data-subtotal="@Model.Sum(p => p.SoLuong * p.DonGia)">
+                            @foreach (var item in Model)
                             {
                                 <div class="order-col">
                                     <div>@item.SoLuong x @item.TenHH</div>
@@ -73,7 +73,7 @@
                         </div>
                         @if (ViewBag.Discount != null && ViewBag.Total != null)
                         {
-                            <div class="order-col">
+                            <div class="order-col" data-discount="@(Model.Sum(p => p.SoLuong * p.DonGia) * ((double)ViewBag.Discount / 100))">
                                 <div>Coupon Discount</div>
                                 <div>
                                     <strong>
@@ -139,7 +139,6 @@
     .suggestions-list {
         display: none;
         position: absolute;
-        top: 100%;
         left: 0;
         right: 0;
         z-index: 1050;
@@ -163,11 +162,20 @@
 
     .suggestion-item:hover {
         background-color: #f8f9fa;
-        padding-left: 1.25rem;
     }
 
-    .address-search-container {
-        position: relative;
-        width: 100%;
+    .suggestion-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .address-name {
+        font-weight: 500;
+    }
+
+    .shipping-fee {
+        color: #6c757d;
+        font-size: 0.9em;
     }
 </style>

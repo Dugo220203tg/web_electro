@@ -34,14 +34,14 @@
             <td style="text-align: left;">
                 <div style="display: inline-grid; grid-template-columns: auto auto auto;">
                     <form method="get" style="margin-right:5px" action="@Url.Action("Edit", "HangHoa", new { MaHH = item.MaHH })">
-                        <button type="submit" class="btn btn-outline-info m-2">Sửa</button>
+                        <button type="submit" class="btn btn-outline-info m-2">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
                     </form>
-
-                    |
-                    <form id="delete-form" style="margin-right:5px" method="post" asp-action="Delete">
-                        <input type="hidden" name="MaHH" value="@item.MaHH" />
-                        <input type="submit" value="Delete" class="btn btn-outline-info m-2" />
-                    </form>
+                
+                    <button onclick="confirmDelete('@item.MaHH')" class="btn btn-outline-info m-2">
+                        <i class="bi bi-trash"></i>
+                    </button
                 </div>
             </td>
         </tr>
