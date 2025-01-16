@@ -1,0 +1,13 @@
+﻿@model IEnumerable<TrangQuanLy.Models.NotificationMD>
+
+@foreach (var item in Model)
+{
+    <a href="#" class="dropdown-item">
+
+        <h6 class="fw-normal mb-0">@item.Name</h6>
+        <h3>@item.Description</h3>
+        <small>@item.CreateAt</small>
+    </a>
+    <hr class="dropdown-divider">
+
+}

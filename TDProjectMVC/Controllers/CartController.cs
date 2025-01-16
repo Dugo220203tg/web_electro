@@ -399,6 +399,7 @@ namespace TDProjectMVC.Controllers
             HttpContext.Session.Remove("FullName");
             HttpContext.Session.Remove("PhoneNumber");
             HttpContext.Session.Remove("Address");
+            
         }
         // Refactored Method to Process Order
         private async Task<IActionResult> ProcessOrder(HoaDon hoadon, string email)
@@ -432,7 +433,15 @@ namespace TDProjectMVC.Controllers
                     {
                         await _mailSender.SendEmailAsync(email, "Đặt hàng thành công", "Đơn hàng đã được đặt thành công!");
                     }
-
+                    var notification = new Notification
+                    {
+                        Name = "Đơn hàng mới",
+                        Description = $"Tài khoản {hoadon.HoTen} đã tạo đơn hàng thành công.",
+                        Status = false,
+                        CreateAt = DateTime.Now
+                    };
+                    db.Notifications.Add(notification);
+                    await db.SaveChangesAsync();
                     TempData["success"] = "Đặt hàng thành công";
                     return RedirectToAction("PaymentSuccess");
                 }
@@ -559,6 +568,16 @@ namespace TDProjectMVC.Controllers
 
                     if (saved)
                     {
+                        var notification = new Notification
+                        {
+                            Name = "Đơn hàng mới",
+                            Description = $"Tài khoản {hoadon.HoTen} đã tạo đơn hàng thành công.",
+                            Status = false,
+                            CreateAt = DateTime.Now
+                        };
+                        db.Notifications.Add(notification);
+                        await db.SaveChangesAsync();
+
                         TempData["success"] = "Giao dịch thành công!";
                         return RedirectToAction("PaymentSuccess");
                     }
@@ -671,6 +690,16 @@ namespace TDProjectMVC.Controllers
 
                 if (saved)
                 {
+                    var notification = new Notification
+                    {
+                        Name = "Đơn hàng mới",
+                        Description = $"Tài khoản {hoadon.HoTen} đã tạo đơn hàng thành công.",
+                        Status = false,
+                        CreateAt = DateTime.Now
+                    };
+                    db.Notifications.Add(notification);
+                    await db.SaveChangesAsync();
+
                     TempData["success"] = "Thanh toán thành công!";
                     return RedirectToAction("PaymentSuccess");
                 }

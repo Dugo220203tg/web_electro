@@ -5,10 +5,10 @@ namespace TrangQuanLy.Models
 	public class AdminViewModel
 	{
 
-        [Display(Name = "User Name")]
+        [Display(Name = "maKh")]
 		[Required(ErrorMessage = "*")]
 		[MaxLength(20, ErrorMessage = "Max 20 keys")]
-		public string UserName { get; set; }
+		public string maKh { get; set; }
 		[Display(Name = "Password")]
 		[Required(ErrorMessage = "*")]
 		[DataType(DataType.Password)]

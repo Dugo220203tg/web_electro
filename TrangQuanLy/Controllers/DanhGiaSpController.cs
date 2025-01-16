@@ -162,9 +162,9 @@ namespace TrangQuanLy.Controllers
             }
         }
 
-
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm(int MaDg)
+        [Authorize]
+        [HttpPost]
+        public IActionResult DeleteDG(int MaDg)
         {
             try
             {

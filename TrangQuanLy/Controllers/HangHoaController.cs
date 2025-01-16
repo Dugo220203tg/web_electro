@@ -1,12 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
-using TrangQuanLy.Models;
-using Microsoft.AspNetCore.Authorization;
 using TrangQuanLy.Helpers;
-using Microsoft.AspNetCore.Mvc.RazorPages;
-using System.Drawing.Printing;
-using Microsoft.CodeAnalysis.Elfie.Diagnostics;
+using TrangQuanLy.Models;
 
 namespace TrangQuanLy.Controllers
 {
@@ -211,7 +208,7 @@ namespace TrangQuanLy.Controllers
         {
             try
             {
-                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + MaHH).Result;
+                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + MaHH);
                 if (response.IsSuccessStatusCode)
                 {
                     var product = JsonConvert.DeserializeObject<HangHoaVM>(response.Content.ReadAsStringAsync().Result);
@@ -243,7 +240,7 @@ namespace TrangQuanLy.Controllers
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
 
-                HttpResponseMessage response = _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content).Result;
+                HttpResponseMessage response = await _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content);
 
                 if (response.IsSuccessStatusCode)
                 {

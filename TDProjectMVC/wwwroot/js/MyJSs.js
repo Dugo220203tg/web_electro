@@ -510,7 +510,7 @@ function initAddressAutocomplete() {
         }
 
         debounceTimer = setTimeout(() => {
-            fetch(`https://localhost:7109/api/Checkout/search?query=${encodeURIComponent(query)}`)                .then(response => {
+            fetch(`https://localhost:7109/api/Checkout/search?query=${encodeURIComponent(query)}`).then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }

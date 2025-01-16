@@ -61,17 +61,25 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			await db.SaveChangesAsync();
 			return khachHang; // Trả về đối tượng KhachHang sau khi thêm vào cơ sở dữ liệu
 		}
-		public async Task<KhachHang?> DeleteAsync(string MaKh)
+		public async Task<KhachHang?> DeleteAsync(string username)
 		{
-			var model = await db.KhachHangs.FirstOrDefaultAsync(x => x.MaKh == MaKh);
-			if (model == null)
+			try
 			{
-				throw new KeyNotFoundException($"Không tìm thấy khách hàng với mã {MaKh}");
+				var model = await db.KhachHangs.FirstOrDefaultAsync(x => x.MaKh == username);
+				if (model == null)
+				{
+					return null;
+				}
+				db.KhachHangs.Remove(model);
+				await db.SaveChangesAsync();
+				return model;
 			}
-			db.KhachHangs.Remove(model);
-			await db.SaveChangesAsync();
-			return model;
+			catch (Exception ex)
+			{
+				throw new Exception($"Lỗi khi xóa khách hàng: {ex.Message}");
+			}
 		}
+
 		public async Task<KhachHang?> GetByIdAsync(string MaKh)
 		{
 			return await db.KhachHangs.FindAsync(MaKh);

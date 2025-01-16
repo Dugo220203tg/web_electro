@@ -14,7 +14,7 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 		{
 			return new KhachHangsMD
 			{
-				UserName = Model.MaKh,
+				maKh = Model.MaKh,
 				Password = Model.MatKhau,
 				Vaitro = Model.VaiTro,
 				Email = Model.Email,

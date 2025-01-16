@@ -4,10 +4,10 @@ namespace API_Web_Shop_Electronic_TD.Models
 {
 	public class KhachHangsMD
 	{
-		[Display(Name = "User Name")]
+		[Display(Name = "maKh")]
 		[MaxLength(20, ErrorMessage = "Max 20 keys")]
 		[Required(ErrorMessage = "Họ tên không được để trống")]
-		public string UserName { get; set; }
+		public string maKh { get; set; }
 		[Display(Name = "Password")]
 		[Required(ErrorMessage = "*")]
 		[DataType(DataType.Password)]

@@ -845,13 +845,13 @@
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.KhachHangsController",
     "Method": "Delete",
-    "RelativePath": "api/KhachHangs/Delete/{MaKh}",
+    "RelativePath": "api/KhachHangs/Delete/Delete/{maKh}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "MaKh",
+        "Name": "maKh",
         "Type": "System.String",
         "IsRequired": true
       }
@@ -1136,6 +1136,36 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.NotificationController",
+    "Method": "GetAllNotifications",
+    "RelativePath": "api/Notification/GetAllNotifications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.NotificationController",
+    "Method": "GetUnseenNotifications",
+    "RelativePath": "api/Notification/GetUnseenNotifications",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.NotificationController",
+    "Method": "MarkNotificationsAsSeen",
+    "RelativePath": "api/Notification/MarkNotificationsAsSeen",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {

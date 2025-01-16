@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using TrangQuanLy.Helpers;
@@ -21,6 +22,28 @@ namespace TrangQuanLy.Controllers
             _client = client;
             _client.BaseAddress = baseAddress;
             _httpContextAccessor = httpContextAccessor;
+        }
+        [HttpGet]
+        public async Task<IActionResult> AllNotifications()
+        {
+            List<NotificationMD> notifications = new List<NotificationMD>();
+
+            try
+            {
+                HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/Notification/GetAllNotifications").Result;
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var data = await response.Content.ReadAsStringAsync();
+                    notifications = JsonConvert.DeserializeObject<List<NotificationMD>>(data).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                ViewData["Error"] = "Không thể tải thông báo: " + ex.Message;
+            }
+
+            return View(notifications);
         }
         #region -- ĐĂNG XUẤT --
         [Authorize]
@@ -42,7 +65,7 @@ namespace TrangQuanLy.Controllers
         {
             try
             {
-                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/KhachHangs/GetById/" + model.UserName);
+                HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/KhachHangs/GetById/" + model.maKh);
                 if (response.IsSuccessStatusCode)
                 {
                     string data = await response.Content.ReadAsStringAsync();
@@ -70,8 +93,8 @@ namespace TrangQuanLy.Controllers
                                 var claims = new List<Claim>
                         {
                             new Claim(ClaimTypes.Email, khachHang.Email),
-                            new Claim(ClaimTypes.Name, khachHang.UserName),
-                            new Claim("CustomerID", khachHang.UserName),
+                            new Claim(ClaimTypes.Name, khachHang.maKh),
+                            new Claim("CustomerID", khachHang.maKh),
                             new Claim(ClaimTypes.Role, "Admin")
                         };
                                 var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -197,7 +220,7 @@ namespace TrangQuanLy.Controllers
                 if (!string.IsNullOrEmpty(query))
                 {
                     searchResult = nguoidung.Where(h =>
-                        MyUtil.RemoveDiacritics(h.UserName).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        MyUtil.RemoveDiacritics(h.maKh).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
                         MyUtil.RemoveDiacritics(h.Hoten).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
                         MyUtil.RemoveDiacritics(h.DienThoai).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0 ||
                         MyUtil.RemoveDiacritics(h.Email).IndexOf(MyUtil.RemoveDiacritics(query), StringComparison.OrdinalIgnoreCase) >= 0
@@ -245,6 +268,7 @@ namespace TrangQuanLy.Controllers
                 return View();
             }
         }
+
         [Authorize]
         [HttpPost]
         public IActionResult Edit(AdminViewModel model)
@@ -253,7 +277,8 @@ namespace TrangQuanLy.Controllers
             {
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-                HttpResponseMessage response = _client.PutAsync(_client.BaseAddress + "/KhachHangs/Update/" + model.UserName, content).Result;
+                HttpResponseMessage response = _client
+                    .PutAsync(_client.BaseAddress + "/KhachHangs/Update/" + model.maKh, content).Result;
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -270,25 +295,42 @@ namespace TrangQuanLy.Controllers
             }
         }
         [Authorize]
-        [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm(int Username)
+        [HttpPost]
+        public IActionResult DeleteAccount(string maKh)
         {
+            if (string.IsNullOrWhiteSpace(maKh))
+            {
+                return Json(new { success = false, message = "Invalid customer ID (maKh)." });
+            }
+
             try
             {
-                HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/KhachHangs/Delete/" + Username).Result;
+                // Adjusted API URL to match the correct route
+                var apiUrl = $"{_client.BaseAddress}/KhachHangs/Delete/Delete/{maKh}";
+                HttpResponseMessage response = _client.DeleteAsync(apiUrl).Result;
+
                 if (response.IsSuccessStatusCode)
                 {
-                    TempData["success"] = "Xóa thành công!";
-                    return RedirectToAction("Index");
+                    return Json(new { success = true });
                 }
-                return View("Index", "Admin");
+                else
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        statusCode = (int)response.StatusCode,
+                        reason = response.ReasonPhrase
+                    });
+                }
             }
             catch (Exception ex)
             {
-                TempData["error"] = ex.Message;
-                return View();
+                return Json(new { success = false, message = ex.Message });
             }
         }
+
+
     }
     #endregion ---
+
 }
