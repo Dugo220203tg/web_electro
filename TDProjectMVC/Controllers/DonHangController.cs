@@ -32,9 +32,9 @@ namespace TDProjectMVC.Controllers
 
             // Query to get all orders for the customer
             var ordersQuery = db.HoaDons
-                .Where(hd => string.IsNullOrEmpty(maKh) || hd.MaKh == maKh) // Filter by customer ID
-                .Where(hd => new[] { 0, 1, 2 }.Contains(hd.MaTrangThai))   // Filter by allowed statuses
-                .OrderByDescending(hd => hd.NgayDat)                      // Order by the most recent date
+                .Where(hd => string.IsNullOrEmpty(maKh) || hd.MaKh == maKh) 
+                .Where(hd => new[] { 0, 1, 2 }.Contains(hd.MaTrangThai))   
+                .OrderByDescending(hd => hd.NgayDat)                      
                 .Select(hd => new DonHangVM
                 {
                     MaHD = hd.MaHd,

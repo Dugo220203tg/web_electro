@@ -321,7 +321,7 @@
 
 
 /*=============================Đơn Hàng==============================*/
-.order-details-nb {
+/*.order-details-nb {
     display: none;
 }
 
@@ -331,29 +331,29 @@
 
 tr.selected {
     font-weight: bold;
-    background-color: #f8f9fa; /* Nhấn mạnh thêm màu nền nhạt */
-}
+    background-color: #f8f9fa;*/ /* Nhấn mạnh thêm màu nền nhạt */
+/*}
 
 .text-truncate-2-lines {
     display: -webkit-box;
-    -webkit-line-clamp: 2; /* Hiển thị tối đa 2 dòng */
-    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;*/ /* Hiển thị tối đa 2 dòng */
+    /*-webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: normal;
-}
+}*/
 
 /* Table 1 styling */
-.table1-container {
+/*.table1-container {
     max-height: 650px;
     overflow-y: auto;
 }
 
 .table1 {
     position: relative;
-}
+}*/
 /* Table Styling */
-.table2-container {
+/*.table2-container {
     position: relative;
     max-height: 265px;
     overflow-y: auto;
@@ -369,13 +369,13 @@ tr.selected {
     .table2 tbody tr {
         display: table;
         width: 100%;
-        table-layout: fixed; /* Consistent column widths */
-    }
+        table-layout: fixed;*/ /* Consistent column widths */
+    /*}
 
     .table2 tbody {
         display: block;
-        max-height: 300px; /* Adjust scrolling area */
-        overflow-y: auto;
+        max-height: 300px;*/ /* Adjust scrolling area */
+        /*overflow-y: auto;
     }
 
     .table2 thead {
@@ -383,10 +383,10 @@ tr.selected {
         top: 0;
         background-color: white;
         z-index: 2;
-    }
+    }*/
 
     /* Fixed rows at the bottom */
-    .table2 tbody tr.sticky-row {
+    /*.table2 tbody tr.sticky-row {
         position: sticky;
         bottom: 0;
         background-color: white;
@@ -395,15 +395,15 @@ tr.selected {
 
         .table2 tbody tr.sticky-row:nth-last-child(1) {
             border-top: 2px solid #dee2e6;
-        }
+        }*/
 
     /* Ensure consistent row heights */
-    .table2 tbody tr {
-        height: 50px; /* Adjust as needed */
-    }
+    /*.table2 tbody tr {
+        height: 50px;*/ /* Adjust as needed */
+    /*}*/
 
     /* Column Widths */
-    .table2 th:nth-child(1),
+    /*.table2 th:nth-child(1),
     .table2 td:nth-child(1) {
         width: 20%;
     }
@@ -421,17 +421,17 @@ tr.selected {
     .table2 th:nth-child(4),
     .table2 td:nth-child(4) {
         width: 25%;
-    }
+    }*/
 
 
 /* Align titles of both tables */
-h3 {
+/*h3 {
     text-align: center;
     margin-bottom: 20px;
-}
+}*/
 
 /* Adjust spacing between the two sections */
-.row {
+/*.row {
     display: flex;
     justify-content: space-between;
     gap: 15px;
@@ -447,4 +447,4 @@ h3 {
         position: relative;
         top: 0;
         text-align: center;
-    }
+    }*/

@@ -1,20 +1,15 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TDProjectMVC.Data;
 using TDProjectMVC.Helpers;
-using TDProjectMVC.ViewModels;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
-using TDProjectMVC.Models;
 using TDProjectMVC.Services.Mail;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.Net.Http;
-using Newtonsoft.Json;
-using TDProjectMVC.Services.Map;
+using TDProjectMVC.ViewModels;
 
 
 namespace TDProjectMVC.Controllers
@@ -81,6 +76,15 @@ namespace TDProjectMVC.Controllers
                 db.Add(khachHang);
                 await db.SaveChangesAsync();
 
+                var notification = new Notification
+                {
+                    Name = "Người dùng mới",
+                    Description = $"Tài khoản {model.MaKh} đã được tạo thành công.",
+                    Status = false, 
+                    CreateAt = DateTime.Now
+                };
+                db.Notifications.Add(notification);
+                await db.SaveChangesAsync();
                 if (!string.IsNullOrEmpty(model.Email))
                 {
                     bool emailSent = await _mailSender.SendEmailAsync(model.Email, "Mã xác nhận của bạn", khachHang.RandomKey);

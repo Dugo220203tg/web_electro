@@ -1,9 +1,7 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
-using API_Web_Shop_Electronic_TD.Mappers;
 using API_Web_Shop_Electronic_TD.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace API_Web_Shop_Electronic_TD.Repository
 {
@@ -45,7 +43,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			var Model = await db.DanhGiaSps.FirstOrDefaultAsync(x => x.MaDg == MaDg);
 			if (Model == null)
 			{
-				throw new KeyNotFoundException($"Không tìm thấy loại sản phẩm với mã {MaDg}");
+				throw new KeyNotFoundException($"Không tìm đánh giá với mã {MaDg}");
 			}
 			db.DanhGiaSps.Remove(Model);
 			await db.SaveChangesAsync();
@@ -82,7 +80,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				throw new KeyNotFoundException($"Không tìm thấy loại sản phẩm với mã {MaDg}");
 			}
 
-			// Cập nhật thông tin của HangHoaModel từ dữ liệu được gửi từ client
 			DanhGiaModel.Sao = model.Sao;
 			DanhGiaModel.NoiDung = model.NoiDung;
 			DanhGiaModel.TrangThai = model.TrangThai;

@@ -8,13 +8,18 @@ namespace TrangQuanLy.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MaHH { get; set; }
+        [Required]
         public string TenHH { get; set; }
+        [Required]
         public string Hinh { get; set; }
+        [Required]
         public string MoTa { get; set; }
         public string MoTaDonVi { get; set; }
+        [Required]
         public int MaLoai { get; set; }
         public DateOnly NgaySX { get; set; }
         public double GiamGia { get; set; }
+        [Required]
         public string MaNCC { get; set; }
         public double DonGia { get; set; }
         public double SoLanXem { get; set; }

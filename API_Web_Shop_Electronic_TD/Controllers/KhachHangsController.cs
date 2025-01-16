@@ -191,20 +191,36 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 		}
 
-		[HttpDelete]
-		[Route("{MaKh}")]
-		public async Task<IActionResult> Delete([FromRoute] string MaKh)
+		[HttpDelete("Delete/{maKh}")]
+		public async Task<IActionResult> Delete([FromRoute] string maKh)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
+			Console.WriteLine($"API Delete method called with maKh: {maKh}");
+			try
+			{
+				if (string.IsNullOrEmpty(maKh))
+				{
+					Console.WriteLine("maKh is null or empty");
+					return BadRequest(new { success = false, message = "Mã khách hàng không hợp lệ." });
+				}
 
-			var deleteKH = await KhachHangsRepository.DeleteAsync(MaKh);
+				var deleteKH = await KhachHangsRepository.DeleteAsync(maKh);
 
-			if (deleteKH == null)
-				return NotFound();
+				if (deleteKH == null)
+				{
+					Console.WriteLine($"Customer not found with maKh: {maKh}");
+					return NotFound(new { success = false, message = "Không tìm thấy khách hàng." });
+				}
 
-			return NoContent();
+				Console.WriteLine($"Successfully deleted customer with maKh: {maKh}");
+				return Ok(new { success = true, message = "Xóa thành công." });
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error in Delete method: {ex}");
+				return StatusCode(500, new { success = false, message = $"Lỗi server: {ex.Message}" });
+			}
 		}
+
 		#endregion --- END ---
 		#region ----- CONTROLLER FOR ANGULAR WEB ------ 
 		#region ----- LOGIN AND REFRESH TOKEN ANGULAR ------

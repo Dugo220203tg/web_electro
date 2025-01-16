@@ -45,15 +45,17 @@ public partial class Hshop2023Context : DbContext
 
     public virtual DbSet<NhanVien> NhanViens { get; set; }
 
-    public virtual DbSet<PayHistory> PayHistorys { get; set; }
+    public virtual DbSet<Notification> Notifications { get; set; }
 
-    public virtual DbSet<PhanCong> PhanCongs { get; set; }
+    public virtual DbSet<PayHistory> PayHistorys { get; set; }
 
     public virtual DbSet<PhanQuyen> PhanQuyens { get; set; }
 
     public virtual DbSet<PhongBan> PhongBans { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
+
+    public virtual DbSet<Slide> Slides { get; set; }
 
     public virtual DbSet<TrangThai> TrangThais { get; set; }
 
@@ -62,6 +64,9 @@ public partial class Hshop2023Context : DbContext
     public virtual DbSet<UserCoupon> UserCoupons { get; set; }
 
     public virtual DbSet<YeuThich> YeuThiches { get; set; }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        => optionsBuilder.UseSqlServer("Data Source=DESKTOP-4AS3J3K;Initial Catalog=Hshop2023;Integrated Security=True;Encrypt=True;Trust Server Certificate=True");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -295,7 +300,6 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.CachVanChuyen)
                 .HasMaxLength(50)
                 .HasDefaultValue("Airline");
-            entity.Property(e => e.DiaChi).HasMaxLength(60);
             entity.Property(e => e.DienThoai)
                 .HasMaxLength(10)
                 .IsFixedLength();
@@ -425,6 +429,15 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.MatKhau).HasMaxLength(50);
         });
 
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.ToTable("Notification");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreateAt).HasColumnType("datetime");
+            entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
         modelBuilder.Entity<PayHistory>(entity =>
         {
             entity.Property(e => e.CouponCode).HasMaxLength(50);
@@ -432,39 +445,6 @@ public partial class Hshop2023Context : DbContext
             entity.Property(e => e.FullName).HasMaxLength(50);
             entity.Property(e => e.OrderInfo).HasMaxLength(50);
             entity.Property(e => e.PayMethod).HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<PhanCong>(entity =>
-        {
-            entity.HasKey(e => e.MaPc);
-
-            entity.ToTable("PhanCong");
-
-            entity.HasIndex(e => e.MaNv, "IX_PhanCong_MaNV");
-
-            entity.HasIndex(e => e.MaPb, "IX_PhanCong_MaPB");
-
-            entity.Property(e => e.MaPc).HasColumnName("MaPC");
-            entity.Property(e => e.MaNv)
-                .HasMaxLength(50)
-                .HasColumnName("MaNV");
-            entity.Property(e => e.MaPb)
-                .HasMaxLength(7)
-                .IsUnicode(false)
-                .HasColumnName("MaPB");
-            entity.Property(e => e.NgayPc)
-                .HasColumnType("datetime")
-                .HasColumnName("NgayPC");
-
-            entity.HasOne(d => d.MaNvNavigation).WithMany(p => p.PhanCongs)
-                .HasForeignKey(d => d.MaNv)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PhanCong_NhanVien");
-
-            entity.HasOne(d => d.MaPbNavigation).WithMany(p => p.PhanCongs)
-                .HasForeignKey(d => d.MaPb)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PhanCong_PhongBan");
         });
 
         modelBuilder.Entity<PhanQuyen>(entity =>
@@ -513,6 +493,19 @@ public partial class Hshop2023Context : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.RoleName).HasMaxLength(50);
+        });
+
+        modelBuilder.Entity<Slide>(entity =>
+        {
+            entity.ToTable("Slide");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Image)
+                .IsUnicode(false)
+                .HasColumnName("image");
+            entity.Property(e => e.SlideName)
+                .HasMaxLength(50)
+                .HasColumnName("slideName");
         });
 
         modelBuilder.Entity<TrangThai>(entity =>

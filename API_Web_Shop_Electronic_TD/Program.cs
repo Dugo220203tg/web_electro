@@ -78,6 +78,9 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IThongKeRepository, ThongKeRepository>();
 builder.Services.AddScoped<ICheckOutRepository, CheckOutRepository>();
 builder.Services.AddSingleton<IVnPayService, VnPayService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+
+
 builder.Services.Configure<MomoOptionModel>(builder.Configuration.GetSection("MomoAPI"));
 
 builder.Services.AddHttpClient<IMomoService, MomoService>(client =>

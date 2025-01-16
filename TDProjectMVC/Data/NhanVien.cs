@@ -18,6 +18,4 @@ public partial class NhanVien
     public virtual ICollection<HoaDon> HoaDons { get; set; } = new List<HoaDon>();
 
     public virtual ICollection<HoiDap> HoiDaps { get; set; } = new List<HoiDap>();
-
-    public virtual ICollection<PhanCong> PhanCongs { get; set; } = new List<PhanCong>();
 }

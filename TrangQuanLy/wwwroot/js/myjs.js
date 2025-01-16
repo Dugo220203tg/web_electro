@@ -350,7 +350,9 @@ document.addEventListener('DOMContentLoaded', function () {
     ImageHandler.initialize();
     DateHandler.initializeDatepickers();
     UIUtils.initializeDeleteConfirmation();
-
+    //initializeNotifications();
+    initializeDataTable();
+    initializeCarousel();
     // Add form submit handler for image names
     const form = document.querySelector('form');
     if (form) {
@@ -360,7 +362,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-// Expose necessary functions to window object for inline event handlers
 window.ImageHandler = ImageHandler;
 
 // Export functions and objects for use in other files
@@ -370,3 +371,284 @@ export {
     UIUtils,
     initializeFormHandlers
 };
+
+//Date js 16/1/2025
+function initializeNotifications() {
+    // Lấy message từ hidden field thay vì trực tiếp từ Razor
+    var successMessage = document.getElementById('successMessage')?.value;
+    var errorMessage = document.getElementById('errorMessage')?.value;
+
+    if (successMessage && successMessage.trim()) {
+        Swal.fire({
+            icon: 'success',
+            title: 'Thông báo',
+            text: successMessage
+        });
+    } else if (errorMessage && errorMessage.trim()) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: errorMessage
+        });
+    }
+}
+function showNotification(type, message) {
+    Swal.fire({
+        icon: type,
+        title: type === 'success' ? 'Thông báo' : 'Lỗi',
+        text: message
+    });
+}
+
+// comments.js
+function toggleCommentStatus(maDg, currentStatus) {
+    const newStatus = currentStatus === 1 ? 0 : 1;
+    const button = document.getElementById(`status-button-${maDg}`);
+    const statusText = document.getElementById(`status-text-${maDg}`);
+
+    $.ajax({
+        type: "POST",
+        url: 'https://localhost:7109/api/DanhGiaSp/UpdateTrangThai',
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ MaDg: maDg, TrangThai: newStatus }),
+        success: function (response) {
+            alert(response.message);
+            button.value = newStatus === 1 ? "Ẩn đánh giá" : "Hiển thị đánh giá";
+            button.setAttribute("onclick", `toggleCommentStatus('${maDg}', ${newStatus})`);
+            statusText.textContent = newStatus === 1 ? "Hiển Thị" : "Đã Ẩn";
+        },
+        error: function (xhr) {
+            alert("Có lỗi xảy ra: " + xhr.responseText);
+        }
+    });
+}
+
+// datatable.js
+function initializeDataTable() {
+    $('#myTable').DataTable({
+        language: {
+            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json',
+        },
+        paging: false,
+        ordering: true,
+        searching: false,
+        info: false,
+        responsive: true,
+        autoWidth: false,
+        columnDefs: [{
+            targets: -1,
+            orderable: false,
+            searchable: false
+        }],
+        scrollY: '50vh',
+        scrollCollapse: true,
+    });
+}
+
+// carousel.js
+function initializeCarousel() {
+    // Owl Carousel initialization
+    $(".testimonial-carousel").owlCarousel({
+        items: 1,
+        loop: true,
+        margin: 10,
+        nav: true,
+        dots: true,
+        navText: ["<div class='owl-prev'>‹</div>", "<div class='owl-next'>›</div>"]
+    });
+
+    // Custom carousel functionality
+    const items = document.querySelectorAll('.testimonial-item');
+    const dots = document.querySelectorAll('.owl-dot');
+    let currentIndex = 0;
+    const autoPlayDelay = 5000;
+    let autoPlayInterval;
+
+    function showItem(index) {
+        items.forEach(item => {
+            item.classList.remove('active', 'prev', 'next');
+        });
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        items[currentIndex].classList.remove('active');
+        items[currentIndex].classList.add('prev');
+
+        currentIndex = index;
+
+        items[currentIndex].classList.add('active');
+        dots[currentIndex].classList.add('active');
+
+        resetAutoPlay();
+    }
+
+    function nextItem() {
+        const nextIndex = (currentIndex + 1) % items.length;
+        showItem(nextIndex);
+    }
+
+    function resetAutoPlay() {
+        clearInterval(autoPlayInterval);
+        autoPlayInterval = setInterval(nextItem, autoPlayDelay);
+    }
+
+    dots.forEach(dot => {
+        dot.addEventListener('click', function () {
+            const index = parseInt(this.getAttribute('data-index'));
+            showItem(index);
+        });
+    });
+
+    resetAutoPlay();
+
+    const carousel = document.querySelector('.owl-carousel');
+    carousel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
+    carousel.addEventListener('mouseleave', resetAutoPlay);
+}
+
+// order.js
+const orderUtils = {
+    removeRow: function (button) {
+        const row = button.closest('tr');
+        if (!row) return;
+
+        const tbody = row.closest('tbody');
+        const rows = Array.from(tbody.querySelectorAll('tr.product-widget'));
+        const index = rows.indexOf(row);
+
+        const form = row.closest('form');
+        const hiddenDelete = document.createElement('input');
+        hiddenDelete.type = 'hidden';
+        hiddenDelete.name = `ChiTietHds[${index}].IsDeleted`;
+        hiddenDelete.value = 'true';
+        form.appendChild(hiddenDelete);
+
+        row.style.display = 'none';
+        this.updateTotal();
+    },
+
+    updateTotal: function () {
+        let total = 0;
+        const rows = document.querySelectorAll('tr.product-widget');
+        const shippingFee = parseFloat(document.querySelector('input[name="PhiVanChuyen"]').value) || 0;
+
+        rows.forEach(row => {
+            if (row.style.display !== 'none') {
+                const quantity = parseFloat(row.querySelector('input[type="number"]').value) || 0;
+                const price = parseFloat(row.querySelector('input[type="text"]').value) || 0;
+                total += quantity * price;
+            }
+        });
+
+        total += shippingFee;
+        const formattedTotal = new Intl.NumberFormat('vi-VN').format(total);
+        document.querySelector('.order-total').textContent = `${formattedTotal} VND`;
+    }
+};
+
+// product.js
+function confirmDelete(url, data) {
+    console.log('Starting delete with:', { url, data }); // Log dữ liệu đầu vào
+    try {
+        Swal.fire({
+            title: 'Bạn có chắc chắn muốn xóa?',
+            text: "Dữ liệu sẽ không thể khôi phục sau khi xóa!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Đồng ý',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log('User confirmed delete');
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: data,
+                    beforeSend: function () {
+                        console.log('Sending request to:', url);
+                        console.log('With data:', data);
+                    },
+                    success: function (response) {
+                        console.log('Delete response:', response);
+                        if (response.success) {
+                            Swal.fire(
+                                'Đã xóa!',
+                                'Xóa dữ liệu thành công.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            console.error('Delete failed:', response);
+                            Swal.fire(
+                                'Lỗi!',
+                                'Xóa không thành công: ' + (response.message || 'Không có thông tin lỗi'),
+                                'error'
+                            );
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Delete error details:', {
+                            xhr: xhr,
+                            status: status,
+                            error: error,
+                            responseText: xhr.responseText
+                        });
+                        Swal.fire(
+                            'Lỗi!',
+                            'Lỗi khi xóa: ' + error,
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    } catch (error) {
+        console.error('Error in confirmDelete:', error);
+    }
+}
+
+// Đảm bảo functions có sẵn trong window object
+window.confirmDelete = confirmDelete;
+window.initializeNotifications = initializeNotifications;
+window.initializeDataTable = initializeDataTable;
+
+document.addEventListener("DOMContentLoaded", function () {
+    const notificationToggle = document.getElementById("notification-toggle");
+    const notificationContainer = document.getElementById("notification-container");
+
+    // Gọi API đánh dấu tất cả thông báo là đã đọc
+    notificationToggle.addEventListener("click", async function () {
+        try {
+            const response = await fetch('https://localhost:7109/api/Notification/MarkNotificationsAsSeen', {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                console.log("All notifications marked as seen.");
+                // Tải lại danh sách thông báo sau khi đánh dấu
+                loadNotifications();
+            } else {
+                console.error("Failed to mark notifications as seen.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    });
+
+    // Hàm tải lại danh sách thông báo
+    async function loadNotifications() {
+        try {
+            const response = await fetch('https://localhost:7109/api/Notification/GetUnseenNotifications');
+            if (response.ok) {
+                const data = await response.text(); // Dữ liệu là HTML từ ViewComponent
+                notificationContainer.innerHTML = data;
+            } else {
+                console.error("Failed to load notifications.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+});

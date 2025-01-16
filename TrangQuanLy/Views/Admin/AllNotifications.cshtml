@@ -1,0 +1,28 @@
+﻿@model List<NotificationMD>
+@{
+    ViewData["Title"] = "Notification";
+    Layout = "_Footer-Header";
+}
+
+<div class="container-fluid pt-4 px-4">
+    <div class="bg-secondary text-center rounded p-4">
+            <h2 class="mb-3">Tất cả thông báo</h2>
+            @if (Model.Any())
+            {
+                <ul class="list-group">
+                    @foreach (var notification in Model)
+                    {
+                        <li class="list-group-item">
+                            <strong>@notification.Name</strong>: @notification.Description
+                            <br />
+                            <small>@notification.CreateAt.ToString("dd/MM/yyyy HH:mm")</small>
+                        </li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Không có thông báo nào.</p>
+            }
+    </div>
+</div>
