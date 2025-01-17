@@ -33,6 +33,7 @@ namespace TDProjectMVC.Controllers
                 Hinh = p.Hinh ?? "",
                 MoTaNgan = p.MoTaDonVi ?? "",
                 TenLoai = p.MaLoaiNavigation.TenLoai,
+                DiemDanhGia = p.DanhGiaSps.Any() ? (int)Math.Round(p.DanhGiaSps.Average(dg => dg.Sao ?? 0)) : 0,
                 GiamGia = p.GiamGia
             });
             return View(result);

@@ -17,11 +17,14 @@ namespace TrangQuanLy.ViewComponents
         public async Task<IViewComponentResult> InvokeAsync()
         {
             List<NotificationMD> data = new List<NotificationMD>();
-            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/Notification/GetUnseenNotifications");
+            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/Notification/GetAllNotifications");
             if (response.IsSuccessStatusCode)
             {
                 string responseData = await response.Content.ReadAsStringAsync();
-                data = JsonConvert.DeserializeObject<List<NotificationMD>>(responseData).ToList();
+                data = JsonConvert.DeserializeObject<List<NotificationMD>>(responseData)
+                    .OrderByDescending(n => n.CreateAt)
+                    .Take(5)
+                    .ToList();
             }
             return View("Index", data);
         }

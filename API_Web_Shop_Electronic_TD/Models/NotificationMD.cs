@@ -7,4 +7,8 @@
 		public bool Status { get; set; }
 		public DateTime CreateAt {get; set; }
 	}
+	public class NotificationUpdateRequest
+	{
+		public int Id { get; set; }
+	}
 }

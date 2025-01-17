@@ -1,5 +1,6 @@
 ﻿using API_Web_Shop_Electronic_TD.Data;
 using API_Web_Shop_Electronic_TD.Interfaces;
+using API_Web_Shop_Electronic_TD.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API_Web_Shop_Electronic_TD.Controllers
@@ -27,16 +28,18 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			var notifications = await _notificationRepository.GetAll();
 			return Ok(notifications);
 		}
-		[HttpPost]
-		public async Task<IActionResult> MarkNotificationsAsSeen()
+		[HttpPost("MarkNotificationAsSeen")]
+		public async Task<IActionResult> MarkNotificationAsSeen([FromBody] NotificationUpdateRequest request)
 		{
-			bool result = await _notificationRepository.MarkNotificationsAsSeenAsync();
-			if (result)
-			{
-				return Ok("Tất cả thông báo chưa đọc đã được đánh dấu là đã đọc.");
-			}
-			return NotFound("Không có thông báo nào để đánh dấu.");
-		}
+			if (request?.Id == null)
+				return BadRequest("Notification Id is required");
 
+			var result = await _notificationRepository.MarkNotificationAsSeenAsync(request.Id);
+
+			if (result)
+				return Ok(new { message = "Notification marked as seen successfully" });
+			else
+				return NotFound(new { message = "Notification not found or already seen" });
+		}
 	}
 }

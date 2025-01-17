@@ -1160,12 +1160,18 @@
   },
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.NotificationController",
-    "Method": "MarkNotificationsAsSeen",
-    "RelativePath": "api/Notification/MarkNotificationsAsSeen",
+    "Method": "MarkNotificationAsSeen",
+    "RelativePath": "api/Notification/MarkNotificationAsSeen/MarkNotificationAsSeen",
     "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
-    "Parameters": [],
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "API_Web_Shop_Electronic_TD.Models.NotificationUpdateRequest",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
