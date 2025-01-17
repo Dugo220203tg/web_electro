@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using TDProjectMVC.Data;
 using TDProjectMVC.ViewModels;
 using TDProjectMVC.Helpers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Diagnostics.Metrics;
 
 namespace TDProjectMVC.Controllers
 {
@@ -15,7 +17,8 @@ namespace TDProjectMVC.Controllers
             db = context;
         }
 
-        public IActionResult Index(int? danhmuc, string? hang, int? loai, decimal? minPrice, decimal? maxPrice, int? page, int? pageSize, string? sortOrder)
+        public IActionResult Index(int? danhmuc, string? hang, int? loai, decimal? minPrice, decimal? maxPrice,
+            int? page, int? pageSize, string? sortOrder)
         {
             int pageIndex = page ?? 1;
             int pageSizeValue = pageSize ?? 9;
@@ -29,18 +32,22 @@ namespace TDProjectMVC.Controllers
             {
                 hangHoas = hangHoas.Where(p => p.MaLoai == loai.Value);
             }
+
             if (!string.IsNullOrEmpty(hang))
             {
                 hangHoas = hangHoas.Where(p => p.MaNcc == hang);
             }
+
             if (danhmuc.HasValue)
             {
                 hangHoas = hangHoas.Where(p => p.MaLoaiNavigation.DanhMucId == danhmuc.Value);
             }
+
             if (minPrice.HasValue)
             {
                 hangHoas = hangHoas.Where(p => p.DonGia >= (double)minPrice.Value);
             }
+
             if (maxPrice.HasValue)
             {
                 hangHoas = hangHoas.Where(p => p.DonGia <= (double)maxPrice.Value);
@@ -85,6 +92,7 @@ namespace TDProjectMVC.Controllers
 
             return View(paginatedList);
         }
+
         [HttpGet]
         public async Task<IActionResult> Search(string? query)
         {
@@ -165,17 +173,70 @@ namespace TDProjectMVC.Controllers
                 ML = data.MaLoai,
                 NCC = data.MaNcc,
                 SoLuong = 10,
-                DiemDanhGia = (int)diemDanhGia,  // Assign calculated rating
+                DiemDanhGia = (int)diemDanhGia, // Assign calculated rating
                 ImageUrls = imageUrls,
                 CountDg = countdg
             };
 
             return View(result);
         }
+
         [HttpGet]
         public IActionResult LoadReviews(int maHH, int page = 1)
         {
             return ViewComponent("DanhGia", new { maHH = maHH, page = page });
+        }
+
+        // Controller action modification
+        public async Task<IActionResult> GetQuickViewData(int id)
+        {
+            try
+            {
+                var data = await db.HangHoas
+                    .Include(p => p.MaLoaiNavigation)
+                    .Include(p => p.MaNccNavigation)
+                    .Include(p => p.DanhGiaSps)
+                    .SingleOrDefaultAsync(p => p.MaHh == id);
+
+                if (data == null) return Json(new { success = false, message = "Product not found" });
+
+                var imageUrls = new List<string>();
+                if (!string.IsNullOrEmpty(data.Hinh))
+                {
+                    imageUrls = data.Hinh.Split(',').ToList();
+                }
+
+
+                double diemDanhGia = data.DanhGiaSps.Any()
+                    ? data.DanhGiaSps.Average(dg => dg.Sao ?? 0)
+                    : 0;
+
+                int countdg = await db.DanhGiaSps.CountAsync(d => d.MaHh == id);
+
+                var result = new HangHoaVM
+                {
+                    MaHH = data.MaHh,
+                    TenHH = data.TenHh,
+                    MoTa = data.MoTa,
+                    MaNCC = data.MaNccNavigation?.TenCongTy ?? "",
+                    DonGia = data.DonGia ?? 0,
+                    Hinh = data.Hinh ?? "",
+                    MoTaNgan = data.MoTaDonVi ?? "",
+                    TenLoai = data.MaLoaiNavigation.TenLoai,
+                    ML = data.MaLoai,
+                    NCC = data.MaNcc,
+                    SoLuong = 10,
+                    DiemDanhGia = (int)diemDanhGia,
+                    ImageUrls = imageUrls,
+                    CountDg = countdg
+                };
+
+                return PartialView("_QuickViewPartial", result);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = "An error occurred while loading product details." });
+            }
         }
     }
 }

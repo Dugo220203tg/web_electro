@@ -23,8 +23,6 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 		private readonly IKhachHangRepository KhachHangsRepository;
 		private readonly Hshop2023Context db;
 		private readonly IConfiguration configuration;
-
-
 		public KhachHangsController(IKhachHangRepository KhachHangsRepository, IConfiguration configuration, Hshop2023Context db)
 		{
 			this.KhachHangsRepository = KhachHangsRepository;

@@ -1,13 +1,45 @@
 ﻿@model IEnumerable<TrangQuanLy.Models.NotificationMD>
 
+<style>
+    .notification-item {
+        position: relative;
+        padding-right: 20px;
+    }
+
+    .unread-indicator {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 8px;
+        height: 8px;
+        background-color: #ff0000;
+        border-radius: 50%;
+    }
+
+    .notification-time {
+        color: #666;
+        font-size: 0.8rem;
+    }
+
+    .notification-description { 
+        color: #cfcfcf;
+        margin: 5px 0;
+    }
+</style>
+
 @foreach (var item in Model)
 {
-    <a href="#" class="dropdown-item">
-
-        <h6 class="fw-normal mb-0">@item.Name</h6>
-        <h3>@item.Description</h3>
-        <small>@item.CreateAt</small>
+    <a href="#" class="dropdown-item notification-item" data-notification-id="@item.id">
+        <div>
+            <h6 class="fw-normal mb-0">@item.Name</h6>
+            <div class="notification-description">@item.Description</div>
+            <small class="notification-time">@item.CreateAt.ToString("dd/MM/yyyy HH:mm")</small>
+        </div>
+        @if (!item.Status)
+        {
+            <span class="unread-indicator"></span>
+        }
     </a>
     <hr class="dropdown-divider">
-
 }

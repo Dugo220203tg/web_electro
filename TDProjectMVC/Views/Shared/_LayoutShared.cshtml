@@ -185,8 +185,11 @@
     <script src="~/js/jquery.zoom.min.js"></script>
     <script src="~/js/main.js"></script>
     <script src="~/js/MyJSs.js"></script>
+    @* <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> *@
+    @* <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js"></script> *@
+
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    @* <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> *@
     <!-- SWEET ALERT -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.14.3/dist/sweetalert2.all.min.js"></script>
     @RenderSection("Scripts", required: false)
@@ -262,6 +265,121 @@
                     });
                 }
             }
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Function to load quick view content
+            function loadQuickView(productId) {
+                fetch(`/Product/GetQuickViewData?id=${productId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch product details');
+                        }
+                        return response.text();
+                    })
+                    .then(html => {
+                        // Remove existing modal if any
+                        const existingModal = document.querySelector('#quickViewModal');
+                        if (existingModal) {
+                            existingModal.remove();
+                        }
+                        // Add new modal to body
+                        document.body.insertAdjacentHTML('beforeend', html);
+                        // Show modal
+                        const modal = document.querySelector('#quickViewModal');
+                        if (modal) {
+                            modal.style.display = 'block';
+                            // Initialize slider after modal content is loaded
+                            initializeSlider();
+                        }
+                        // Initialize close handlers
+                        initializeModalHandlers();
+                    })
+            }
+
+            // Initialize slider functionality
+            function initializeSlider() {
+                const slides = document.querySelectorAll('.product-preview');
+                let currentSlide = 0;
+
+                function showSlide(n) {
+                    slides.forEach(slide => {
+                        slide.classList.remove('active');
+                    });
+                    slides[n].classList.add('active');
+                }
+
+                // Add these functions to window to make them globally accessible
+                window.nextSlide = function () {
+                    currentSlide++;
+                    if (currentSlide >= slides.length) {
+                        currentSlide = 0;
+                    }
+                    showSlide(currentSlide);
+                };
+
+                window.prevSlide = function () {
+                    currentSlide--;
+                    if (currentSlide < 0) {
+                        currentSlide = slides.length - 1;
+                    }
+                    showSlide(currentSlide);
+                };
+
+                // Show initial slide
+                showSlide(currentSlide);
+            }
+
+            // Initialize modal event handlers
+            function initializeModalHandlers() {
+                const modal = document.querySelector('#quickViewModal');
+                const modalContainer = modal.querySelector('.modal-container');
+                const overlay = modal.querySelector('.modal-overlay');
+                const closeButton = modal.querySelector('.modal-close');
+
+                // Close modal when clicking close button
+                closeButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    closeModal(modal);
+                });
+
+                // Close modal when clicking overlay (outside modal content)
+                modal.addEventListener('click', (e) => {
+                    if (e.target === overlay) {
+                        closeModal(modal);
+                    }
+                });
+
+                // Prevent modal from closing when clicking inside modal-container
+                modalContainer.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+
+                // Close modal when pressing ESC key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        closeModal(modal);
+                    }
+                });
+            }
+
+            // Close modal function
+            function closeModal(modal) {
+                if (modal) {
+                    modal.style.display = 'none';
+                    modal.remove();
+                }
+            }
+
+            // Add click handler for quick view buttons
+            document.addEventListener('click', function (e) {
+                if (e.target.classList.contains('quick-view')) {
+                    e.preventDefault();
+                    const productId = e.target.dataset.productId;
+                    loadQuickView(productId);
+                }
+            });
         });
     </script>
 </body>

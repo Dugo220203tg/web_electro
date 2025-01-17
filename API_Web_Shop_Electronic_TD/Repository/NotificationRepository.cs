@@ -27,23 +27,32 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				.ToListAsync();
 		}
 
-		// Cập nhật tất cả các thông báo có Status = false thành Status = true
-		public async Task<bool> MarkNotificationsAsSeenAsync()
+		public async Task<bool> MarkNotificationAsSeenAsync(int notificationId)
 		{
-			var notifications = await _db.Notifications
-				.Where(n => (bool)!n.Status) 
-				.ToListAsync();
-
-			if (!notifications.Any())
-				return false;
-
-			foreach (var notification in notifications)
+			try
 			{
-				notification.Status = true; 
-			}
+				var notification = await _db.Notifications
+					.FirstOrDefaultAsync(n => n.Id == notificationId && (!n.Status.GetValueOrDefault()));
+				if (notification == null)
+					return false;
 
-			await _db.SaveChangesAsync(); 
-			return true; 
+				notification.Status = true;
+				await _db.SaveChangesAsync();
+				return true;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+		}
+
+		// Phương thức lấy ra trạng thái hiện tại của notification
+		public async Task<bool> GetNotificationStatusAsync(int notificationId)
+		{
+			var notification = await _db.Notifications
+				.FirstOrDefaultAsync(n => n.Id == notificationId);
+
+			return notification?.Status ?? false;
 		}
 	}
 

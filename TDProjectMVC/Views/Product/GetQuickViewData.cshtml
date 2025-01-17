@@ -1,0 +1,181 @@
+﻿@model TDProjectMVC.ViewModels.HangHoaVM
+@using TDProjectMVC.ViewModels
+<!-- Quick View Modal -->
+<div class="modal fade" id="quickViewModal" tabindex="-1" role="dialog" aria-labelledby="quickViewModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quickViewModalLabel">Quick View</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <!-- Product Images -->
+                    <div class="col-md-6">
+                        <                <div id="product-main-img">
+                            @foreach (var imageUrl in Model.ImageUrls)
+                            {
+                                <div class="product-preview">
+                                    <img src="~/Hinh/Hinh/HangHoa/@Model.MaHH/@imageUrl" alt="@Model.TenHH">
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <!-- /Product main img -->
+                    <!-- Product thumb imgs  -->
+                    <div class="col-md-2  col-md-pull-5">
+                        <div id="product-imgs">
+                            @foreach (var imageUrl in Model.ImageUrls)
+                            {
+                                <div class="product-preview">
+                                    <img src="~/Hinh/Hinh/HangHoa/@Model.MaHH/@imageUrl" alt="@Model.TenHH">
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Product Details -->
+                    <div class="col-md-6">
+                        <div class="product-details">
+                            <h2 class="product-name" id="quickview-name">@Model.TenHH</h2>
+
+                            <!-- Rating -->
+                            <div class="product-rating">
+                                @for (int i = 0; i < 5; i++)
+                                {
+                                    if (i < @Model.DiemDanhGia)
+                                    {
+                                        <i class="fa fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa fa-star-o"></i>
+                                    }
+                                }
+                            </div>
+                            <!-- Price -->
+                            <div class="product-price" id="quickview-price">
+                                <h4 class="price"> @Model.DonGia.ToString("#,##0 VNĐ")
+                                    &nbsp;</h4>
+                                <del class="old-price"></del>
+                                <span class="product-available">In Stock</span>
+                            </div>
+
+                            <!-- Add to Cart -->
+                            <div class="add-to-cart">
+                                <div class="qty-label">
+                                    Qty
+                                    <div class="input-number">
+                                        <input type="number" id="quickview-quantity" value="1" min="1">
+                                        <span class="qty-up">+</span>
+                                        <span class="qty-down">-</span>
+                                    </div>
+                                </div>
+                                <button class="add-to-cart-btn" id="quickview-add-to-cart">
+                                    <i class="fa fa-shopping-cart"></i> add to cart
+                                </button>
+                            </div>
+
+                            <!-- Quick Actions -->
+                            <ul class="product-btns">
+                                <li><a href="#" id="quickview-wishlist"><i class="fa fa-heart-o"></i> add to wishlist</a></li>
+                                <li><a href="#" id="quickview-compare"><i class="fa fa-exchange"></i> add to compare</a></li>
+                            </ul>
+
+                            <!-- Categories -->
+                            <ul class="product-links">
+                                <li>Category:</li>
+                                <li id="quickview-category"></li>
+                                <li id="quickview-supplier"></li>
+                            </ul>
+
+                            <!-- View Full Details -->
+                            <div class="view-full-details">
+                                <a href="#" id="quickview-full-details" class="primary-btn">View Full Details</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Quick View Modal Styles */
+    #quickViewModal .modal-dialog {
+        max-width: 900px;
+    }
+
+    #quickViewModal .modal-content {
+        border-radius: 0;
+        padding: 20px;
+    }
+
+    #quickViewModal .close {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 1;
+    }
+
+    .product-preview-container {
+        position: relative;
+    }
+
+    .main-image {
+        margin-bottom: 15px;
+    }
+
+        .main-image img {
+            width: 100%;
+            height: auto;
+        }
+
+    .thumbnail-images {
+        display: flex;
+        gap: 10px;
+    }
+
+        .thumbnail-images img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            cursor: pointer;
+            border: 1px solid #ddd;
+        }
+
+            .thumbnail-images img:hover {
+                border-color: #D10024;
+            }
+    .view-full-details {
+        margin-top: 20px;
+    }
+
+    #quickViewModal .product-details {
+        padding: 0 20px;
+    }
+
+    #quickViewModal .product-name {
+        margin-bottom: 15px;
+    }
+
+    #quickViewModal .product-price {
+        margin: 15px 0;
+    }
+
+    #quickViewModal .add-to-cart {
+        margin: 20px 0;
+    }
+
+    /* Fix for slick slider accessibility */
+    .slick-slide:not(.slick-active) {
+        pointer-events: none;
+    }
+
+    .slick-slide.slick-active {
+        pointer-events: auto;
+    }
+</style>

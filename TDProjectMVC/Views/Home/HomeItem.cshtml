@@ -3,7 +3,7 @@
 @foreach (var item in Model)
 {
     <div class="col-md-4 col-xs-6">
-        <div class="product">
+        <div class="product" data-product-id="@item.MaHH">
             <a asp-action="Detail" asp-controller="Product" asp-route-id="@item.MaHH">
                 <div class="product-img">
                     @{
@@ -48,11 +48,17 @@
                         @((item.DonGia * (100 + item.GiamGia) / 100).ToString("#,##0 VNĐ"))
                     </del>
                     <div class="product-rating">
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
+                        @for (int i = 0; i < 5; i++)
+                        {
+                            if (i < @item.DiemDanhGia)
+                            {
+                                <i class="fa fa-star"></i>
+                            }
+                            else
+                            {
+                                <i class="fa fa-star-o"></i>
+                            }
+                        }
                     </div>
                     <div class="product-btns">
                         <button class="add-to-wishlist">
@@ -61,7 +67,7 @@
                             </a>
                         </button>
                         <button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-                        <button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+                            <button class="quick-view" data-product-id="@item.MaHH"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
                     </div>
                 </div>
             </a>

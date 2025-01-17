@@ -20,32 +20,51 @@ function confirmChangeTrangThai(maHD, selectElement) {
     const newMaTrangThai = selectElement.value;
     const originalValue = selectElement.getAttribute('data-original-value');
 
-    if (confirm("Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng này không?")) {
-        console.log('User confirmed status change. Sending AJAX request...');
-
-        $.ajax({
-            url: `${API_BASE_URL}/HoaDon/UpdateTrangThai`,
-            type: 'POST',
-            data: JSON.stringify({
-                maHD: maHD,
-                maTrangThai: newMaTrangThai
-            }),
-            contentType: 'application/json',
-            success: function (response) {
-                console.log('AJAX request successful. Status updated.');
-                alert('Cập nhật trạng thái thành công!');
-                selectElement.setAttribute('data-original-value', newMaTrangThai);
-            },
-            error: function (xhr) {
-                console.error('AJAX request failed:', xhr.statusText);
-                alert('Cập nhật trạng thái thất bại: ' + xhr.responseText);
-                selectElement.value = originalValue;
-            }
-        });
-    } else {
-        console.log('User cancelled status change. Reverting select value.');
-        selectElement.value = originalValue;
-    }
+    Swal.fire({
+        title: 'Xác nhận thay đổi',
+        text: 'Bạn có chắc chắn muốn thay đổi trạng thái của đơn hàng này không?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Đồng ý',
+        cancelButtonText: 'Hủy bỏ'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            console.log('User confirmed status change. Sending AJAX request...');
+            $.ajax({
+                url: `${API_BASE_URL}/HoaDon/UpdateTrangThai`,
+                type: 'POST',
+                data: JSON.stringify({
+                    maHD: maHD,
+                    maTrangThai: newMaTrangThai
+                }),
+                contentType: 'application/json',
+                success: function (response) {
+                    console.log('AJAX request successful. Status updated.');
+                    Swal.fire({
+                        title: 'Thành công!',
+                        text: 'Cập nhật trạng thái thành công',
+                        icon: 'success',
+                        timer: 1500
+                    });
+                    selectElement.setAttribute('data-original-value', newMaTrangThai);
+                },
+                error: function (xhr) {
+                    console.error('AJAX request failed:', xhr.statusText);
+                    Swal.fire({
+                        title: 'Lỗi!',
+                        text: 'Cập nhật trạng thái thất bại: ' + xhr.responseText,
+                        icon: 'error'
+                    });
+                    selectElement.value = originalValue;
+                }
+            });
+        } else {
+            console.log('User cancelled status change. Reverting select value.');
+            selectElement.value = originalValue;
+        }
+    });
 }
 
 // Sales Chart
@@ -424,26 +443,26 @@ function toggleCommentStatus(maDg, currentStatus) {
 }
 
 // datatable.js
-function initializeDataTable() {
-    $('#myTable').DataTable({
-        language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json',
-        },
-        paging: false,
-        ordering: true,
-        searching: false,
-        info: false,
-        responsive: true,
-        autoWidth: false,
-        columnDefs: [{
-            targets: -1,
-            orderable: false,
-            searchable: false
-        }],
-        scrollY: '50vh',
-        scrollCollapse: true,
-    });
-}
+//function initializeDataTable() {
+//    $('#myTable').DataTable({
+//        language: {
+//            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/vi.json',
+//        },
+//        paging: false,
+//        ordering: true,
+//        searching: false,
+//        info: false,
+//        responsive: true,
+//        autoWidth: false,
+//        columnDefs: [{
+//            targets: -1,
+//            orderable: false,
+//            searchable: false
+//        }],
+//        scrollY: '50vh',
+//        scrollCollapse: true,
+//    });
+//}
 
 // carousel.js
 function initializeCarousel() {
@@ -615,40 +634,71 @@ window.initializeNotifications = initializeNotifications;
 window.initializeDataTable = initializeDataTable;
 
 document.addEventListener("DOMContentLoaded", function () {
-    const notificationToggle = document.getElementById("notification-toggle");
     const notificationContainer = document.getElementById("notification-container");
 
-    // Gọi API đánh dấu tất cả thông báo là đã đọc
-    notificationToggle.addEventListener("click", async function () {
+    // Xử lý sự kiện cho từng thông báo
+    function attachNotificationEvents() {
+        const notifications = document.querySelectorAll(".notification-item");
+        notifications.forEach(notification => {
+            const notificationId = notification.getAttribute("data-notification-id");
+            const unreadIndicator = notification.querySelector(".unread-indicator");
+
+            // Nếu thông báo chưa đọc (có chấm đỏ), thêm event listeners
+            if (unreadIndicator) {
+                // Đánh dấu đã đọc khi hover
+                notification.addEventListener("mouseenter", async function () {
+                    await markNotificationAsSeen(notificationId);
+                    unreadIndicator.style.display = "none";
+                });
+
+                // Hoặc khi click (tùy theo yêu cầu của bạn)
+                notification.addEventListener("click", async function (e) {
+                    e.preventDefault(); // Ngăn chặn hành vi mặc định của thẻ <a>
+                    await markNotificationAsSeen(notificationId);
+                    unreadIndicator.style.display = "none";
+                });
+            }
+        });
+    }
+
+    // Hàm đánh dấu một thông báo đã đọc
+    async function markNotificationAsSeen(notificationId) {
         try {
-            const response = await fetch('https://localhost:7109/api/Notification/MarkNotificationsAsSeen', {
-                method: 'POST'
+            const response = await fetch('https://localhost:7109/api/Notification/MarkNotificationAsSeen', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: notificationId })
             });
 
             if (response.ok) {
-                console.log("All notifications marked as seen.");
-                // Tải lại danh sách thông báo sau khi đánh dấu
-                loadNotifications();
+                console.log(`Notification ${notificationId} marked as seen`);
             } else {
-                console.error("Failed to mark notifications as seen.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    });
-
-    // Hàm tải lại danh sách thông báo
-    async function loadNotifications() {
-        try {
-            const response = await fetch('https://localhost:7109/api/Notification/GetUnseenNotifications');
-            if (response.ok) {
-                const data = await response.text(); // Dữ liệu là HTML từ ViewComponent
-                notificationContainer.innerHTML = data;
-            } else {
-                console.error("Failed to load notifications.");
+                console.error("Failed to mark notification as seen");
             }
         } catch (error) {
             console.error("Error:", error);
         }
     }
+
+    // Hàm tải lại danh sách thông báo
+    async function loadNotifications() {
+        try {
+            const response = await fetch('https://localhost:7109/api/Notification/GetAllNotifications');
+            if (response.ok) {
+                const data = await response.text();
+                notificationContainer.innerHTML = data;
+                // Gắn lại các event listeners sau khi tải lại danh sách
+                attachNotificationEvents();
+            } else {
+                console.error("Failed to load notifications");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+        }
+    }
+
+    // Khởi tạo event listeners cho các thông báo ban đầu
+    attachNotificationEvents();
 });
