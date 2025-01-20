@@ -258,3 +258,5 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\ref\TDProjectMVC.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\BraintreeHttp-Dotnet.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Source.dll

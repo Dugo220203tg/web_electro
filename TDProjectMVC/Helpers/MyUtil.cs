@@ -55,5 +55,6 @@ namespace TDProjectMVC.Helpers
 
             return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
         }
+      
     }
 }
