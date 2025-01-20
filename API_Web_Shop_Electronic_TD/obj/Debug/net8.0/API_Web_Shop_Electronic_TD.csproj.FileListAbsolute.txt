@@ -269,3 +269,5 @@ C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\obj\Debug\net8.
 C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\obj\Debug\net8.0\ref\API_Web_Shop_Electronic_TD.dll
 C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
 C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\BraintreeHttp-Dotnet.dll
+C:\Users\td\source\repos\TDProjectMVC\API_Web_Shop_Electronic_TD\bin\Debug\net8.0\Source.dll

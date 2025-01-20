@@ -8,6 +8,7 @@ using TDProjectMVC.Models.MoMo;
 using TDProjectMVC.Services.Mail;
 using TDProjectMVC.Services.Map;
 using TDProjectMVC.Services.Momo;
+using TDProjectMVC.Services.PayPal;
 using TDProjectMVC.Services.VnPay;
 using TDProjectMVC.ViewModels;
 namespace TDProjectMVC.Controllers
@@ -20,9 +21,9 @@ namespace TDProjectMVC.Controllers
         private readonly IMomoService _momoService;
         private readonly ILogger<CartController> _logger;
         private readonly OpenStreetMapService _osmService;
-
+        private readonly IPayPalService _payPalService;
         public CartController(IMailSender mailSender,
-            OpenStreetMapService osmService, Hshop2023Context context, IVnPayService vnPayService, IMomoService momoService, ILogger<CartController> logger)
+            OpenStreetMapService osmService, Hshop2023Context context, IVnPayService vnPayService, IMomoService momoService, ILogger<CartController> logger, IPayPalService payPalService)
         {
             db = context;
             _vnPayservice = vnPayService;
@@ -30,6 +31,7 @@ namespace TDProjectMVC.Controllers
             _momoService = momoService;
             _logger = logger;
             _osmService = osmService;
+            _payPalService = payPalService;
 
         }
         public List<CartItem> Cart => HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY) ?? new List<CartItem>();
@@ -270,6 +272,17 @@ namespace TDProjectMVC.Controllers
                         var paymentUrl = _vnPayservice.CreatePaymentUrl(paymentModel, HttpContext);
 
                         return Redirect(paymentUrl);
+                    case "PAYPAL":
+                        var paypalModel = new PaymentInformationModel
+                        {
+                            FullName = model.HoTen,
+                            Amount = (double)total,
+                            Description = "Thanh toán qua PayPal",
+                            OrderType = "other"
+                        };
+                        var url = await _payPalService.CreatePaymentUrl(paypalModel, HttpContext);
+
+                        return Redirect(url);
 
                     default:
                         TempData["error"] = "Vui lòng chọn phương thức thanh toán!";
@@ -424,7 +437,6 @@ namespace TDProjectMVC.Controllers
 
                 if (saved)
                 {
-                    // Clear cart and coupon data
                     HttpContext.Session.Remove(MySetting.CART_KEY);
                     HttpContext.Session.Remove("CouponCode");
                     HttpContext.Session.Remove("CouponDiscount");
@@ -714,6 +726,101 @@ namespace TDProjectMVC.Controllers
                 return RedirectToAction("PaymentFail");
             }
         }
+        #endregion
+
+        #region --- PAYPAL ---
+
+        [HttpGet] // Changed from HttpPost to HttpGet
+        public async Task<IActionResult> PayPalCallBack([FromQuery] string? paymentId, [FromQuery] string? PayerID)
+        {
+            try
+            {
+                var response = _payPalService.PaymentExecute(HttpContext.Request.Query);
+
+                if (response.Success) // Successful payment
+                {
+                    var customerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    if (string.IsNullOrEmpty(customerId))
+                    {
+                        _logger.LogWarning("Customer ID not found in claims.");
+                        TempData["error"] = "Không tìm thấy thông tin khách hàng. Vui lòng đăng nhập lại.";
+                        return RedirectToAction("PaymentFail");
+                    }
+
+                    var cart = HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY);
+                    if (cart == null || !cart.Any())
+                    {
+                        TempData["error"] = "Giỏ hàng trống.";
+                        return RedirectToAction("PaymentFail");
+                    }
+
+                    // Lấy thông tin từ session
+                    string fullName = HttpContext.Session.GetString("FullName");
+                    string phoneNumber = HttpContext.Session.GetString("PhoneNumber");
+                    string address = HttpContext.Session.GetString("Address");
+
+                    // Tính tổng tiền
+                    decimal amount = (decimal)cart.Sum(item => item.SoLuong * item.DonGia);
+
+                    // Kiểm tra và áp dụng mã giảm giá nếu có
+                    string couponCode = HttpContext.Session.GetString("CouponCode");
+                    if (!string.IsNullOrEmpty(couponCode))
+                    {
+                        var discountStr = HttpContext.Session.GetString("CouponDiscount");
+                        if (decimal.TryParse(discountStr, out decimal discount))
+                        {
+                            amount = amount * (100 - discount) / 100;
+                        }
+                    }
+
+                    // Lưu thông tin đơn hàng và thanh toán
+                    bool saved = await SaveOrderAndPaymentData(
+                        customerId: customerId,
+                        fullName: fullName,
+                        address: address,
+                        phone: phoneNumber,
+                        paymentMethod: "PAYPAL",
+                        orderInfo: $"Thanh toán PayPal - Payment ID: {paymentId}",
+                        amount: amount,
+                        couponCode: couponCode,
+                        cartItems: cart
+                    );
+
+                    if (saved)
+                    {
+                        // Tạo thông báo
+                        var notification = new Notification
+                        {
+                            Name = "Đơn hàng mới",
+                            Description = $"Tài khoản {fullName} đã tạo đơn hàng thành công.",
+                            Status = false,
+                            CreateAt = DateTime.Now
+                        };
+                        db.Notifications.Add(notification);
+                        await db.SaveChangesAsync();
+
+                        TempData["success"] = "Giao dịch PayPal thành công!";
+                        return RedirectToAction("PaymentSuccess");
+                    }
+
+                    TempData["error"] = "Đơn hàng đã được tạo nhưng có lỗi khi lưu.";
+                    return RedirectToAction("PaymentFail");
+                }
+                else // Failed or canceled payment
+                {
+                    _logger.LogWarning($"PayPal Payment Failed. Payment ID: {paymentId}");
+                    TempData["error"] = "Giao dịch PayPal đã bị hủy hoặc thất bại.";
+                    return RedirectToAction("Index", "Cart");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"PayPal PaymentCallBack Error: {ex}");
+                TempData["error"] = "Có lỗi xảy ra khi xử lý đơn hàng PayPal: " + ex.Message;
+                return RedirectToAction("PaymentFail");
+            }
+        }
+
         #endregion
         #region ---OpenStreetMap---
         public async Task<IActionResult> Search(string query)
