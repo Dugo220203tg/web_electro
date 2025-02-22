@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', function () {
     DateHandler.initializeDatepickers();
     UIUtils.initializeDeleteConfirmation();
     //initializeNotifications();
-    initializeDataTable();
+    //initializeDataTable();
     initializeCarousel();
     // Add form submit handler for image names
     const form = document.querySelector('form');
@@ -631,7 +631,7 @@ function confirmDelete(url, data) {
 // Đảm bảo functions có sẵn trong window object
 window.confirmDelete = confirmDelete;
 window.initializeNotifications = initializeNotifications;
-window.initializeDataTable = initializeDataTable;
+//window.initializeDataTable = initializeDataTable;
 
 document.addEventListener("DOMContentLoaded", function () {
     const notificationContainer = document.getElementById("notification-container");

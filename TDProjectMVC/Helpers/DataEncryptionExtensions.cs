@@ -24,26 +24,33 @@ namespace TDProjectMVC.Helpers
 			return Convert.ToBase64String(encryptedSHA512);
 		}
 
-		public static string ToMd5Hash(this string password, string? saltKey)
-		{
-            if (saltKey == null)
+        public static string ToMd5Hash(this string password, string? saltKey)
+        {
+            // Kiểm tra cả password và saltKey
+            if (string.IsNullOrEmpty(password))
             {
-                throw new ArgumentNullException(nameof(saltKey), "Salt key cannot be null.");
+                throw new ArgumentNullException(nameof(password), "Password cannot be null or empty.");
             }
+
+            if (string.IsNullOrEmpty(saltKey))
+            {
+                throw new ArgumentNullException(nameof(saltKey), "Salt key cannot be null or empty.");
+            }
+
             using (var md5 = MD5.Create())
-			{
-				byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(string.Concat(password, saltKey)));
-				StringBuilder sBuilder = new StringBuilder();
-				for (int i = 0; i < data.Length; i++)
-				{
-					sBuilder.Append(data[i].ToString("x2"));
-				}
-				return sBuilder.ToString();
-			}
-		}
+            {
+                byte[] data = md5.ComputeHash(Encoding.UTF8.GetBytes(string.Concat(password, saltKey)));
+                StringBuilder sBuilder = new StringBuilder();
+                for (int i = 0; i < data.Length; i++)
+                {
+                    sBuilder.Append(data[i].ToString("x2"));
+                }
+                return sBuilder.ToString();
+            }
+        }
 
-		#endregion
+        #endregion
 
-	}
+    }
 
 }

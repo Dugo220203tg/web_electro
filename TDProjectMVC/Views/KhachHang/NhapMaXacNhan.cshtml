@@ -2,37 +2,34 @@
 @{
     ViewData["Title"] = Model.Type == "Register" ? "Xác nhận đăng ký" : "Xác nhận đổi mật khẩu";
 }
-
-<div class="billing-details" style="display: grid; place-items: center;">
-    <div class="section-title">
-        <h3 class="title">@ViewData["Title"]</h3>
+<div class="billing-details" style="display: grid; place-items: center; margin-top:30px;">
+    <div class="form-container">
+        <div class="logo-container">
+            <h3 class="title">@ViewData["Title"]</h3>
+        </div>
+        @if (TempData["error"] != null)
+        {
+            <div class="alert alert-danger">
+                @TempData["error"]
+            </div>
+        }
+        <form class="form" asp-action="NhapMaXacNhan" method="post">
+            <input type="hidden" asp-for="KhachHangId" />
+            <input type="hidden" asp-for="Type" />
+            <div class="form-group">
+                <label>Mã xác nhận đã được gửi đến email của bạn</label>
+                <input class="input" asp-for="ConfirmationCode" placeholder="Nhập mã xác nhận">
+                <span asp-validation-for="ConfirmationCode" class="text-danger"></span>
+            </div>
+            <button class="form-submit-btn" type="submit">Submit</button>
+        </form>
     </div>
-
-    @if (TempData["error"] != null)
-    {
-        <div class="alert alert-danger">
-            @TempData["error"]
-        </div>
-    }
-
-    <form asp-action="NhapMaXacNhan" method="post">
-        <input type="hidden" asp-for="KhachHangId" />
-        <input type="hidden" asp-for="Type" />
-
-        <div class="form-group">
-            <label>Mã xác nhận đã được gửi đến email của bạn</label>
-            <input class="input" asp-for="ConfirmationCode" placeholder="Nhập mã xác nhận">
-            <span asp-validation-for="ConfirmationCode" class="text-danger"></span>
-        </div>
-
-        <button type="submit" class="primary-btn order-submit" style="margin-top: 20px;">
-            Xác nhận
-        </button>
-    </form>
 </div>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/Login.css" />
 }

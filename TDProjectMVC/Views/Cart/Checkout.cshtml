@@ -83,7 +83,7 @@
                             </div>
                             <div class="order-col">
                                 <div><strong>TOTAL</strong></div>
-                                <div><strong class="order-total">@ViewBag.Total.ToString("#,##0 VNĐ")</strong></div>
+                                <div><strong class="order-total" style="font-size: 17px;">@ViewBag.Total.ToString("#,##0 VNĐ")</strong></div>
                             </div>
                         }
                         else
@@ -91,8 +91,10 @@
                             <p>Error: Unable to calculate order totals.</p>
                         }
                     </div>
-
-                    <div class="payment-method">
+                    <div class="order-col">
+                        <div><strong>PAYMENT METHOD</strong></div>
+                    </div>
+                    <div class="payment-method" style="display: grid; grid-template-columns: repeat(2, 1fr); margin: 20px 0px;">
                         <div class="input-radio">
                             <input type="radio" name="paymentMethod" id="payment-1" value="COD">
                             <label for="payment-1">

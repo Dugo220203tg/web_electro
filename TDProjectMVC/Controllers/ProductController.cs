@@ -94,25 +94,90 @@ namespace TDProjectMVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Search(string? query)
+        public IActionResult Search(string? query, int? danhmuc, string? hang, int? loai,
+        decimal? minPrice, decimal? maxPrice, int? page, int? pageSize, string? sortOrder)
         {
+            int pageIndex = page ?? 1;
+            int pageSizeValue = pageSize ?? 9;
+            ViewBag.PageSize = pageSizeValue;
+            ViewBag.CurrentSort = sortOrder;
+
             var hangHoas = db.HangHoas.AsQueryable();
+
+            // Apply search filter
             if (!string.IsNullOrEmpty(query))
             {
-                hangHoas = hangHoas.Where(p => p.TenHh.Contains(query) || p.MaLoaiNavigation.TenLoai.Contains(query));
+                hangHoas = hangHoas.Where(p => p.TenHh.Contains(query) ||
+                                             p.MaLoaiNavigation.TenLoai.Contains(query));
             }
 
-            var result = await hangHoas.Select(p => new HangHoaVM
+            // Apply existing filters
+            if (loai.HasValue)
+            {
+                hangHoas = hangHoas.Where(p => p.MaLoai == loai.Value);
+            }
+
+            if (!string.IsNullOrEmpty(hang))
+            {
+                hangHoas = hangHoas.Where(p => p.MaNcc == hang);
+            }
+
+            if (danhmuc.HasValue)
+            {
+                hangHoas = hangHoas.Where(p => p.MaLoaiNavigation.DanhMucId == danhmuc.Value);
+            }
+
+            if (minPrice.HasValue)
+            {
+                hangHoas = hangHoas.Where(p => p.DonGia >= (double)minPrice.Value);
+            }
+
+            if (maxPrice.HasValue)
+            {
+                hangHoas = hangHoas.Where(p => p.DonGia <= (double)maxPrice.Value);
+            }
+
+            // Apply sorting
+            hangHoas = sortOrder switch
+            {
+                "price_desc" => hangHoas.OrderByDescending(p => p.DonGia),
+                "price_asc" => hangHoas.OrderBy(p => p.DonGia),
+                "popularity" => hangHoas.OrderByDescending(p => p.DanhGiaSps.Average(dg => dg.Sao ?? 0)),
+                _ => hangHoas.OrderBy(p => p.TenHh)
+            };
+
+            // Map to view model
+            var result = hangHoas.Select(p => new HangHoaVM
             {
                 MaHH = p.MaHh,
                 TenHH = p.TenHh,
                 DonGia = p.DonGia ?? 0,
                 Hinh = p.Hinh ?? "",
                 MoTaNgan = p.MoTaDonVi ?? "",
-                TenLoai = p.MaLoaiNavigation.TenLoai
-            }).ToListAsync();
+                TenLoai = p.MaLoaiNavigation.TenLoai,
+                GiamGia = p.GiamGia,
+                MaNCC = p.MaNccNavigation.TenCongTy,
+                ML = p.MaLoai,
+                NCC = p.MaNcc,
+                DiemDanhGia = p.DanhGiaSps.Any() ?
+                    (int)Math.Round(p.DanhGiaSps.Average(dg => dg.Sao ?? 0)) : 0
+            });
 
-            return View(result);
+            // Apply pagination
+            var paginatedList = PaginatedList<HangHoaVM>.CreateAsync(result, pageIndex, pageSizeValue);
+
+            // Set ViewBag values
+            ViewBag.TotalPages = paginatedList.TotalPages;
+            ViewBag.Page = pageIndex;
+            ViewBag.Loai = loai;
+            ViewBag.Hang = hang;
+            ViewBag.DanhMuc = danhmuc;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.MinPrice = minPrice;
+            ViewBag.MaxPrice = maxPrice;
+            ViewBag.SearchQuery = query;
+
+            return View("Index", paginatedList);
         }
 
         public IActionResult Detail(int id)

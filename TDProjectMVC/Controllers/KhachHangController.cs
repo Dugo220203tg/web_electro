@@ -57,19 +57,22 @@ namespace TDProjectMVC.Controllers
             {
                 errors.Add("Email đã được sử dụng.");
             }
-
+            var checkPassword = model.RepeatMatKhau == model.MatKhau;
+            if (!checkPassword)
+            {
+                errors.Add("Mật khẩu không trùng khớp.");
+            }
             if (errors.Any())
             {
                 TempData["error"] = string.Join(" ", errors);
                 return View(model);
             }
-
             try
             {
                 var khachHang = _mapper.Map<KhachHang>(model);
                 khachHang.RandomKey = MyUtil.GenerateRamdomKey();
                 khachHang.MatKhau = model.MatKhau.ToMd5Hash(khachHang.RandomKey);
-                khachHang.HieuLuc = false; // Account inactive until verification
+                khachHang.HieuLuc = false; 
                 khachHang.VaiTro = 0;
                 khachHang.NgayTao = DateTime.Now;
 
@@ -250,7 +253,7 @@ namespace TDProjectMVC.Controllers
 
                 if (khachHang == null)
                 {
-                    AddLoginError("Thông tin đăng nhập không chính xác");
+                    AddLoginError("Email hoặc Username không chính xác");
                     return View(model);
                 }
 
@@ -266,9 +269,18 @@ namespace TDProjectMVC.Controllers
                     return View(model);
                 }
 
-                if (khachHang.MatKhau != model.Password.ToMd5Hash(khachHang.RandomKey))
+                try
                 {
-                    AddLoginError("Thông tin đăng nhập không chính xác");
+                    var hashedPassword = model.Password.ToMd5Hash(khachHang.RandomKey);
+                    if (khachHang.MatKhau != hashedPassword)
+                    {
+                        AddLoginError("Mật khẩu không chính xác");
+                        return View(model);
+                    }
+                }
+                catch (ArgumentNullException)
+                {
+                    AddLoginError("Mật khẩu không chính xác");
                     return View(model);
                 }
 

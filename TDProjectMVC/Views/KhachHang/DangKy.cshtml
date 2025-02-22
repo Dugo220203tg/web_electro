@@ -2,54 +2,71 @@
 @{
     ViewData["Title"] = "Register";
 }
-<div class="billing-details" style="display: grid;
-    place-items: center;">
-    <div class="section-title">
-        <h3 class="title">Register</h3>
-    </div>
-    <form asp-action="DangKy" enctype="multipart/form-data" method="post">
-        <div class="form-group">
-            <input class="input" asp-for="@Model.MaKh" placeholder="User Name">
-            <span asp-validation-for="@Model.MaKh" class="text-danger"></span>
+<div class="billing-details" style="display: grid; place-items: center; background-color: #e8e8e8;">
+    <form asp-action="DangKy" enctype="multipart/form-data" method="post" class="form-login">
+        <p class="title">Sign Up</p>
+        <div class="flex-column">
+            <label>Email </label>
         </div>
-        <div class="form-group">
-            <input class="input" asp-for="@Model.MatKhau" placeholder="PassWord">
-            <span asp-validation-for="@Model.MatKhau" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <input class="input" asp-for="@Model.HoTen" placeholder="Full name">
-            <span asp-validation-for="@Model.HoTen" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <input class="input" asp-for="@Model.Email" placeholder="Email">
+        <div class="inputFormSignup">
+            <input placeholder="Enter your Email" asp-for="@Model.Email" class="input-signup" type="email">
             <span asp-validation-for="@Model.Email" class="text-danger"></span>
+
         </div>
-        <div class="form-group">
-            <input class="input" asp-for="@Model.DiaChi" placeholder="Address">
-            <span asp-validation-for="@Model.DiaChi" class="text-danger"></span>
+        <div class="flex-column">
+            <label>Username </label>
         </div>
-        <div class="form-group">
-            <div class="input-checkbox">
-                <input type="radio" id="GioiTinhNam" name="GioiTinh" class="form-check-input" value="true" />
-                <label for="GioiTinhNam">Nam</label>
-                <input type="radio" id="GioiTinhNu" name="GioiTinh" class="form-check-input" value="false" />
-                <label for="GioiTinhNu">Nữ</label>
+        <div class="inputFormSignup">
+            <input placeholder="Enter your Username" asp-for="@Model.MaKh" class="input-signup" type="text">
+            <span asp-validation-for="@Model.MaKh" class="text-danger"></span>
+
+        </div>
+        <div class="flex-column">
+            <label>Full Name </label>
+        </div>
+        <div class="inputFormSignup">
+            <input placeholder="Enter your Full Name" asp-for="@Model.HoTen" class="input-signup" type="text">
+            <span asp-validation-for="@Model.HoTen" class="text-danger"></span>
+
+        </div>
+        <div class="flex-column">
+            <label>Password </label>
+        </div>
+        <div class="inputFormSignup">
+            <input placeholder="Enter your Password" asp-for="@Model.MatKhau" class="input-signup" type="password" id="passwordInput">
+            <span asp-validation-for="@Model.MatKhau" class="text-danger"></span>
+            <svg id="togglePassword" xmlns="http://www.w3.org/2000/svg" width="40" height="20" viewBox="0 0 24 24" fill="none" stroke="#151717" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-icon">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        </div>
+        <div class="flex-column">
+            <label>Confirm Password</label>
+        </div>
+        <div class="inputFormSignup">
+            <input placeholder="Repeat your Password"  class="input-signup" type="password" asp-for="@Model.RepeatMatKhau">
+        </div>
+        <div class="mydict">
+            <div>
+                <label>
+                    <input type="radio" id="GioiTinhNu" name="radio" checked="" value="false">
+                    <span>Women</span>
+                </label>
+                <label>
+                    <input type="radio" id="GioiTinhNam" name="radio" value="true">
+                    <span>Men</span>
+                </label>
             </div>
         </div>
-        <div class="form-group">
-            <input asp-for="@Model.NgaySinh" class="form-control" />
-            <span asp-validation-for="@Model.NgaySinh" class="text-danger"></span>
-        </div>
-        <div class="form-group">
-            <input class="input" asp-for="@Model.DienThoai" placeholder="Số Điện Thoại">
-            <span asp-validation-for="@Model.DienThoai" class="text-danger"></span>
-        </div>
-@*         <div class="form-group">
-            <label class="form-label my-3" for="Hinh">Hình<sup>*</sup></label>
-            <input type="file" name="Hinh" class="form-control" />
-        </div> *@
-        <button type="submit" class="primary-btn order-submit" style="margin-top: 20px; margin-left: 110px;" value="">
-            Đăng ký
-        </button>
+        <button type="submit" class="button-submit">Sign Up</button>
+        <p class="p">
+            Have already an account ?
+            <span class="span">
+                <a asp-action="DangNhap" asp-controller="Khachhang">Login here</a>
+            </span>
+        </p>
     </form>
 </div>
+@section Styles {
+    <link rel="stylesheet" href="~/css/Login.css" />
+}

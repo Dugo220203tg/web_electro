@@ -461,7 +461,7 @@
         top: 0;
         text-align: center;
     }*/
-/*TEst*/
+
 /* Add this to your site.css or create a new CSS file */
 .custom-modal {
     display: none;
@@ -485,7 +485,7 @@
 
 .modal-container {
     position: relative;
-    z-index: 1001; /* Nằm trên overlay */
+    z-index: 1001; 
     background: #fff;
     margin: 10% auto;
     padding: 20px;
@@ -535,21 +535,32 @@
     flex-direction: column;
     gap: 10px;
 }
-
+.product-images.w-100 {
+    flex: 1; 
+    max-width: 50%; 
+}
 .product-preview img {
     width: 100%;
     height: auto;
     cursor: pointer;
 }
 
-.product-info {
+.product-info.product-details {
     flex: 1;
+    max-width: 50%; 
     padding: 20px;
 }
 
 .product-name {
     margin: 0 0 15px 0;
     font-size: 24px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 60px; 
+    line-height: 1.2; 
 }
 
 .product-rating {
@@ -588,9 +599,9 @@
         flex-direction: column;
     }
 
-    .thumb-images {
-        flex-direction: row;
-        overflow-x: auto;
+    .product-images.w-100,
+    .product-info.product-details {
+        max-width: 100%;
     }
 }
 
@@ -646,4 +657,82 @@
 
 .next-btn {
     right: 10px;
+}
+
+
+/*
+<!--Style >*/
+.wrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.inner {
+    --w: 100px;
+    --h: 150px;
+    --translateZ: calc((var(--w) + var(--h)) + 0px);
+    --rotateX: -15deg;
+    --perspective: 1000px;
+    --color-card: 255, 255, 255; /* Added RGB values for the color */
+
+    position: absolute;
+    width: var(--w);
+    height: var(--h);
+    top: 25%;
+    left: calc(50% - (var(--w) / 2) - 2.5px);
+    z-index: 2;
+    transform-style: preserve-3d;
+    transform: perspective(var(--perspective));
+    animation: rotating 20s linear infinite;
+}
+
+@keyframes rotating {
+    from {
+        transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(0);
+    }
+
+    to {
+        transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(1turn);
+    }
+}
+
+.card {
+    position: absolute;
+    border: 2px solid rgba(var(--color-card), 1); /* Fixed rgba syntax */
+    border-radius: 12px;
+    overflow: hidden;
+    inset: 0;
+    transform: rotateY(calc((360deg / var(--quantity)) * var(--index))) translateZ(var(--translateZ));
+}
+
+.img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: radial-gradient( circle, rgba(var(--color-card), 0.2) 0%, rgba(var(--color-card), 0.6) 80%, rgba(var(--color-card), 0.9) 100% );
+}
+/*--------------------------------------Clear Search in Store-------------------------------------- */
+
+.clear-search.visible {
+    display: block !important;
+    opacity: 1 !important;
+}
+
+.search-container:hover .clear-search.visible {
+    color: #666;
+}
+
+.clear-search:hover {
+    color: #333 !important;
+}
+
+.timkiem-top:focus {
+    outline: none;
+    border-color: #D10024 !important;
 }
