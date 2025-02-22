@@ -583,13 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         showConfirmButton: false,
                         timer: 1500,
                     });
-                    updateCartDisplay(); // Cập nhật hiển thị giỏ hàng
-                } else {
-                    Swal.fire({
-                        icon: "error",
-                        title: "Lỗi",
-                        text: result.message,
-                    });
+                    updateCartDisplay();
                 }
             },
             error: function (xhr, status, error) {
@@ -910,6 +904,140 @@ function updateWishList() {
 
 // Initialize wishlist on document ready
 $(document).ready(function () {
-    updateWishList(); // Cập nhật danh sách yêu thích khi trang được tải
+    updateWishList(); 
+    loadQuickView();
+    initializeSlider();
+    initializeModalHandlers();
+    closeModal();
+
 });
 //---------------------------------------------WISH-LIST-----------------------------------------------
+function loadQuickView(productId) {
+    fetch(`/Product/GetQuickViewData?id=${productId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch product details');
+            }
+            return response.text();
+        })
+        .then(html => {
+            // Remove existing modal if any
+            const existingModal = document.querySelector('#quickViewModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            // Add new modal to body
+            document.body.insertAdjacentHTML('beforeend', html);
+
+            // Show modal
+            const modal = document.querySelector('#quickViewModal');
+            if (modal) {
+                modal.style.display = 'block';
+                // Initialize modal handlers first
+                initializeModalHandlers();
+                // Then initialize slider
+                initializeSlider();
+            } else {
+                console.error('Modal element not found after insertion');
+            }
+        })
+        .catch(error => {
+            console.error('Error loading quick view:', error);
+        });
+}
+
+function initializeSlider() {
+    const slides = document.querySelectorAll('.product-preview');
+    if (slides.length === 0) {
+        console.warn('No slides found with class "product-preview"');
+        return;
+    }
+
+    let currentSlide = 0;
+
+    function showSlide(n) {
+        // Ensure n is within bounds
+        n = ((n % slides.length) + slides.length) % slides.length;
+
+        slides.forEach(slide => {
+            slide.classList.remove('active');
+        });
+        slides[n].classList.add('active');
+    }
+
+    // Add these functions to window to make them globally accessible
+    window.nextSlide = function () {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    };
+
+    window.prevSlide = function () {
+        currentSlide = ((currentSlide - 1) % slides.length + slides.length) % slides.length;
+        showSlide(currentSlide);
+    };
+
+    // Show initial slide
+    showSlide(currentSlide);
+}
+
+function initializeModalHandlers() {
+    const modal = document.querySelector('#quickViewModal');
+    if (!modal) {
+        console.error('Modal element not found');
+        return;
+    }
+
+    const modalContainer = modal.querySelector('.modal-container');
+    const overlay = modal.querySelector('.modal-overlay');
+    const closeButton = modal.querySelector('.modal-close');
+
+    if (!modalContainer || !overlay || !closeButton) {
+        console.error('One or more modal elements are missing');
+        return;
+    }
+
+    // Close modal when clicking close button
+    closeButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        closeModal(modal);
+    });
+
+    // Close modal when clicking overlay (outside modal content)
+    modal.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+            closeModal(modal);
+        }
+    });
+
+    // Prevent modal from closing when clicking inside modal-container
+    modalContainer.addEventListener('click', (e) => {
+        e.stopPropagation();
+    });
+
+    // Close modal when pressing ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal(modal);
+        }
+    });
+}
+
+function closeModal(modal) {
+    if (modal) {
+        modal.style.display = 'none';
+        modal.remove();
+    }
+}
+
+// Add click handler for quick view buttons
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('quick-view')) {
+        e.preventDefault();
+        const productId = e.target.dataset.productId;
+        if (productId) {
+            loadQuickView(productId);
+        } else {
+            console.error('No product ID found on quick view button');
+        }
+    }
+});

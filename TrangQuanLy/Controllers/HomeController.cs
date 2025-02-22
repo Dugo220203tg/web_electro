@@ -34,7 +34,6 @@ namespace TrangQuanLy.Controllers
         {
             try
             {
-                // Khởi tạo các giá trị mặc định cho phân trang
                 int pageIndex = page ?? 1;
                 int pageSizeValue = pageSize ?? 5;
                 ViewBag.PageSize = pageSizeValue;
@@ -81,9 +80,10 @@ namespace TrangQuanLy.Controllers
                     var statistics = JsonConvert.DeserializeObject<List<CategorySalesStatistics>>(statsData);
 
                     var statisticsData = statistics.Where(s =>
-    new DateTime(currentYear, s.Month, 1) >= new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1) &&
-    new DateTime(currentYear, s.Month, 1) <= new DateTime(currentYear, currentMonth, 1)
-).ToList();
+                        new DateTime(currentYear, s.Month, 1) >= new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1) 
+                        &&
+                        new DateTime(currentYear, s.Month, 1) <= new DateTime(currentYear, currentMonth, 1)
+                    ).ToList();
                     // Xử lý dữ liệu cho biểu đồ
                     var months = Enumerable.Range(0, 6)
                         .Select(i => currentDate.AddMonths(-i))

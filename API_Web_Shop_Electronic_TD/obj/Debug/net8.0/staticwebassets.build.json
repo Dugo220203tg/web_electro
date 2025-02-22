@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "er+Loq83CmPexssJTY6TXo6Va3nGM3YOGNZz8mlDbbE=",
+  "Hash": "x0IqJL1qrC8tdMks+6a79cRbc2eBebphMnxcbYUvPvc=",
   "Source": "API_Web_Shop_Electronic_TD",
   "BasePath": "_content/API_Web_Shop_Electronic_TD",
   "Mode": "Default",
@@ -198,6 +198,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\css\\font-awesome.min.css"
+    },
+    {
+      "Identity": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\css\\Login.css",
+      "SourceId": "TDProjectMVC",
+      "SourceType": "Project",
+      "ContentRoot": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\",
+      "BasePath": "_content/TDProjectMVC",
+      "RelativePath": "css/Login.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\Login.css"
     },
     {
       "Identity": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\css\\MyCss.css",
@@ -521,6 +540,25 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\fonts\\slick.woff"
+    },
+    {
+      "Identity": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\fonts\\text_login.svg",
+      "SourceId": "TDProjectMVC",
+      "SourceType": "Project",
+      "ContentRoot": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\",
+      "BasePath": "_content/TDProjectMVC",
+      "RelativePath": "fonts/text_login.svg",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "PreferTarget",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\fonts\\text_login.svg"
     },
     {
       "Identity": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\Hinh\\default.jpg",

@@ -192,11 +192,19 @@
     <script type="module">
         import { initializeSalesChart } from './js/myjs.js';
 
-        const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
-        const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
-        const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
-        const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
+        document.addEventListener('DOMContentLoaded', () => {
+            const labels = @Html.Raw(Json.Serialize(ViewBag.Labels));
+            const salesData1 = @Html.Raw(Json.Serialize(ViewBag.SalesData1));
+            const salesData8 = @Html.Raw(Json.Serialize(ViewBag.SalesData8));
+            const salesData11 = @Html.Raw(Json.Serialize(ViewBag.SalesData11));
 
-        initializeSalesChart(labels, salesData1, salesData8, salesData11);
+            // Ensure canvas exists before initializing chart
+            const canvas = document.getElementById('worldwide-sales');
+            if (canvas) {
+                initializeSalesChart(labels, salesData1, salesData8, salesData11);
+            } else {
+                console.error('Canvas element not found');
+            }
+        });
     </script>
 }

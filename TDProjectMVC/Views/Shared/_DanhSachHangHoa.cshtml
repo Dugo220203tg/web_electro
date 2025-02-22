@@ -12,6 +12,7 @@
             <!-- ASIDE -->
             <div id="aside" class="col-md-3">
                 <!-- aside Widget -->
+
                 @await Component.InvokeAsync("DanhMuc")
                 <!-- /aside Widget -->
                 <!-- aside Widget -->
@@ -64,9 +65,75 @@
                         </label>
                     </div>
                     <div class="store-sort" style="margin-left: 5px;">
-                        <form asp-action="Search" asp-controller="Product" method="get">
-                            <input type="search" class="timkiem-top" placeholder=" keywords ..." aria-describedby="searchButton" name="query" style="border: 1px solid #E4E7ED; height: 40px;">
-                            <button type="submit" id="searchButton" style="background-color: #D10024; border-color: #D10024; color: #FFF; cursor: default; width: 40px; height: 40px; margin-bottom: 5px;">
+                        @{
+                            // Get all current filter values from either ViewBag or Query string
+                            var minPrice = (ViewBag.MinPrice ?? Context.Request.Query["minPrice"].ToString())?.ToString();
+                            var maxPrice = (ViewBag.MaxPrice ?? Context.Request.Query["maxPrice"].ToString())?.ToString();
+                            var sortOrder = (ViewBag.CurrentSort ?? Context.Request.Query["sortOrder"].ToString())?.ToString();
+                            var loai = (ViewBag.Loai ?? Context.Request.Query["loai"].ToString())?.ToString();
+                            var hang = (ViewBag.Hang ?? Context.Request.Query["hang"].ToString())?.ToString();
+                            var danhmuc = (ViewBag.DanhMuc ?? Context.Request.Query["danhmuc"].ToString())?.ToString();
+                            var query = (ViewBag.SearchQuery ?? Context.Request.Query["query"].ToString())?.ToString();
+                        }
+
+                        <form asp-controller="Product" asp-action="Search" method="get"
+                              class="d-flex align-items-center">
+                            @if (!string.IsNullOrEmpty(danhmuc))
+                            {
+                                <input type="hidden" name="danhmuc" value="@danhmuc" />
+                            }
+                            @if (!string.IsNullOrEmpty(hang))
+                            {
+                                <input type="hidden" name="hang" value="@hang" />
+                            }
+                            @if (!string.IsNullOrEmpty(loai))
+                            {
+                                <input type="hidden" name="loai" value="@loai" />
+                            }
+                            @if (!string.IsNullOrEmpty(minPrice))
+                            {
+                                <input type="hidden" name="minPrice" value="@minPrice" />
+                            }
+                            @if (!string.IsNullOrEmpty(maxPrice))
+                            {
+                                <input type="hidden" name="maxPrice" value="@maxPrice" />
+                            }
+                            @if (!string.IsNullOrEmpty(sortOrder))
+                            {
+                                <input type="hidden" name="sortOrder" value="@sortOrder" />
+                            }
+
+                            <input type="search"
+                                   class="timkiem-top"
+                                   placeholder=" keywords ..."
+                                   aria-describedby="searchButton"
+                                   name="query"
+                                   value="@query"
+                                   style="border: 1px solid #E4E7ED; height: 40px;">
+                            @if (!string.IsNullOrEmpty(query))
+                            {
+                                <button type="button"
+                                        class="clear-search"
+                                        style="
+                               position: absolute;
+                               left: 558px;
+                               top: 36px;
+                               transform: translateY(-50%);
+                               background: none;
+                               border: none;
+                               color: #999;
+                               cursor: pointer;
+                               padding: 0;
+                               font-size: 16px;
+                               display: none;
+                               opacity: 0;
+                               transition: opacity 0.2s ease;    ">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            }
+                            <button type="submit"
+                                    id="searchButton"
+                                    style="background-color: #D10024; border-color: #D10024; color: #FFF; cursor: pointer; width: 40px; height: 40px; margin-bottom: 5px;">
                                 <i class="fa fa-search"></i>
                             </button>
                         </form>

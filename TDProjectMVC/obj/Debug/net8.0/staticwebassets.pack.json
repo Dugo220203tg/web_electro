@@ -6217,6 +6217,10 @@
       "PackagePath": "staticwebassets\\css\\CartCSS.css"
     },
     {
+      "Id": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\css\\Login.css",
+      "PackagePath": "staticwebassets\\css\\Login.css"
+    },
+    {
       "Id": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\css\\MyCss.css",
       "PackagePath": "staticwebassets\\css\\MyCss.css"
     },
@@ -6291,6 +6295,10 @@
     {
       "Id": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\fonts\\slick.woff",
       "PackagePath": "staticwebassets\\fonts\\slick.woff"
+    },
+    {
+      "Id": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\fonts\\text_login.svg",
+      "PackagePath": "staticwebassets\\fonts\\text_login.svg"
     },
     {
       "Id": "C:\\Users\\td\\source\\repos\\TDProjectMVC\\TDProjectMVC\\wwwroot\\img\\hotdeal.png",

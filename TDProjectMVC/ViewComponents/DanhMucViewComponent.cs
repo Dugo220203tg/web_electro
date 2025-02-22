@@ -4,20 +4,24 @@ using TDProjectMVC.ViewModels;
 
 namespace TDProjectMVC.ViewComponents
 {
-	public class DanhMucViewComponent : ViewComponent
-	{
-		private readonly Hshop2023Context db;
+    public class DanhMucViewComponent : ViewComponent
+    {
+        private readonly Hshop2023Context db;
+        public DanhMucViewComponent(Hshop2023Context context) => db = context;
 
-		public DanhMucViewComponent(Hshop2023Context context) => db = context;
+        public IViewComponentResult Invoke()
+        {
+            var currentDanhMuc = HttpContext.Request.Query["danhmuc"].ToString();
 
-		public IViewComponentResult Invoke()
-		{
-			var data = db.DanhMucSps.Select(lo => new DanhMucVM
-			{
-				ID = lo.MaDanhMuc,
-				TenDanhMuc = lo.TenDanhMuc,
-			}).OrderBy(p => p.TenDanhMuc);
-			return View("Index", data);
-		}
-	}
+            var data = db.DanhMucSps.Select(lo => new DanhMucVM
+            {
+                ID = lo.MaDanhMuc,
+                TenDanhMuc = lo.TenDanhMuc,
+                IsSelected = !string.IsNullOrEmpty(currentDanhMuc) &&
+                            lo.MaDanhMuc.ToString() == currentDanhMuc
+            }).OrderBy(p => p.TenDanhMuc);
+
+            return View("Index", data);
+        }
+    }
 }
