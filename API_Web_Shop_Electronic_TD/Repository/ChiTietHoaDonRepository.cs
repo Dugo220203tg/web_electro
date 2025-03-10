@@ -15,18 +15,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		}
 		public async Task<ChiTietHd> CreateAsync(PostChiTietHoaDonMD model)
 		{
-			if (model.MaHH == 0)
-			{
-				throw new ArgumentException("Mã hàng hóa không hợp lệ hoặc chưa được nhập");
-			}
-			if (model.MaHD == 0 || model.MaHD <= 0)
-			{
-				throw new ArgumentException(" Mã hóa đơn không hợp lệ hoặc chưa được nhập");
-			}
-			if (model.MaGiamGia <= 0)
-			{
-				throw new ArgumentException("Mã giảm giá không hợp lệ hoặc chưa được nhập");
-			}
+
 			if (model.SoLuong <= 0)
 			{
 				throw new ArgumentException("Số lượng không hợp lệ hoặc chưa được nhập");
@@ -94,16 +83,29 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				{
 					throw new KeyNotFoundException($"Không tìm thấy chi tiết hóa đơn với mã {MaCt}");
 				}
+				if (model.MaHH != Model.MaHh)
+				{
+					throw new KeyNotFoundException($"Không tìm thấy hàng hóa trong chi tiết hóa đơn với mã {MaCt}");
+				}
+				if (model.MaHD != Model.MaHd)
+				{
+					throw new KeyNotFoundException($"Không tìm thấy hóa đơn tương thích trong chi tiết hóa đơn với mã {MaCt}");
+				}
 				var hanghoa = await db.HangHoas.FirstOrDefaultAsync(x => x.MaHh == Model.MaHh);
 				if (hanghoa == null)
 				{
 					throw new KeyNotFoundException($"Hàng hóa với mã {Model.MaHh}");
 				}
+				var HoaDon = await db.HoaDons.FirstOrDefaultAsync(x => x.MaHd == Model.MaHd);
+				if (HoaDon == null)
+				{
+					throw new KeyNotFoundException($"Không tồn tại hóa đơn với mã {Model.MaHd}");
+
+				}
 				Model.MaHd = model.MaHD;
 				Model.MaHh = model.MaHH;
 				Model.DonGia = model.DonGia;
 				Model.SoLuong = model.SoLuong;
-				Model.MaGiamGia = model.MaGiamGia;
 
 				await db.SaveChangesAsync();
 				return Model;

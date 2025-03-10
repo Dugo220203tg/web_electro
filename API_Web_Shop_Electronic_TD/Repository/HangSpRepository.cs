@@ -58,6 +58,11 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 		public async Task<NhaCungCap?> DeleteAsync(string MaNCC)
 		{
+			var productError = await db.HangHoas.FirstOrDefaultAsync(p => p.MaNcc == MaNCC);
+			if (productError != null)
+			{
+				throw new KeyNotFoundException($"Tồn tại sản phẩm hàng hóa thuộc hãng {MaNCC}!");
+			}
 			var NhaCC = await db.NhaCungCaps.FirstOrDefaultAsync(x => x.MaNcc == MaNCC);
 			if (NhaCC == null)
 			{

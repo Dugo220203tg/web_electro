@@ -156,7 +156,7 @@ namespace TrangQuanLy.Controllers
             ViewBag.Page = page;
             ViewBag.TotalPages = paginatedList.TotalPages;
 
-            return View(paginatedList);
+            return View("Index", paginatedList);  // Use the Index view for search results
         }
 
         [Authorize]
@@ -204,18 +204,25 @@ namespace TrangQuanLy.Controllers
         [Authorize]
         [HttpGet]
         [Route("HangHoa/Edit/{MaHH}")]
-        public async Task<IActionResult> Edit(int MaHH)
+        public async Task<IActionResult> Edit(int MaHH, string returnUrl = null)
         {
             try
             {
+                HangHoaVM hanghoa = new HangHoaVM();
                 HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/HangHoa/GetById/" + MaHH);
                 if (response.IsSuccessStatusCode)
                 {
-                    var product = JsonConvert.DeserializeObject<HangHoaVM>(response.Content.ReadAsStringAsync().Result);
-                    return View(product); // Make sure to pass the model to the view
+                    string data = response.Content.ReadAsStringAsync().Result;
+                    hanghoa = JsonConvert.DeserializeObject<HangHoaVM>(data);
                 }
-                TempData["error"] = "Không tìm thấy sản phẩm!";
-                return RedirectToAction("Index");
+                if (string.IsNullOrEmpty(returnUrl) && Request.Headers.ContainsKey("Referer"))
+                {
+                    returnUrl = Request.Headers["Referer"].ToString();
+                }
+                ViewBag.ReturnUrl = returnUrl;
+                TempData["ReturnUrl"] = returnUrl;
+
+                return View(hanghoa);
             }
             catch (Exception ex)
             {
@@ -227,7 +234,7 @@ namespace TrangQuanLy.Controllers
         [Authorize]
         [HttpPost]
         [Route("HangHoa/Edit/{MaHH}")]
-        public async Task<IActionResult> Edit(AllHangHoaVM model, IFormFile[] ImageFiles, int MaHH)
+        public async Task<IActionResult> Edit(HangHoaVM model, IFormFile[] ImageFiles, int MaHH, string returnUrl = null)
         {
             try
             {
@@ -236,38 +243,43 @@ namespace TrangQuanLy.Controllers
                     TempData["error"] = "Dữ liệu không hợp lệ!";
                     return View(model);  // Return the model back to the view
                 }
-
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
-
                 HttpResponseMessage response = await _client.PutAsync(_client.BaseAddress + "/HangHoa/Update/" + MaHH, content);
-
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Cập nhật thành công!";
+                    if (string.IsNullOrEmpty(returnUrl) && TempData.ContainsKey("ReturnUrl"))
+                    {
+                        returnUrl = TempData["ReturnUrl"]?.ToString();
+                    }
+                    // Ensure we have a valid URL to return to
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
                     return RedirectToAction("Index");
                 }
-
-                TempData["error"] = "Cập nhật không thành công!";
-                return View();
+                string errorContent = await response.Content.ReadAsStringAsync();
+                TempData["error"] = "Cập nhật thất bại: " + errorContent;
+                return View(model);
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                return View();
+                return View(model);
             }
         }
-
         [Authorize]
         [HttpPost]
-        public IActionResult DeleteProduct(int MaHH)
+        public IActionResult DeleteProduct(int MaHH, string returnUrl = null)
         {
             try
             {
                 HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/HangHoa/Delete/" + MaHH).Result;
                 if (response.IsSuccessStatusCode)
                 {
-                    return Json(new { success = true });
+                    return Json(new { success = true, returnUrl = returnUrl });
                 }
                 return Json(new { success = false });
             }

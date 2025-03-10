@@ -59,57 +59,48 @@
                 <canvas id="worldwide-sales" style="display: block; box-sizing: border-box; height: 360px !important; width: 721px !important;" width="721" height="360"></canvas>
             </div>
         </div>
+        <!-- HTML cấu trúc đúng cho Owl Carousel -->
         <div class="col-sm-12 col-xl-6">
-            <div class="bg-secondary rounded h-100 p-4">
+            <div class="bg-secondary rounded p-4 " style="width:769px;height:456px;">
                 <h6 class="mb-4">TOP SELL PRODUCT</h6>
-                <div class="owl-carousel testimonial-carousel">
-                    <div class="owl-stage-outer">
-                        <div class="owl-stage">
-                            @{
-                                var products = ViewBag.DataSellProduct as List<DataSellProduct>;
-                            }
-                            @if (products != null && products.Any())
-                            {
-                                @foreach (var product in products)
-                                {
-                                    <div class="testimonial-item @(products.IndexOf(product) == 0 ? "active" : "")">
-                                        @{
-                                            string firstImageUrl = string.Empty;
-                                            if (!string.IsNullOrEmpty(product.Hinh))
-                                            {
-                                                var imageUrls = product.Hinh.Split(',');
-                                                firstImageUrl = imageUrls.FirstOrDefault();
-                                            }
-                                        }
-                                        @if (!string.IsNullOrEmpty(firstImageUrl))
-                                        {
-                                            <img class="product-image" src="~/Hinh/Hinh/HangHoa/@product.MaHH/@firstImageUrl" alt="@product.TenHH">
-                                        }
-                                        else
-                                        {
-                                            <img class="product-image" src="~/Hinh/default.jpg" alt="Default Image">
-                                        }
-                                        <h5 class="product-name">@product.TenHH</h5>
-                                        <p class="product-price">@product.DonGia.ToString("#,##0 VNĐ")</p>
-                                        <p class="product-rating">Rating: @product.DiemDanhGia stars</p>
-                                        <small class="product-sold">@product.SoLuong units sold</small>
-                                    </div>
-                                }
-                                <div class="owl-dots">
-                                    @for (int i = 0; i < products.Count; i++)
+                <div class="testimonial-carousel owl-carousel">
+                    @{
+                        var products = ViewBag.DataSellProduct as List<DataSellProduct>;
+                    }
+                    @if (products != null && products.Any())
+                    {
+                        @foreach (var product in products)
+                        {
+                            <div class="testimonial-item">
+                                @{
+                                    string firstImageUrl = string.Empty;
+                                    if (!string.IsNullOrEmpty(product.Hinh))
                                     {
-                                        <div class="owl-dot @(i == 0 ? "active" : "")" data-index="@i">
-                                            <span></span>
-                                        </div>
+                                        var imageUrls = product.Hinh.Split(',');
+                                        firstImageUrl = imageUrls.FirstOrDefault();
                                     }
-                                </div>
-                            }
-                            else
-                            {
-                                <p>No sales data available.</p>
-                            }
+                                }
+                                @if (!string.IsNullOrEmpty(firstImageUrl))
+                                {
+                                    <img class="product-image" src="~/Hinh/Hinh/HangHoa/@product.MaHH/@firstImageUrl" alt="@product.TenHH">
+                                }
+                                else
+                                {
+                                    <img class="product-image" src="~/Hinh/default.jpg" alt="Default Image">
+                                }
+                                <h5 class="product-name">@product.TenHH</h5>
+                                <p class="product-price">@product.DonGia.ToString("#,##0 VNĐ")</p>
+                                <p class="product-rating">Rating: @product.DiemDanhGia stars</p>
+                                <small class="product-sold">@product.SoLuong units sold</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="testimonial-item">
+                            <p>No sales data available.</p>
                         </div>
-                    </div>
+                    }
                 </div>
             </div>
         </div>
@@ -187,7 +178,6 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script type="module">
         import { initializeSalesChart } from './js/myjs.js';

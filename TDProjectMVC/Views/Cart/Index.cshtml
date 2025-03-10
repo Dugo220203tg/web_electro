@@ -2,10 +2,6 @@
 @{
     ViewData["Title"] = "Cart";
 }
-@if (TempData["success"] != null)
-{
-    <input type="hidden" id="temp-success-message" value="@TempData["success"]" />
-}
 @if (TempData["Error"] != null)
 {
     <input type="hidden" id="temp-error-message" value="@TempData["Error"]" />

@@ -8,9 +8,8 @@ using Newtonsoft.Json;
 using System.Text;
 using System.Net.Http;
 using Microsoft.AspNetCore.Authorization;
-using PagedList;
+//using PagedList;
 using TrangQuanLy.Helpers;
-using System.Configuration;
 
 namespace TrangQuanLy.Controllers
 {
@@ -80,7 +79,7 @@ namespace TrangQuanLy.Controllers
                     var statistics = JsonConvert.DeserializeObject<List<CategorySalesStatistics>>(statsData);
 
                     var statisticsData = statistics.Where(s =>
-                        new DateTime(currentYear, s.Month, 1) >= new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1) 
+                        new DateTime(currentYear, s.Month, 1) >= new DateTime(sixMonthsAgo.Year, sixMonthsAgo.Month, 1)
                         &&
                         new DateTime(currentYear, s.Month, 1) <= new DateTime(currentYear, currentMonth, 1)
                     ).ToList();
@@ -139,6 +138,61 @@ namespace TrangQuanLy.Controllers
                 return View("Error");
             }
         }
+        [Authorize]
+        [HttpGet]
+        public async Task<IActionResult> ShowAll(int? page, int? pagesize, int? maTrangThai, string sortOrder)
+        {
+            if (page == null) page = 1;
+            if (pagesize == null) pagesize = 7;
+
+            ViewBag.PageSize = pagesize;
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.DateSortParm = string.IsNullOrEmpty(sortOrder) ? "date_desc" : "";
+            ViewBag.MaTrangThai = maTrangThai;
+
+            // Get order statuses for dropdown
+            List<TrangThaiHoaDonVM> trangThaiList = new List<TrangThaiHoaDonVM>();
+            HttpResponseMessage statusResponse = await _client.GetAsync(_client.BaseAddress + "/TrangThaiHd/GetAll");
+            if (statusResponse.IsSuccessStatusCode)
+            {
+                string statusData = await statusResponse.Content.ReadAsStringAsync();
+                trangThaiList = JsonConvert.DeserializeObject<List<TrangThaiHoaDonVM>>(statusData);
+            }
+            ViewBag.TrangThaiHoaDon = trangThaiList;
+
+            // Get all orders
+            List<HoaDonViewModel> hoadon = new List<HoaDonViewModel>();
+            HttpResponseMessage response = await _client.GetAsync(_client.BaseAddress + "/HoaDon/GetAll");
+
+            if (response.IsSuccessStatusCode)
+            {
+                string data = await response.Content.ReadAsStringAsync();
+                hoadon = JsonConvert.DeserializeObject<List<HoaDonViewModel>>(data);
+            }
+            if (maTrangThai.HasValue)
+            {
+                hoadon = hoadon.Where(h => h.MaTrangThai == maTrangThai.Value).ToList();
+            }
+
+            // Apply sorting
+            switch (sortOrder)
+            {
+                case "date_desc":
+                    hoadon = hoadon.OrderByDescending(h => h.NgayDat).ToList();
+                    break;
+                default: // Date ascending
+                    hoadon = hoadon.OrderBy(h => h.NgayDat).ToList();
+                    break;
+            }
+
+            int totalItems = hoadon.Count();
+            var paginatedList = PaginatedList<HoaDonViewModel>.CreateAsync(hoadon.AsQueryable(), page ?? 1, pagesize ?? 9);
+
+            ViewBag.Page = page;
+            ViewBag.TotalPages = paginatedList.TotalPages;
+
+            return View(paginatedList);
+        }
         public async Task<IActionResult> GetDataSellProduct()
         {
             // Make the API call to get data
@@ -174,18 +228,30 @@ namespace TrangQuanLy.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("Edit/{id}")]  
-        public IActionResult Edit(int id)
+        [Route("Edit/{id}")]
+        public IActionResult Edit(int id, string returnUrl = null)
         {
             try
             {
                 HoaDonViewModel hoadon = new HoaDonViewModel();
                 HttpResponseMessage response = _client.GetAsync(_client.BaseAddress + "/HoaDon/GetById/" + id).Result;
+
                 if (response.IsSuccessStatusCode)
                 {
                     string data = response.Content.ReadAsStringAsync().Result;
                     hoadon = JsonConvert.DeserializeObject<HoaDonViewModel>(data);
                 }
+
+                // If returnUrl is not provided, capture the Referer header
+                if (string.IsNullOrEmpty(returnUrl) && Request.Headers.ContainsKey("Referer"))
+                {
+                    returnUrl = Request.Headers["Referer"].ToString();
+                }
+
+                // Store returnUrl in ViewBag and TempData for use in the view and post action
+                ViewBag.ReturnUrl = returnUrl;
+                TempData["ReturnUrl"] = returnUrl;
+
                 return View(hoadon);
             }
             catch (Exception ex)
@@ -195,25 +261,41 @@ namespace TrangQuanLy.Controllers
             }
         }
 
+
         [Authorize]
         [HttpPost]
-        [Route("Edit/{MaHD}")]  // Add explicit route for POST
-        public async Task<IActionResult> Edit(HoaDonViewModel model, int MaHD)
+        [Route("Edit/{MaHD}")]
+        public async Task<IActionResult> Edit(HoaDonViewModel model, int MaHD, string returnUrl = null)
         {
             try
             {
-                model.ChiTietHds = model.ChiTietHds
-                    .Where(x => !x.IsDeleted)
-                    .ToList();
+                model.ChiTietHds = model.ChiTietHds.Where(item => item.IsDeleted == false).ToList();
+
                 string data = JsonConvert.SerializeObject(model);
                 StringContent content = new StringContent(data, Encoding.UTF8, "application/json");
                 HttpResponseMessage response = await _client.PutAsync(_client.BaseAddress + "/HoaDon/Update/" + MaHD, content);
+
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Hóa đơn đã được cập nhật!";
+
+                    // Try to get returnUrl from various sources
+                    if (string.IsNullOrEmpty(returnUrl) && TempData.ContainsKey("ReturnUrl"))
+                    {
+                        returnUrl = TempData["ReturnUrl"]?.ToString();
+                    }
+
+                    // Ensure we have a valid URL to return to
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+
                     return RedirectToAction("Index");
                 }
-                TempData["error"] = "Cập nhật thất bại.";
+
+                string errorContent = await response.Content.ReadAsStringAsync();
+                TempData["error"] = "Cập nhật thất bại: " + errorContent;
                 return View(model);
             }
             catch (Exception ex)
@@ -222,6 +304,8 @@ namespace TrangQuanLy.Controllers
                 return View(model);
             }
         }
+
+
         [Authorize]
         [HttpGet]
         public async Task<IActionResult> Search(string? query, int? page, int? pagesize, int? maTrangThai, string sortOrder)
@@ -302,30 +386,52 @@ namespace TrangQuanLy.Controllers
         }
         [Authorize]
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirm(int MaHD)
+        public IActionResult DeleteConfirm(int MaHD, string returnUrl = null)
         {
             try
             {
+                // If returnUrl is not provided and there's a Referer header, use it
+                if (string.IsNullOrEmpty(returnUrl) && Request.Headers.ContainsKey("Referer"))
+                {
+                    returnUrl = Request.Headers["Referer"].ToString();
+                }
+
                 HttpResponseMessage response = _client.DeleteAsync(_client.BaseAddress + "/HoaDon/Delete/" + MaHD).Result;
                 if (response.IsSuccessStatusCode)
                 {
                     TempData["success"] = "Xóa thành công!";
+
+                    // Return to the provided URL if available
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return Redirect(returnUrl);
+                    }
+
                     return RedirectToAction("Index");
                 }
-                return View("ShowAll", "HoaDon");
+
+                TempData["error"] = "Xóa thất bại!";
+
+                // If there's a returnUrl, redirect back to it
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
+                return RedirectToAction("Index");
             }
             catch (Exception ex)
             {
                 TempData["error"] = ex.Message;
-                return View();
+
+                // If there's a returnUrl, redirect back to it
+                if (!string.IsNullOrEmpty(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+
+                return RedirectToAction("Index");
             }
         }
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
-
-
     }
 }

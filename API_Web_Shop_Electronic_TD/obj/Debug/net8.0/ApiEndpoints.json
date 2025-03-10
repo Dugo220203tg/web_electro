@@ -99,6 +99,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChatController",
+    "Method": "Webhook",
+    "RelativePath": "api/Chat",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "request",
+        "Type": "API_Web_Shop_Electronic_TD.Controllers.DialogflowWebhookRequest",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "CheckoutController",
     "Method": "ProcessCheckout",
     "RelativePath": "api/Checkout",
@@ -175,7 +191,7 @@
   {
     "ContainingType": "API_Web_Shop_Electronic_TD.Controllers.ChiTietHoaDonController",
     "Method": "Delete",
-    "RelativePath": "api/ChiTietHoaDon/Delete/{MaLoai}",
+    "RelativePath": "api/ChiTietHoaDon/Delete/{MaCt}",
     "HttpMethod": "DELETE",
     "IsController": true,
     "Order": 0,
@@ -183,11 +199,6 @@
       {
         "Name": "MaCt",
         "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "MaLoai",
-        "Type": "",
         "IsRequired": true
       }
     ],

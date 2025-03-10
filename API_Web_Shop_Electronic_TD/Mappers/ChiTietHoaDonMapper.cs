@@ -29,17 +29,13 @@ namespace API_Web_Shop_Electronic_TD.Mappers
 				MaHH = model.MaHh,
 				DonGia = model.DonGia,
 				SoLuong = model.SoLuong,
-				MaGiamGia = (int)model.MaGiamGia
 			};
 		}
 		public static ChiTietHd ToCtHoaDonDTO(this PostChiTietHoaDonMD Model)
 		{
 			return new ChiTietHd
 			{
-				MaHd = Model.MaHD,
-				MaHh = Model.MaHH,
 				SoLuong = Model.SoLuong,
-				MaGiamGia = Model.MaGiamGia,
 				DonGia = Model.DonGia
 			};
 		}

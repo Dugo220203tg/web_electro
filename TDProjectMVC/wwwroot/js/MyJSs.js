@@ -561,7 +561,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.addEventListener('DOMContentLoaded', function () {
     // Định nghĩa hàm addToCart trong phạm vi toàn cục
     window.addToCart = function (id, quantity, type) {
-        console.log("ID sản phẩm:", id); // Kiểm tra ID sản phẩm được truyền vào
+        console.log("ID sản phẩm:", id);
         if (!id || id <= 0) {
             Swal.fire({
                 icon: "error",

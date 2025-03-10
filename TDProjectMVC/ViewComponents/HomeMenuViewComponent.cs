@@ -13,12 +13,16 @@ namespace TDProjectMVC.ViewComponents
 
 		public IViewComponentResult Invoke()
 		{
-			var data = db.Loais.Select(lo => new HomeMenuVM
-			{
-				MaLoai = lo.MaLoai,
-				TenLoai = lo.TenLoai,
-			}).OrderBy(p => p.TenLoai);
-			return View("homeMenu", data);
+            var currentDanhMuc = HttpContext.Request.Query["danhmuc"].ToString();
+
+            var data = db.DanhMucSps.Select(lo => new DanhMucVM
+            {
+                ID = lo.MaDanhMuc,
+                TenDanhMuc = lo.TenDanhMuc,
+                IsSelected = !string.IsNullOrEmpty(currentDanhMuc) &&
+                            lo.MaDanhMuc.ToString() == currentDanhMuc
+            }).OrderBy(p => p.TenDanhMuc);
+            return View("homeMenu", data);
 		}
 
 	}

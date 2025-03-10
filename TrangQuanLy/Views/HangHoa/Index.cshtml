@@ -33,7 +33,17 @@
 
                         <h3 class="mb-4">Sản phẩm hàng hóa</h3>
                         <form class="ms-4" style="display: grid; grid-template-columns: 200px 50px; place-items: center;" asp-action="Search" asp-controller="HangHoa" method="get">
-                            <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query">
+                            <div class="position-relative" style="width: 100%;">
+                                <input class="form-control bg-dark border-0" type="search" placeholder="Search" name="query" value="@ViewBag.Query">
+                                @if (!string.IsNullOrEmpty(ViewBag.Query))
+                                {
+                                    <button type="button" class="btn-close bg-light position-absolute" style="right: 10px; top: 50%; transform: translateY(-50%)"
+                                            onclick="window.location.href='@Url.Action("Index", "HangHoa", new { categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort, pagesize = ViewBag.PageSize })'"></button>
+                                }
+                            </div>
+                            <input type="hidden" name="categoryId" value="@ViewBag.CategoryId">
+                            <input type="hidden" name="sortOrder" value="@ViewBag.CurrentSort">
+                            <input type="hidden" name="pagesize" value="@ViewBag.PageSize">
                             <button type="submit" class="btn btn-square btn-outline-info m-2"><i class="fa fa-search"></i></button>
                         </form>
                         <div>
@@ -83,35 +93,76 @@
                             int pageSizeValue = ViewBag.PageSize;
                             int startPage = ((pageIndex - 1) / 5) * 5 + 1;
                             int endPage = Math.Min(startPage + 4, totalPages);
+
+                            // Determine the action name based on whether we're in search mode
+                            string actionName = ViewBag.Query != null ? "Search" : "Index";
+
+                            // Create route values dictionary for pagination links
+                            var routeValues = new Dictionary<string, object> {
+                        { "pagesize", pageSizeValue },
+                        { "categoryId", ViewBag.CategoryId },
+                        { "sortOrder", ViewBag.CurrentSort }
+                        };
+
+                            // Add query parameter if we're in search mode
+                            if (ViewBag.Query != null)
+                            {
+                                routeValues.Add("query", ViewBag.Query);
+                            }
                         }
+
                         @if (startPage > 1)
                         {
                             <li class="page_item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = startPage - 5, pagesize = pageSizeValue, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">&lt;&lt;</a>
+                                @{
+                                    var prevGroupValues = new Dictionary<string, object>(routeValues);
+                                    prevGroupValues["page"] = startPage - 5;
+                                }
+                                <a class="page-link" href="@Url.Action(actionName, prevGroupValues)">&lt;&lt;</a>
                             </li>
                         }
+
                         @if (pageIndex > 1)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex - 1, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">&lt;</a>
+                                @{
+                                    var prevPageValues = new Dictionary<string, object>(routeValues);
+                                    prevPageValues["page"] = Model.PageIndex - 1;
+                                }
+                                <a class="page-link" href="@Url.Action(actionName, prevPageValues)">&lt;</a>
                             </li>
                         }
+
                         @for (var i = startPage; i <= endPage; i++)
                         {
                             <li class="page-item @(Model.PageIndex == i ? "active" : "")">
-                                <a class="page-link" href="@Url.Action("Index", new { page = i, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">@i</a>
+                                @{
+                                    var pageValues = new Dictionary<string, object>(routeValues);
+                                    pageValues["page"] = i;
+                                }
+                                <a class="page-link" href="@Url.Action(actionName, pageValues)">@i</a>
                             </li>
                         }
+
                         @if (pageIndex < totalPages)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = Model.PageIndex + 1, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">></a>
+                                @{
+                                    var nextPageValues = new Dictionary<string, object>(routeValues);
+                                    nextPageValues["page"] = Model.PageIndex + 1;
+                                }
+                                <a class="page-link" href="@Url.Action(actionName, nextPageValues)">></a>
                             </li>
                         }
+
                         @if (endPage < totalPages)
                         {
                             <li class="page-item">
-                                <a class="page-link" href="@Url.Action("Index", new { page = endPage + 1, pagesize = ViewBag.PageSize, categoryId = ViewBag.CategoryId, sortOrder = ViewBag.CurrentSort })">>></a>
+                                @{
+                                    var nextGroupValues = new Dictionary<string, object>(routeValues);
+                                    nextGroupValues["page"] = endPage + 1;
+                                }
+                                <a class="page-link" href="@Url.Action(actionName, nextGroupValues)">>></a>
                             </li>
                         }
                     </ul>

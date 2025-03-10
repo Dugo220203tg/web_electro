@@ -48,8 +48,6 @@ C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\NuGet.Packagi
 C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\NuGet.ProjectModel.dll
 C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\NuGet.Protocol.dll
 C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\NuGet.Versioning.dll
-C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\PagedList.dll
-C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\PagedList.Mvc.dll
 C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\BouncyCastle.Crypto.dll
 C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\System.CodeDom.dll
 C:\Users\td\source\repos\TDProjectMVC\TrangQuanLy\bin\Debug\net8.0\System.Composition.AttributedModel.dll

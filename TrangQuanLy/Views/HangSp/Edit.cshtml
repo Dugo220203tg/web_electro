@@ -6,10 +6,9 @@
 <div class="container-fluid pt-4 px-4" style="display: grid; place-items: center;">
     <div class="bg-secondary rounded h-100 p-4">
         <h5 class="mb-4">Cập nhật thông tin</h5>
-        <form asp-action="Edit" method="post">
+        <form asp-action="Edit" method="post" style="justify-content:normal">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <input asp-for="MaNCC" class="form-control" name="MaNcc" />
+            <input type="hidden" asp-for="MaNCC" class="form-control" name="MaNcc" />
             <div class="mb-3">
                 <label asp-for="TenCongTy" class="control-label"></label>
                 <input asp-for="TenCongTy" class="form-control" />
@@ -46,13 +45,13 @@
                 <span asp-validation-for="Logo" class="text-danger"></span>
             </div>
             <img id="imagePreview" src="#" alt="Hình ảnh sản phẩm" style="display: none; max-width: 100%; max-height: 200px;">
-            <div class="mb-3">
+            <div class="mb-3 d-grid" style="place-items:center">
                 <input type="submit" value="Lưu" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
-<a asp-action="Index">X</a>
+<a asp-action="Index" style="position:absolute; top:107px;right:640px;">X</a>
 
 

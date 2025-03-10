@@ -31,6 +31,11 @@ namespace API_Web_Shop_Electronic_TD.Repository
 		}
 		public async Task<DanhMucSp?> DeleteAsync(int MaDanhMuc)
 		{
+			var productError = await db.HangHoas.FirstOrDefaultAsync(p => p.MaLoaiNavigation.DanhMucId == MaDanhMuc);
+			if (productError != null)
+			{
+				throw new KeyNotFoundException($"Tồn tại sản phẩm hàng hóa thuộc danh mục {MaDanhMuc}!");
+			}
 			var danhmucModel = await db.DanhMucSps.FirstOrDefaultAsync(x => x.MaDanhMuc == MaDanhMuc);
 			if (danhmucModel == null)
 			{

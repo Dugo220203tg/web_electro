@@ -8,6 +8,7 @@
         <h5 class="mb-4">Thêm sản phẩm</h5>
         <a class="close-button" href="/HangHoa/Index">X</a>
         <form asp-action="Edit" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
             <div class="form-content">
                 <div class="form-fields">
                     <input asp-for="MaHH" type="hidden" name="MaHH" value="@Model.MaHH" />
@@ -110,9 +111,7 @@
 
                 </div>
 
-                <div class="form-group submit-button">
-                    <input type="submit" value="Lưu" class="btn btn-primary" />
-                </div>
+                <input type="submit" value="Lưu" class="btn btn-primary" style="position:absolute; top:40px;right:50px;" />
             </div>
         </form>
     </div>

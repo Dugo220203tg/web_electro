@@ -54,11 +54,7 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 		public async Task<HoaDon?> UpdateAsync(int MaHd, HoaDonMD model)
 		{
-			// Kiểm tra các điều kiện của HoaDon
-			if (string.IsNullOrEmpty(model.MaKH))
-			{
-				throw new ArgumentException("Mã khách hàng không được để trống");
-			}
+
 			if (string.IsNullOrEmpty(model.HoTen))
 			{
 				throw new ArgumentException("Tên khách hàng không được để trống");
@@ -129,16 +125,6 @@ namespace API_Web_Shop_Electronic_TD.Repository
 				{
 					throw new ArgumentException($"Đơn giá không hợp lệ hoặc chưa được nhập tại chi tiết hóa đơn có mã hàng hóa {chiTiet.MaHH}");
 				}
-
-				// Kiểm tra MaGiamGia nếu có
-				//if (chiTiet.MaGiamGia > 0)
-				//{
-				//	var existingGiamGia = await db.GiamGias.FirstOrDefaultAsync(g => g.MaGiamGia == chiTiet.MaGiamGia);
-				//	if (existingGiamGia == null)
-				//	{
-				//		throw new ArgumentException($"Mã giảm giá {chiTiet.MaGiamGia} không tồn tại trong hệ thống");
-				//	}
-				//}
 			}
 			// Lấy đối tượng HoaDon từ cơ sở dữ liệu
 			var hoaDon = await db.HoaDons
@@ -160,42 +146,65 @@ namespace API_Web_Shop_Electronic_TD.Repository
 			hoaDon.PhiVanChuyen = (double)(double?)model.PhiVanChuyen;
 			hoaDon.MaTrangThai = (int)model.MaTrangThai;
 			hoaDon.DienThoai = model.DienThoai;
+			hoaDon.GhiChu = model.GhiChu;
+			hoaDon.CachThanhToan = model.CachThanhToan;
 
-			// Xóa những chi tiết không còn trong model
-			var chiTietToRemove = hoaDon.ChiTietHds
-				.Where(ct => !model.ChiTietHds.Any(m => m.MaCT == ct.MaCt))
-				.ToList();
-			db.ChiTietHds.RemoveRange(chiTietToRemove);
+			// Xử lý chi tiết hóa đơn
+			// Lấy danh sách các chi tiết hiện có
+			var existingDetails = hoaDon.ChiTietHds.ToList();
 
-			// Cập nhật hoặc thêm chi tiết hóa đơn
+			// Danh sách các chi tiết cần giữ lại (không bị xóa)
+			var detailsToKeep = new List<ChiTietHd>();
+
+			// Xử lý các chi tiết trong model
 			foreach (var chiTietModel in model.ChiTietHds)
 			{
-				var chiTiet = hoaDon.ChiTietHds.FirstOrDefault(ct => ct.MaCt == chiTietModel.MaCT);
-
-				if (chiTiet != null) // Nếu chi tiết đã tồn tại, cập nhật
+				// Chỉ xử lý các chi tiết không bị đánh dấu xóa
+				if (!chiTietModel.IsDeleted)
 				{
-					chiTiet.MaHh = chiTietModel.MaHH;
-					chiTiet.SoLuong = chiTietModel.SoLuong;
-					chiTiet.DonGia = chiTietModel.DonGia;
-					chiTiet.MaGiamGia = chiTietModel.MaGiamGia;
-				}
-				else // Nếu chi tiết chưa tồn tại, thêm mới
-				{
-					hoaDon.ChiTietHds.Add(new ChiTietHd
+					if (chiTietModel.MaCT > 0)
 					{
-						MaHd = hoaDon.MaHd,
-						MaHh = chiTietModel.MaHH,
-						SoLuong = chiTietModel.SoLuong,
-						DonGia = chiTietModel.DonGia,
-						MaGiamGia = chiTietModel.MaGiamGia,
-					});
+						// Đây là chi tiết đã tồn tại - cập nhật
+						var chiTiet = existingDetails.FirstOrDefault(ct => ct.MaCt == chiTietModel.MaCT);
+						if (chiTiet != null)
+						{
+							// Cập nhật thông tin
+							chiTiet.MaHh = chiTietModel.MaHH;
+							chiTiet.SoLuong = chiTietModel.SoLuong;
+							chiTiet.DonGia = chiTietModel.DonGia;
+							chiTiet.MaGiamGia = chiTietModel.MaGiamGia;
+
+							// Thêm vào danh sách giữ lại
+							detailsToKeep.Add(chiTiet);
+						}
+					}
+					else
+					{
+						// Đây là chi tiết mới - thêm mới
+						var newDetail = new ChiTietHd
+						{
+							MaHd = hoaDon.MaHd,
+							MaHh = chiTietModel.MaHH,
+							SoLuong = chiTietModel.SoLuong,
+							DonGia = chiTietModel.DonGia,
+							MaGiamGia = chiTietModel.MaGiamGia,
+						};
+						hoaDon.ChiTietHds.Add(newDetail);
+						detailsToKeep.Add(newDetail);
+					}
 				}
 			}
 
-			// Lưu các thay đổi vào cơ sở dữ liệu
-			await db.SaveChangesAsync();
+			// Xóa các chi tiết không còn trong danh sách giữ lại
+			foreach (var detail in existingDetails)
+			{
+				if (!detailsToKeep.Contains(detail))
+				{
+					db.ChiTietHds.Remove(detail);
+				}
+			}
 
-			// Trả về hóa đơn đã được cập nhật
+			await db.SaveChangesAsync();
 			return hoaDon;
 		}
 

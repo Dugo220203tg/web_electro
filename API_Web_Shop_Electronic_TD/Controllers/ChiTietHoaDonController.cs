@@ -110,18 +110,7 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 						errors = errors
 					});
 				}
-
-				// Các kiểm tra logic khác
 				var validationErrors = new List<string>();
-
-				if (model.MaHH <= 0)
-					validationErrors.Add("Mã hàng hóa không hợp lệ hoặc chưa được nhập");
-
-				if (model.MaHD <= 0)
-					validationErrors.Add("Mã hóa đơn không hợp lệ hoặc chưa được nhập");
-
-				if (model.MaGiamGia <= 0)
-					validationErrors.Add("Mã giảm giá không hợp lệ hoặc chưa được nhập");
 
 				if (model.SoLuong <= 0)
 					validationErrors.Add("Số lượng không hợp lệ hoặc chưa được nhập");
@@ -152,21 +141,18 @@ namespace API_Web_Shop_Electronic_TD.Controllers
 			}
 		}
 		[HttpDelete]
-		[Route("{MaLoai:int}")]
+		[Route("{MaCt:int}")]
 		public async Task<IActionResult> Delete([FromRoute] int MaCt)
 		{
-			// Kiểm tra tính hợp lệ của ModelState
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
 			// Xóa bản ghi từ bảng "HangHoas"
 			var Model = await ChiTietHoaDonRepository.DeleteAsync(MaCt);
 
-			// Nếu không tìm thấy bản ghi để xóa, trả về NotFound
 			if (Model == null)
 				return NotFound();
 
-			// Trả về phản hồi NoContent nếu xóa thành công
 			return NoContent();
 		}
 

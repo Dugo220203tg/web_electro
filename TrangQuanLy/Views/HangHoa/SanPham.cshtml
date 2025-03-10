@@ -34,11 +34,12 @@
             <td style="text-align: left;">
                 <div style="display: inline-grid; grid-template-columns: auto auto auto;">
                     <form method="get" style="margin-right:5px" action="@Url.Action("Edit", "HangHoa", new { MaHH = item.MaHH })">
+                        <input type="hidden" name="returnUrl" value="@Context.Request.Path@Context.Request.QueryString" />
                         <button type="submit" class="btn btn-outline-info m-2">
                             <i class="bi bi-pencil-square"></i>
                         </button>
                     </form>
-                    <button onclick="confirmDelete('/HangHoa/DeleteProduct', { MaHH: @item.MaHH })" class="btn btn-outline-info m-2">
+                    <button type="button" onclick="confirmDelete('/HangHoa/DeleteProduct', { MaHH: @item.MaHH, returnUrl: '@Context.Request.Path@Context.Request.QueryString' })" class="btn btn-outline-info m-2">
                         <i class="bi bi-trash"></i>
                     </button>
                 </div>
@@ -51,6 +52,7 @@
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-bottom: -0.5px;
     }
 
     .product-image {

@@ -22,9 +22,9 @@
             <td style="color: white;">
                 @Html.DisplayFor(modelItem => item.NoiDung)
             </td>
-          @*    <td id="status-text-@item.MaDg" style="color: white;">
-                 @Html.DisplayFor(modelItem => item.TenTrangThai)
-             </td> *@
+            @*    <td id="status-text-@item.MaDg" style="color: white;">
+        @Html.DisplayFor(modelItem => item.TenTrangThai)
+        </td> *@
             <td style="display:flex;align-items: center; color: white;    padding: 20px;">
                 <input type="button"
                        id="status-button-@item.MaDg"
@@ -38,3 +38,28 @@
         </tr>
     }
 </body>
+@section Scripts {
+    <script>
+        function toggleCommentStatus(maDg, currentStatus) {
+            const newStatus = currentStatus === 1 ? 0 : 1;
+            const button = document.getElementById(`status - button -${maDg}`);
+            const statusText = document.getElementById(`status - text -${maDg}`);
+
+            $.ajax({
+                type: "POST",
+                url: 'https://localhost:7109/api/DanhGiaSp/UpdateTrangThai',
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ MaDg: maDg, TrangThai: newStatus }),
+                success: function (response) {
+                    alert(response.message);
+                    button.value = newStatus === 1 ? "Ẩn đánh giá" : "Hiển thị đánh giá";
+                    button.setAttribute("onclick", `toggleCommentStatus('${maDg}', ${newStatus})`);
+                    statusText.textContent = newStatus === 1 ? "Hiển Thị" : "Đã Ẩn";
+                },
+                error: function (xhr) {
+                    alert("Có lỗi xảy ra: " + xhr.responseText);
+                }
+            });
+        }
+    </script>
+}

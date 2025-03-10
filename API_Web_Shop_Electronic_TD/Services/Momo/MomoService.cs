@@ -27,7 +27,6 @@ namespace API_Web_Shop_Electronic_TD.Services.Momo
 			_httpClient = httpClient;
 			_logger = logger;
 		}
-
 		public MomoExecuteResponseModel PaymentExecuteAsync(IQueryCollection collection)
 		{
 			try

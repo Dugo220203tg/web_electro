@@ -49,14 +49,14 @@
 
 
     // Testimonials carousel
-    $(".testimonial-carousel").owlCarousel({
-        autoplay: true,
-        smartSpeed: 1000,
-        items: 1,
-        dots: true,
-        loop: true,
-        nav: false
-    });
+    //$(".testimonial-carousel").owlCarousel({
+    //    autoplay: true,
+    //    smartSpeed: 1000,
+    //    items: 1,
+    //    dots: true,
+    //    loop: true,
+    //    nav: false
+    //});
 
 
     // Chart Global Color
@@ -68,44 +68,44 @@
     
 
     // Salse & Revenue Chart
-    var ctx2 = document.getElementById("salse-revenue").getContext("2d");
-    var myChart2 = new Chart(ctx2, {
-        type: "line",
-        data: {
-            labels: @Html.Raw(Json.Serialize(ViewBag.Labels)), // X-axis labels (months)
-            datasets: [
-                {
-                    label: "Sales (Category 1)",
-                    data: @Html.Raw(Json.Serialize(ViewBag.SalesData1)),
-                    backgroundColor: "rgba(75, 192, 192, 0.5)",
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    fill: false
-                },
-                {
-                    label: "Sales (Category 8)",
-                    data: @Html.Raw(Json.Serialize(ViewBag.SalesData8)),
-                    backgroundColor: "rgba(54, 162, 235, 0.5)",
-                    borderColor: "rgba(54, 162, 235, 1)",
-                    fill: false
-                },
-                {
-                    label: "Sales (Category 11)",
-                    data: @Html.Raw(Json.Serialize(ViewBag.SalesData11)),
-                    backgroundColor: "rgba(255, 99, 132, 0.5)",
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    fill: false
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    //var ctx2 = document.getElementById("salse-revenue").getContext("2d");
+    //var myChart2 = new Chart(ctx2, {
+    //    type: "line",
+    //    data: {
+    //        labels: @Html.Raw(Json.Serialize(ViewBag.Labels)), // X-axis labels (months)
+    //        datasets: [
+    //            {
+    //                label: "Sales (Category 1)",
+    //                data: @Html.Raw(Json.Serialize(ViewBag.SalesData1)),
+    //                backgroundColor: "rgba(75, 192, 192, 0.5)",
+    //                borderColor: "rgba(75, 192, 192, 1)",
+    //                fill: false
+    //            },
+    //            {
+    //                label: "Sales (Category 8)",
+    //                data: @Html.Raw(Json.Serialize(ViewBag.SalesData8)),
+    //                backgroundColor: "rgba(54, 162, 235, 0.5)",
+    //                borderColor: "rgba(54, 162, 235, 1)",
+    //                fill: false
+    //            },
+    //            {
+    //                label: "Sales (Category 11)",
+    //                data: @Html.Raw(Json.Serialize(ViewBag.SalesData11)),
+    //                backgroundColor: "rgba(255, 99, 132, 0.5)",
+    //                borderColor: "rgba(255, 99, 132, 1)",
+    //                fill: false
+    //            }
+    //        ]
+    //    },
+    //    options: {
+    //        responsive: true,
+    //        scales: {
+    //            y: {
+    //                beginAtZero: true
+    //            }
+    //        }
+    //    }
+    //});
 
 
 

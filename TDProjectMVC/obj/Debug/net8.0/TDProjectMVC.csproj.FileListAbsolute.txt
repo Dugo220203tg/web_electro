@@ -9,6 +9,7 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\TDProjectMVC
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\AutoMapper.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Azure.Core.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Azure.Identity.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\BraintreeHttp-Dotnet.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Humanizer.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.Google.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.AspNetCore.Razor.Language.dll
@@ -33,6 +34,8 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.En
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.Relational.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.EntityFrameworkCore.SqlServer.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyModel.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Identity.Client.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Identity.Client.Extensions.Msal.dll
@@ -65,6 +68,7 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\NuGet.Protoc
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\NuGet.Versioning.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\PagedList.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\PagedList.Mvc.dll
+C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Source.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\RestSharp.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.CodeDom.dll
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\System.Composition.AttributedModel.dll
@@ -256,7 +260,3 @@ C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\refint\TDPro
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC.pdb
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\TDProjectMVC.genruntimeconfig.cache
 C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\obj\Debug\net8.0\ref\TDProjectMVC.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\BraintreeHttp-Dotnet.dll
-C:\Users\td\source\repos\TDProjectMVC\TDProjectMVC\bin\Debug\net8.0\Source.dll

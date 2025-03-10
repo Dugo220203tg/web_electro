@@ -169,7 +169,7 @@ namespace TDProjectMVC.Controllers
             return View(new ResetPassword());
         }
         [HttpPost]
-        [AllowAnonymous] // Cho phép truy cập không cần đăng nhập
+        [AllowAnonymous] 
         [HttpPost]
         public async Task<IActionResult> ResetPassword(ResetPassword model)
         {

@@ -250,16 +250,45 @@ namespace TDProjectMVC.Controllers
                         return await ProcessOrder(hoadon, model.Email);
 
                     case "MOMO":
-                        var momoModel = new OrderInfoModel
+                        try
                         {
-                            FullName = model.HoTen,
-                            Amount = total,
-                            OrderId = Guid.NewGuid().ToString(),
-                            OrderInfo = "Thanh toán MOMO"
-                        };
+                            var momoModel = new OrderInfoModel
+                            {
+                                FullName = model.HoTen,
+                                Amount = total,
+                                OrderId = Guid.NewGuid().ToString(),
+                                OrderInfo = "Thanh toán MOMO"
+                            };
 
-                        CreatePaymentMomo(momoModel);
-                        return await PaymentCallBack(model); ;
+                            // Lưu thông tin tạm thời để sử dụng khi callback
+                            HttpContext.Session.SetString("PendingOrderEmail", model.Email ?? "");
+
+                            // Gọi service để tạo thanh toán và lấy URL thanh toán
+                            var paymentResponse = await _momoService.CreatePaymentAsync(momoModel);
+
+                            // Thêm log để debug
+                            _logger.LogInformation($"MOMO Payment URL: {paymentResponse?.PayUrl}");
+
+                            if (paymentResponse != null && !string.IsNullOrEmpty(paymentResponse.PayUrl))
+                            {
+                                // Chuyển hướng đến trang thanh toán MOMO
+                                return Redirect(paymentResponse.PayUrl);
+                            }
+
+                            // Nếu không có PayUrl, ghi log và hiển thị lỗi
+                            _logger.LogError("MOMO Payment URL is null or empty");
+                            TempData["error"] = "Không thể kết nối đến cổng thanh toán MOMO";
+                            return RedirectToAction("Index", "Cart");
+                        }
+                        catch (Exception ex)
+                        {
+                            // Ghi log ngoại lệ để debug
+                            _logger.LogError($"MOMO payment creation error: {ex.Message}");
+                            _logger.LogError($"Stack trace: {ex.StackTrace}");
+
+                            TempData["error"] = "Lỗi khi tạo giao dịch MOMO: " + ex.Message;
+                            return RedirectToAction("PaymentFail");
+                        }
 
                     case "VNPAY":
                         var paymentModel = new PaymentInformationModel
@@ -540,8 +569,20 @@ namespace TDProjectMVC.Controllers
         {
             try
             {
-                var response = _momoService.PaymentExecuteAsync(HttpContext.Request.Query);
                 var requestQuery = HttpContext.Request.Query;
+
+                // Log what's actually in the request for debugging
+                _logger.LogInformation($"MOMO Callback Query: {string.Join(", ", requestQuery.Select(q => $"{q.Key}={q.Value}"))}");
+
+                // Check if we have expected parameters before proceeding
+                if (!requestQuery.ContainsKey("resultCode"))
+                {
+                    _logger.LogWarning("MOMO callback missing resultCode parameter");
+                    TempData["error"] = "Dữ liệu trả về từ MOMO không hợp lệ.";
+                    return RedirectToAction("PaymentFail");
+                }
+
+                var response = _momoService.PaymentExecuteAsync(requestQuery);
 
                 if (requestQuery["resultCode"] == "0") // Successful payment
                 {
@@ -553,18 +594,27 @@ namespace TDProjectMVC.Controllers
                         return RedirectToAction("PaymentFail");
                     }
 
-                    var amount = decimal.Parse(requestQuery["amount"]);
-                    var orderInfo = requestQuery["orderInfo"].ToString();
-                    var cart = HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY);
+                    // Use TryParse instead of Parse to handle potential format issues
+                    decimal amount = 0;
+                    if (requestQuery.ContainsKey("amount") && !decimal.TryParse(requestQuery["amount"], out amount))
+                    {
+                        _logger.LogWarning("Failed to parse amount from MOMO callback");
+                        amount = 0; // Default value
+                    }
 
+                    var orderInfo = requestQuery.ContainsKey("orderInfo") ? requestQuery["orderInfo"].ToString() : string.Empty;
+
+                    var cart = HttpContext.Session.Get<List<CartItem>>(MySetting.CART_KEY);
                     if (cart == null || !cart.Any())
                     {
                         TempData["error"] = "Giỏ hàng trống.";
                         return RedirectToAction("PaymentFail");
                     }
+
                     string fullName = HttpContext.Session.GetString("FullName");
                     string phoneNumber = HttpContext.Session.GetString("PhoneNumber");
                     string address = HttpContext.Session.GetString("Address");
+
                     bool saved = await SaveOrderAndPaymentData(
                         customerId: customerId,
                         fullName: fullName,
@@ -599,8 +649,9 @@ namespace TDProjectMVC.Controllers
                 }
                 else // Failed or canceled payment
                 {
-                    _logger.LogWarning($"MOMO Payment Failed. ResponseCode: {requestQuery["resultCode"]}");
-                    TempData["error"] = "Giao dịch Momo đã bị hủy.";
+                    string resultCode = requestQuery["resultCode"].ToString();
+                    _logger.LogWarning($"MOMO Payment Failed. ResponseCode: {resultCode}");
+                    TempData["error"] = "Giao dịch Momo đã bị hủy hoặc thất bại.";
                     return RedirectToAction("Index", "Cart");
                 }
             }

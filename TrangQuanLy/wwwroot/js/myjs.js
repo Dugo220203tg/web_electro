@@ -364,22 +364,7 @@ const UIUtils = {
 };
 
 // Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', function () {
-    initializeFormHandlers();
-    ImageHandler.initialize();
-    DateHandler.initializeDatepickers();
-    UIUtils.initializeDeleteConfirmation();
-    //initializeNotifications();
-    //initializeDataTable();
-    initializeCarousel();
-    // Add form submit handler for image names
-    const form = document.querySelector('form');
-    if (form) {
-        form.addEventListener('submit', function (event) {
-            ImageHandler.updateExistingImageNames();
-        });
-    }
-});
+
 
 window.ImageHandler = ImageHandler;
 
@@ -466,63 +451,175 @@ function toggleCommentStatus(maDg, currentStatus) {
 
 // carousel.js
 function initializeCarousel() {
-    // Owl Carousel initialization
-    $(".testimonial-carousel").owlCarousel({
-        items: 1,
-        loop: true,
-        margin: 10,
-        nav: true,
-        dots: true,
-        navText: ["<div class='owl-prev'>‹</div>", "<div class='owl-next'>›</div>"]
-    });
-
-    // Custom carousel functionality
     const items = document.querySelectorAll('.testimonial-item');
     const dots = document.querySelectorAll('.owl-dot');
     let currentIndex = 0;
-    const autoPlayDelay = 5000;
-    let autoPlayInterval;
 
-    function showItem(index) {
+    // Đảm bảo có phần tử để hiển thị
+    if (items.length === 0) return;
+
+    // Thiết lập trạng thái ban đầu
+    function setupInitialState() {
+        // Ẩn tất cả item trước
         items.forEach(item => {
-            item.classList.remove('active', 'prev', 'next');
+            item.classList.remove('active');
         });
-        dots.forEach(dot => dot.classList.remove('active'));
 
-        items[currentIndex].classList.remove('active');
-        items[currentIndex].classList.add('prev');
+        // Hiển thị item đầu tiên
+        if (items[0]) {
+            items[0].style.display = 'block';
+            items[0].classList.add('active');
+        }
 
-        currentIndex = index;
-
-        items[currentIndex].classList.add('active');
-        dots[currentIndex].classList.add('active');
-
-        resetAutoPlay();
+        // Đánh dấu dot đầu tiên là active
+        if (dots.length > 0) {
+            dots.forEach(dot => dot.classList.remove('active'));
+            dots[0].classList.add('active');
+        }
     }
 
+    // Thiết lập ban đầu
+    setupInitialState();
+
+    // Hàm hiển thị item theo index
+    function showItem(index) {
+        // Ẩn item hiện tại và xóa class active
+        if (items[currentIndex]) {
+            items[currentIndex].classList.remove('active');
+            // Đặt một timeout để đợi hiệu ứng fade out hoàn tất trước khi ẩn
+            setTimeout(() => {
+                // Chỉ ẩn item hiện tại nếu nó không phải là item mới được chọn
+                if (currentIndex !== index) {
+                    items[currentIndex].style.display = 'none';
+                }
+            }, 500);
+        }
+
+        // Cập nhật index mới
+        currentIndex = index;
+
+        // Hiển thị item mới (đặt display trước, thêm class active sau một chút)
+        if (items[currentIndex]) {
+            items[currentIndex].style.display = 'block';
+            // Áp dụng hiệu ứng fade in sau một khoảng thời gian ngắn
+            setTimeout(() => {
+                items[currentIndex].classList.add('active');
+            }, 10);
+        }
+
+        // Cập nhật trạng thái active cho dots
+        dots.forEach((dot, idx) => {
+            dot.classList.toggle('active', idx === currentIndex);
+        });
+    }
+
+    // Chuyển đến slide tiếp theo
     function nextItem() {
-        const nextIndex = (currentIndex + 1) % items.length;
+        let nextIndex = (currentIndex + 1) % items.length;
         showItem(nextIndex);
     }
 
-    function resetAutoPlay() {
-        clearInterval(autoPlayInterval);
-        autoPlayInterval = setInterval(nextItem, autoPlayDelay);
+    // Chuyển đến slide trước đó
+    function prevItem() {
+        let prevIndex = (currentIndex - 1 + items.length) % items.length;
+        showItem(prevIndex);
     }
 
-    dots.forEach(dot => {
+    // Thiết lập sự kiện click cho dots
+    dots.forEach((dot, index) => {
+        // Đảm bảo mỗi dot có data-index
+        if (!dot.hasAttribute('data-index')) {
+            dot.setAttribute('data-index', index);
+        }
+
+        // Thêm sự kiện click
         dot.addEventListener('click', function () {
-            const index = parseInt(this.getAttribute('data-index'));
-            showItem(index);
+            const dotIndex = parseInt(this.getAttribute('data-index'));
+            showItem(dotIndex);
         });
     });
 
-    resetAutoPlay();
+    // Tìm và thiết lập nút prev/next
+    const prevButton = document.querySelector('.owl-prev');
+    const nextButton = document.querySelector('.owl-next');
 
-    const carousel = document.querySelector('.owl-carousel');
-    carousel.addEventListener('mouseenter', () => clearInterval(autoPlayInterval));
-    carousel.addEventListener('mouseleave', resetAutoPlay);
+    // Nếu không có nút điều hướng, tạo mới
+    if (!prevButton && !nextButton) {
+        const carousel = document.querySelector('.testimonial-carousel');
+        if (carousel) {
+            // Tạo nút prev
+            const prev = document.createElement('div');
+            prev.className = 'owl-prev';
+            prev.innerHTML = '‹';
+            carousel.appendChild(prev);
+
+            // Tạo nút next
+            const next = document.createElement('div');
+            next.className = 'owl-next';
+            next.innerHTML = '›';
+            carousel.appendChild(next);
+
+            // Thiết lập sự kiện click
+            prev.addEventListener('click', function () {
+                prevItem();
+            });
+
+            next.addEventListener('click', function () {
+                nextItem();
+            });
+        }
+    } else {
+        // Nếu đã có nút, thêm sự kiện
+        if (prevButton) {
+            prevButton.addEventListener('click', function () {
+                prevItem();
+            });
+        }
+
+        if (nextButton) {
+            nextButton.addEventListener('click', function () {
+                nextItem();
+            });
+        }
+    }
 }
+
+document.addEventListener('DOMContentLoaded', function () {
+    // Kiểm tra nếu các hàm khác tồn tại trước khi gọi
+    if (typeof initializeFormHandlers === 'function') initializeFormHandlers();
+    if (typeof ImageHandler !== 'undefined' && typeof ImageHandler.initialize === 'function') ImageHandler.initialize();
+    if (typeof DateHandler !== 'undefined' && typeof DateHandler.initializeDatepickers === 'function') DateHandler.initializeDatepickers();
+    if (typeof UIUtils !== 'undefined' && typeof UIUtils.initializeDeleteConfirmation === 'function') UIUtils.initializeDeleteConfirmation();
+
+    // Khởi tạo carousel
+    initializeCarousel();
+
+    // Xử lý form nếu có
+    const form = document.querySelector('form');
+    if (form && typeof ImageHandler !== 'undefined' && typeof ImageHandler.updateExistingImageNames === 'function') {
+        form.addEventListener('submit', function (event) {
+            ImageHandler.updateExistingImageNames();
+        });
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+    initializeFormHandlers();
+    ImageHandler.initialize();
+    DateHandler.initializeDatepickers();
+    UIUtils.initializeDeleteConfirmation();
+    //initializeNotifications();
+    //initializeDataTable();
+    initializeCarousel();
+    // Add form submit handler for image names
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            ImageHandler.updateExistingImageNames();
+        });
+    }
+});
+
 
 // order.js
 const orderUtils = {
@@ -701,4 +798,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Khởi tạo event listeners cho các thông báo ban đầu
     attachNotificationEvents();
+});
+document.addEventListener('DOMContentLoaded', function () {
+    initializeFormHandlers();
+    ImageHandler.initialize();
+    DateHandler.initializeDatepickers();
+    UIUtils.initializeDeleteConfirmation();
+    //initializeNotifications();
+    //initializeDataTable();
+    initializeCarousel();
+    // Add form submit handler for image names
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function (event) {
+            ImageHandler.updateExistingImageNames();
+        });
+    }
 });

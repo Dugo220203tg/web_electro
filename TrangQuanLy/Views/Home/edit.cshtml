@@ -7,11 +7,11 @@
     <div class="bg-secondary rounded h-100 p-4">
         <h5 class="mb-4">Cập nhật đơn hàng</h5>
         <form asp-action="Edit" asp-route-MaHD="@Model.MaHD" method="post" enctype="multipart/form-data">
+            <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
             <div class="form-content">
                 <div class="form-fields">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="MaHD" />
-
+                    <input type="hidden" name="MaHD" asp-for="MaHD" />
                     <div class="form-group">
                         <label asp-for="MaKH" class="control-label">Mã khách hàng</label>
                         <input asp-for="MaKH" style="background-color: #5c5c5c;" class="form-control" readonly />
@@ -87,9 +87,10 @@
                             <tbody>
                                 @for (int i = 0; i < Model.ChiTietHds.Count; i++)
                                 {
-                                    <input type="hidden" asp-for="ChiTietHds[i].MaHD" />
-                                    <input type="hidden" asp-for="ChiTietHds[i].IsDeleted" />
+
                                     <tr class="product-widget" data-id="@Model.ChiTietHds[i].MaHH">
+                                        <input type="hidden" asp-for="ChiTietHds[i].MaCtHd" />
+                                        <input type="hidden" asp-for="ChiTietHds[i].IsDeleted" value="false" />
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 <img src="~/Hinh/Hinh/HangHoa/@Model.ChiTietHds[i].MaHH/@Model.ChiTietHds[i].HinhAnh" class="img-fluid me-5" style="width: 80px; height: 80px;" alt="@Model.ChiTietHds[i].TenHangHoa">
@@ -141,7 +142,7 @@
                 </div>
             </div>
             <div class="form-group submit-button" style="position: relative;">
-                <button type="button" class="btn btn-outline-info m-2" style="position: absolute; bottom: 752px; right: 60px;">
+                <button type="submit" class="btn btn-outline-info m-2" style="position: absolute; bottom: 752px; right: 60px;">
                     <i class="bi bi-save-fill"></i>  save
                 </button>
             </div>
@@ -160,4 +161,98 @@
             updateTotal();
         });
     </script>
+    <script>
+        // Cập nhật tổng cộng
+        function updateTotal() {
+            let total = 0;
+            const rows = document.querySelectorAll('tr.product-widget');
+
+            rows.forEach(row => {
+                // Chỉ tính các hàng hiển thị (không bị xóa tạm thời)
+                if (row.style.display !== 'none') {
+                    const quantity = parseInt(row.querySelector('input[name$=".SoLuong"]').value) || 0;
+                    const price = parseFloat(row.querySelector('input[name$=".DonGia"]').value) || 0;
+                    total += quantity * price;
+                }
+            });
+
+            // Thêm phí vận chuyển
+            const shippingFee = parseFloat(document.querySelector('input[name="PhiVanChuyen"]').value) || 0;
+            total += shippingFee;
+
+            // Cập nhật tổng cộng hiển thị
+            const formattedTotal = new Intl.NumberFormat('vi-VN').format(total) + ' VND';
+            document.querySelector('.order-total').textContent = formattedTotal;
+        }
+
+        // Xóa tạm thời (chỉ trên UI)
+        function removeRow(button) {
+            Swal.fire({
+                title: 'Xác nhận xóa',
+                text: 'Bạn có chắc chắn muốn xóa sản phẩm này?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Đồng ý',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const row = button.closest('tr');
+                    const isDeletedInput = row.querySelector('input[name$=".IsDeleted"]');
+                    if (isDeletedInput) {
+                        isDeletedInput.value = 'true';
+                        row.style.display = 'none';
+                        // Cập nhật tổng sau khi xóa
+                        updateTotal();
+                
+                        // Hiển thị thông báo thành công (tùy chọn)
+                        Swal.fire(
+                            'Đã xóa!',
+                            'Sản phẩm đã được xóa khỏi danh sách.',
+                            'success'
+                        );
+                    }
+                }
+            });
+        }
+
+        // Khởi tạo khi trang được tải
+        document.addEventListener('DOMContentLoaded', function () {
+            // Thêm sự kiện lắng nghe cho thay đổi số lượng và giá
+            const quantityInputs = document.querySelectorAll('input[name$=".SoLuong"]');
+            quantityInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    updateTotal();
+                });
+            });
+
+            const priceInputs = document.querySelectorAll('input[name$=".DonGia"]');
+            priceInputs.forEach(input => {
+                input.addEventListener('change', function () {
+                    updateTotal();
+                });
+            });
+
+            // Ghi đè sự kiện gửi form
+            const form = document.querySelector('form[asp-action="Edit"]');
+            if (form) {
+                form.addEventListener('submit', function (event) {
+                    // Đảm bảo các mục đã xóa được đánh dấu đúng
+                    document.querySelectorAll('tr.product-widget').forEach(row => {
+                        if (row.style.display === 'none') {
+                            const isDeletedInput = row.querySelector('input[name$=".IsDeleted"]');
+                            if (isDeletedInput) {
+                                isDeletedInput.value = 'true';
+                            }
+                        }
+                    });
+                });
+            }
+
+            // Tính toán tổng cộng ban đầu
+            updateTotal();
+        });
+    </script>
+
 }

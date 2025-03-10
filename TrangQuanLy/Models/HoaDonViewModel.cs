@@ -5,7 +5,7 @@ namespace TrangQuanLy.Models
 {
     public class ChiTietHoaDonMD
     {
-        public int MaHD { get; set; }
+        public int MaCtHd { get; set; }
         public int MaHH { get; set; }
         public int SoLuong { get; set; }
         public double DonGia { get; set; }

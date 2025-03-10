@@ -45,6 +45,11 @@ namespace API_Web_Shop_Electronic_TD.Repository
 
 		public async Task<Loai?> DeleteAsync(int MaLoai)
 		{
+			var ProductMaLoai = await db.HangHoas.FirstOrDefaultAsync(p =>  p.MaLoai == MaLoai);
+			if (ProductMaLoai != null )
+			{
+				throw new KeyNotFoundException($"Không thể xóa loại sản phẩm vì còn tồn tại sản phẩm chứa mã loại {MaLoai}!");
+			}
 			var LoaiModel = await db.Loais.FirstOrDefaultAsync(x => x.MaLoai == MaLoai);
 			if (LoaiModel == null)
 			{
